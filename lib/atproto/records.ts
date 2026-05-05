@@ -55,7 +55,9 @@ async function resolvePdsUrl(did: string): Promise<string | null> {
     } else {
       return null;
     }
-    const pds = doc.service?.find((s) => s.type === "AtprotoPersonalDataServer");
+    const pds = doc.service?.find(
+      (s) => s.type === "AtprotoPersonalDataServer",
+    );
     return pds?.serviceEndpoint ?? null;
   } catch {
     return null;
@@ -89,13 +91,23 @@ async function listAllRecords<T>(
 }
 
 function aggregateEntries(
-  records: { uri: string; value: string; preferred: boolean; sortOrder: number; updatedAt: string }[],
+  records: {
+    uri: string;
+    value: string;
+    preferred: boolean;
+    sortOrder: number;
+    updatedAt: string;
+  }[],
 ): { values: string[]; preferred: string[] } {
   const byNorm = new Map<string, (typeof records)[0]>();
   for (const r of records) {
     const key = r.value.toLocaleLowerCase();
     const cur = byNorm.get(key);
-    if (!cur || r.updatedAt > cur.updatedAt || (r.updatedAt === cur.updatedAt && r.uri > cur.uri)) {
+    if (
+      !cur ||
+      r.updatedAt > cur.updatedAt ||
+      (r.updatedAt === cur.updatedAt && r.uri > cur.uri)
+    ) {
       byNorm.set(key, r);
     }
   }
@@ -110,10 +122,18 @@ function aggregateEntries(
   };
 }
 
-export async function getProfileRecordsFromPds(did: string): Promise<PdsProfile> {
+export async function getProfileRecordsFromPds(
+  did: string,
+): Promise<PdsProfile> {
   const pdsUrl = await resolvePdsUrl(did);
 
-  if (!pdsUrl) return { names: [], pronouns: [], preferredNames: [], preferredPronouns: [] };
+  if (!pdsUrl)
+    return {
+      names: [],
+      pronouns: [],
+      preferredNames: [],
+      preferredPronouns: [],
+    };
 
   const [nameRecords, pronounRecords] = await Promise.all([
     listAllRecords<NameValue>(pdsUrl, did, "blue.pronouns.name"),

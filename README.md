@@ -28,18 +28,18 @@ No database setup needed — SQLite is used automatically at `./app.db`.
 
 **Required for production:**
 
-| Variable | Description |
-|---|---|
-| `PUBLIC_URL` | Canonical URL, e.g. `https://pronouns.blue` |
+| Variable       | Description                                      |
+| -------------- | ------------------------------------------------ |
+| `PUBLIC_URL`   | Canonical URL, e.g. `https://pronouns.blue`      |
 | `DATABASE_URL` | Postgres connection string (Supabase or similar) |
-| `PRIVATE_KEY` | JWK for OAuth — generate with `pnpm gen-key` |
+| `PRIVATE_KEY`  | JWK for OAuth — generate with `pnpm gen-key`     |
 
 **Optional:**
 
-| Variable | Description | Default |
-|---|---|---|
-| `DATABASE_PATH` | SQLite file path (local dev only) | `./app.db` |
-| `PUBLIC_APPVIEW_URL` | Bluesky appview base URL | `https://public.api.bsky.app` |
+| Variable             | Description                       | Default                       |
+| -------------------- | --------------------------------- | ----------------------------- |
+| `DATABASE_PATH`      | SQLite file path (local dev only) | `./app.db`                    |
+| `PUBLIC_APPVIEW_URL` | Bluesky appview base URL          | `https://public.api.bsky.app` |
 
 SSL is enabled automatically when `DATABASE_URL` points to a non-local host — no extra flag needed.
 
