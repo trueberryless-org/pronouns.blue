@@ -47,7 +47,7 @@ export function HandleSearch() {
   }, [normalizedQuery]);
 
   function openHandle(handle: string) {
-    router.push(`/${handle}`);
+    router.push(`/profile/${handle}`);
   }
 
   return (

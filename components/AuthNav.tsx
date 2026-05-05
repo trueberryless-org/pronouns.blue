@@ -121,7 +121,7 @@ export function AuthNav({
     const label = displayName ?? handle ?? did ?? "profile";
     const normalizedHandle = handle?.replace(/^@/, "");
     const profileHref = normalizedHandle
-      ? `/${encodeURIComponent(normalizedHandle)}`
+      ? `/profile/${encodeURIComponent(normalizedHandle)}`
       : "/settings";
     return (
       <div className="relative" ref={menuRef}>

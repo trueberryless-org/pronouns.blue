@@ -8,7 +8,7 @@ export default async function Home() {
   const session = await getSession();
   const signedInActor = session ? await getActorProfile(session.did) : null;
   const profileHref = signedInActor?.handle
-    ? `/${encodeURIComponent(signedInActor.handle.replace(/^@/, ""))}`
+    ? `/profile/${encodeURIComponent(signedInActor.handle.replace(/^@/, ""))}`
     : "/settings";
 
   return (
