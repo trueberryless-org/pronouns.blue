@@ -10,7 +10,10 @@ let _db: Kysely<DatabaseSchema> | null = null;
 export const getDb = (): Kysely<DatabaseSchema> => {
   if (!_db) {
     if (DATABASE_URL) {
-      const pool = new Pool({ connectionString: DATABASE_URL });
+      const pool = new Pool({
+        connectionString: DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+      });
       _db = new Kysely<DatabaseSchema>({
         dialect: new PostgresDialect({ pool }),
       });
