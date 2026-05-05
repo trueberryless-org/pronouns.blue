@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { Client } from "@atproto/lex";
 import { AtUri } from "@atproto/syntax";
 import { getSession } from "@/lib/auth/session";
+import { getProfileRecordsTag } from "@/lib/atproto/cache";
 import * as blue from "@/lib/lexicons/blue";
 
 function cleanEntries(value: unknown): string[] {
@@ -119,6 +121,8 @@ export async function POST(request: NextRequest) {
         }),
       ),
     ]);
+
+    revalidateTag(getProfileRecordsTag(session.did), "max");
 
     return NextResponse.json({
       success: true,

@@ -1,3 +1,5 @@
+import { getProfileRecordsTag } from "@/lib/atproto/cache";
+
 interface DidDocument {
   service?: { id: string; type: string; serviceEndpoint: string }[];
 }
@@ -38,17 +40,18 @@ export interface PdsProfile {
 
 async function resolvePdsUrl(did: string): Promise<string | null> {
   try {
+    const profileRecordsTag = getProfileRecordsTag(did);
     let doc: DidDocument;
     if (did.startsWith("did:plc:")) {
       const res = await fetch(`https://plc.directory/${did}`, {
-        next: { revalidate: 3600 },
+        next: { revalidate: 3600, tags: [profileRecordsTag] },
       });
       if (!res.ok) return null;
       doc = (await res.json()) as DidDocument;
     } else if (did.startsWith("did:web:")) {
       const host = did.slice("did:web:".length);
       const res = await fetch(`https://${host}/.well-known/did.json`, {
-        next: { revalidate: 3600 },
+        next: { revalidate: 3600, tags: [profileRecordsTag] },
       });
       if (!res.ok) return null;
       doc = (await res.json()) as DidDocument;
@@ -69,6 +72,7 @@ async function listAllRecords<T>(
   did: string,
   collection: string,
 ): Promise<PdsRecord<T>[]> {
+  const profileRecordsTag = getProfileRecordsTag(did);
   const records: PdsRecord<T>[] = [];
   let cursor: string | undefined;
 
@@ -79,7 +83,9 @@ async function listAllRecords<T>(
     url.searchParams.set("limit", "100");
     if (cursor) url.searchParams.set("cursor", cursor);
 
-    const res = await fetch(url.toString(), { next: { revalidate: 60 } });
+    const res = await fetch(url.toString(), {
+      next: { revalidate: 60, tags: [profileRecordsTag] },
+    });
     if (!res.ok) break;
 
     const data = (await res.json()) as ListRecordsResponse<T>;
