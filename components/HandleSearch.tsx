@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
 
 interface Suggestion {
   did: string;
@@ -9,7 +9,7 @@ interface Suggestion {
 }
 
 export function HandleSearch() {
-  const router = useRouter();
+  const router = useTransitionRouter();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(false);
