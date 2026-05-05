@@ -63,7 +63,7 @@ function EntryColumn({
 
 export function ProfileDisplay(props: ProfileDisplayProps) {
   return (
-    <main className="mx-auto flex min-h-full w-full max-w-3xl items-center justify-center px-4 pb-8">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 items-center justify-center px-4 pb-8">
       <section className="w-full py-4">
         <div className="mb-8 flex flex-col items-center text-center">
           <Avatar src={props.avatar} label={props.title} />
