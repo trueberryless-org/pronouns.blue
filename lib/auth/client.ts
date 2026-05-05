@@ -12,7 +12,7 @@ import type {
 // Use undici's native fetch to bypass Next.js's patched globalThis.fetch,
 // which can strip POST bodies when passing Request objects (DPoP flow).
 import { fetch as nativeFetch } from "undici";
-import { getDb } from "../db";
+import { cookies } from "next/headers";
 
 export const SCOPE =
   "atproto repo:blue.pronouns.name repo:blue.pronouns.pronoun";
@@ -21,6 +21,10 @@ let client: NodeOAuthClient | null = null;
 
 const PUBLIC_URL = process.env.PUBLIC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const IS_PROD = process.env.NODE_ENV === "production";
+
+const STATE_COOKIE = "oauth_state";
+const SESSION_COOKIE = "session";
 
 function getClientMetadata(): OAuthClientMetadataInput {
   if (PUBLIC_URL) {
@@ -64,55 +68,76 @@ export async function getOAuthClient(): Promise<NodeOAuthClient> {
 
     stateStore: {
       async get(key: string) {
-        const db = getDb();
-        const row = await db
-          .selectFrom("auth_state")
-          .select("value")
-          .where("key", "=", key)
-          .executeTakeFirst();
-        return row ? JSON.parse(row.value) : undefined;
+        const jar = await cookies();
+        const raw = jar.get(STATE_COOKIE)?.value;
+        if (!raw) return undefined;
+        try {
+          const parsed = JSON.parse(raw) as {
+            key: string;
+            value: NodeSavedState;
+          };
+          return parsed.key === key ? parsed.value : undefined;
+        } catch {
+          return undefined;
+        }
       },
       async set(key: string, value: NodeSavedState) {
-        const db = getDb();
-        const valueJson = JSON.stringify(value);
-        await db
-          .insertInto("auth_state")
-          .values({ key, value: valueJson })
-          .onConflict((oc) =>
-            oc.column("key").doUpdateSet({ value: valueJson }),
-          )
-          .execute();
+        try {
+          const jar = await cookies();
+          jar.set(STATE_COOKIE, JSON.stringify({ key, value }), {
+            httpOnly: true,
+            secure: IS_PROD,
+            sameSite: "lax",
+            maxAge: 600, // 10 minutes — enough for the OAuth redirect round-trip
+            path: "/",
+          });
+        } catch {
+          // cookies() is read-only in Server Components; ignore if called there
+        }
       },
-      async del(key: string) {
-        const db = getDb();
-        await db.deleteFrom("auth_state").where("key", "=", key).execute();
+      async del(_key: string) {
+        try {
+          const jar = await cookies();
+          jar.delete(STATE_COOKIE);
+        } catch {
+          // ignore
+        }
       },
     },
 
     sessionStore: {
-      async get(key: string) {
-        const db = getDb();
-        const row = await db
-          .selectFrom("auth_session")
-          .select("value")
-          .where("key", "=", key)
-          .executeTakeFirst();
-        return row ? JSON.parse(row.value) : undefined;
+      async get(_key: string) {
+        const jar = await cookies();
+        const raw = jar.get(SESSION_COOKIE)?.value;
+        if (!raw) return undefined;
+        try {
+          return JSON.parse(raw) as NodeSavedSession;
+        } catch {
+          return undefined;
+        }
       },
-      async set(key: string, value: NodeSavedSession) {
-        const db = getDb();
-        const valueJson = JSON.stringify(value);
-        await db
-          .insertInto("auth_session")
-          .values({ key, value: valueJson })
-          .onConflict((oc) =>
-            oc.column("key").doUpdateSet({ value: valueJson }),
-          )
-          .execute();
+      async set(_key: string, value: NodeSavedSession) {
+        try {
+          const jar = await cookies();
+          jar.set(SESSION_COOKIE, JSON.stringify(value), {
+            httpOnly: true,
+            secure: IS_PROD,
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24 * 30, // 30 days
+            path: "/",
+          });
+        } catch {
+          // ignore — token refresh in a Server Component won't persist,
+          // but the session will be refreshed again on the next Route Handler call
+        }
       },
-      async del(key: string) {
-        const db = getDb();
-        await db.deleteFrom("auth_session").where("key", "=", key).execute();
+      async del(_key: string) {
+        try {
+          const jar = await cookies();
+          jar.delete(SESSION_COOKIE);
+        } catch {
+          // ignore
+        }
       },
     },
   });

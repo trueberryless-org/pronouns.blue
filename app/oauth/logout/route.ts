@@ -13,11 +13,15 @@ export async function POST() {
     }
 
     cookieStore.delete("did");
+    cookieStore.delete("session");
+    cookieStore.delete("oauth_state");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Logout error:", error);
     const cookieStore = await cookies();
     cookieStore.delete("did");
+    cookieStore.delete("session");
+    cookieStore.delete("oauth_state");
     return NextResponse.json({ success: true });
   }
 }

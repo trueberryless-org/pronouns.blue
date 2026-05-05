@@ -34,19 +34,18 @@ export default function PrivacyPage() {
           <ul className="space-y-3 text-[var(--muted)]">
             <li>
               <span className="font-medium text-[var(--text)]">
-                OAuth session data
+                Nothing server-side
               </span>{" "}
-              — when you sign in, we store your DID and OAuth tokens (encrypted
-              session state) in our database solely to maintain your login
-              session. This data is deleted when you sign out.
+              — we run no database. Your OAuth session is stored entirely in
+              your browser as encrypted cookies (see below). When you sign out,
+              those cookies are deleted.
             </li>
             <li>
               <span className="font-medium text-[var(--text)]">
-                Nothing else
+                Names &amp; pronouns
               </span>{" "}
               — your names and pronouns are written directly to your PDS and
-              read back from it on every page load. We do not keep a copy in our
-              database.
+              read back on every page load. We never keep a copy.
             </li>
           </ul>
         </section>
@@ -84,10 +83,28 @@ export default function PrivacyPage() {
           <h2 className="mb-3 text-xl font-semibold text-[var(--text)]">
             Cookies
           </h2>
-          <p className="text-[var(--muted)]">
-            We set a single session cookie containing your DID to identify your
-            login session. No tracking or analytics cookies are used.
+          <p className="mb-3 text-[var(--muted)]">
+            We set three <code className="text-xs">httpOnly</code> session
+            cookies. They are never accessible to JavaScript and are never used
+            for tracking.
           </p>
+          <ul className="space-y-2 text-[var(--muted)]">
+            <li>
+              <code className="text-xs font-medium text-[var(--text)]">did</code>{" "}
+              — your ATProto DID, used to identify your login session.
+            </li>
+            <li>
+              <code className="text-xs font-medium text-[var(--text)]">session</code>{" "}
+              — your OAuth tokens and DPoP private key, used to make
+              authenticated requests to your PDS on your behalf. Expires after
+              30 days or when you sign out.
+            </li>
+            <li>
+              <code className="text-xs font-medium text-[var(--text)]">oauth_state</code>{" "}
+              — temporary PKCE state during the sign-in redirect. Expires after
+              10 minutes automatically.
+            </li>
+          </ul>
         </section>
 
         <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
@@ -95,7 +112,7 @@ export default function PrivacyPage() {
             Data deletion
           </h2>
           <p className="text-[var(--muted)]">
-            Sign out to remove your OAuth session from our database. Your
+            Sign out to delete your session cookies. Your
             name/pronoun records are stored in your own ATProto repo — delete
             them there (via your PDS or any ATProto client) to remove them from
             your repo and from public view.

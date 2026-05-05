@@ -1,12 +1,12 @@
-import { getSession } from "@/lib/auth/session";
+import { getDid } from "@/lib/auth/session";
 import { getActorProfile } from "@/lib/atproto/profiles";
 import { HandleSearch } from "@/components/HandleSearch";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
 
 export default async function Home() {
-  const session = await getSession();
-  const signedInActor = session ? await getActorProfile(session.did) : null;
+  const did = await getDid();
+  const signedInActor = did ? await getActorProfile(did) : null;
   const profileHref = signedInActor?.handle
     ? `/profile/${encodeURIComponent(signedInActor.handle.replace(/^@/, ""))}`
     : "/settings";
@@ -33,7 +33,7 @@ export default async function Home() {
           <HandleSearch />
         </section>
 
-        {session && (
+        {did && (
           <section className="grid gap-4 md:grid-cols-2">
             <Link
               href="/settings"
@@ -76,10 +76,10 @@ export default async function Home() {
                   <p className="truncate text-lg font-semibold text-[var(--text)]">
                     {signedInActor?.displayName ??
                       signedInActor?.handle ??
-                      session.did}
+                      did}
                   </p>
                   <p className="truncate text-sm text-[var(--muted)]">
-                    @{signedInActor?.handle ?? session.did}
+                    @{signedInActor?.handle ?? did}
                   </p>
                 </span>
               </div>

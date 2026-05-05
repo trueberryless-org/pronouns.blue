@@ -2,15 +2,14 @@
 
 A small [AT Protocol](https://atproto.com/) app for sharing your names and pronouns.
 
-Users sign in with their ATProto account (Bluesky, etc.), then set their names and pronouns from the Settings page. Each name and pronoun is published as its own record in their ATProto repo under the `blue.pronouns.name` and `blue.pronouns.pronoun` lexicons. Anyone can view a profile at `pronouns.blue/@handle` — no account required.
+Users sign in with their ATProto account (Bluesky, etc.), then set their names and pronouns from the Settings page. Each name and pronoun is published as its own record in their ATProto repo under the `blue.pronouns.name` and `blue.pronouns.pronoun` lexicons. Anyone can view a profile at `pronouns.blue/profile/@handle` — no account required.
 
 ## Tech stack
 
 - [Next.js](https://nextjs.org/) App Router
 - `@atproto/oauth-client-node` — sign in with any ATProto account
 - `@atproto/lex` + generated bindings from local lexicons
-- SQLite (local dev, zero config) or Postgres/Supabase (production)
-- Kysely for type-safe migrations and queries
+- No database — OAuth state and sessions are stored in `httpOnly` cookies
 
 ## Local setup
 
@@ -22,34 +21,27 @@ pnpm install
 pnpm dev
 ```
 
-No database setup needed — SQLite is used automatically at `./app.db`.
-
 ## Environment variables
 
 **Required for production:**
 
-| Variable       | Description                                      |
-| -------------- | ------------------------------------------------ |
-| `PUBLIC_URL`   | Canonical URL, e.g. `https://pronouns.blue`      |
-| `DATABASE_URL` | Postgres connection string (Supabase or similar) |
-| `PRIVATE_KEY`  | JWK for OAuth — generate with `pnpm gen-key`     |
+| Variable      | Description                                  |
+| ------------- | -------------------------------------------- |
+| `PUBLIC_URL`  | Canonical URL, e.g. `https://pronouns.blue`  |
+| `PRIVATE_KEY` | JWK for OAuth — generate with `pnpm gen-key` |
 
 **Optional:**
 
-| Variable             | Description                       | Default                       |
-| -------------------- | --------------------------------- | ----------------------------- |
-| `DATABASE_PATH`      | SQLite file path (local dev only) | `./app.db`                    |
-| `PUBLIC_APPVIEW_URL` | Bluesky appview base URL          | `https://public.api.bsky.app` |
-
-SSL is enabled automatically when `DATABASE_URL` points to a non-local host — no extra flag needed.
+| Variable             | Description              | Default                       |
+| -------------------- | ------------------------ | ----------------------------- |
+| `PUBLIC_APPVIEW_URL` | Bluesky appview base URL | `https://public.api.bsky.app` |
 
 ## Scripts
 
 ```bash
-pnpm dev           # migrate + Next.js dev server
+pnpm dev           # Next.js dev server
 pnpm build         # regenerate lexicon bindings + Next.js build
-pnpm start         # migrate + Next.js production server
-pnpm migrate       # apply DB migrations
+pnpm start         # Next.js production server
 pnpm build:lex     # regenerate TypeScript bindings from lexicons/
 pnpm lint          # ESLint
 pnpm lint:fix      # ESLint with autofix
@@ -60,17 +52,15 @@ pnpm gen-key       # generate a PRIVATE_KEY JWK
 
 ## CI
 
-- `ci.yaml` — lint, format check, migrate, build on every PR/push (starts a local Postgres service)
+- `ci.yaml` — lint, format check, build on every PR/push
 - `format.yaml` — autofix lint + Prettier and commits via `autofix-ci`
 
 ## Deploying to Vercel
 
-1. Create a [Supabase](https://supabase.com/) project and copy the Postgres connection string.
-2. In Vercel project settings add:
-   - `DATABASE_URL` — Supabase Postgres URI
+1. In Vercel project settings add:
    - `PUBLIC_URL` — your domain, e.g. `https://pronouns.blue`
    - `PRIVATE_KEY` — from `pnpm gen-key`
-3. Deploy from GitHub as a Next.js project. Migrations run automatically on every cold start via `instrumentation.ts`.
+2. Deploy from GitHub as a Next.js project. No database or migrations needed.
 
 ## Lexicon development
 

@@ -15,7 +15,7 @@ pnpm install
 pnpm dev
 ```
 
-No database setup needed — if `DATABASE_URL` is not set, the app uses SQLite at `./app.db` automatically.
+No database or other services needed.
 
 ## Main commands
 
@@ -24,7 +24,6 @@ pnpm lint
 pnpm lint:fix
 pnpm format
 pnpm format:check
-pnpm migrate
 pnpm build:lex
 pnpm build
 ```
@@ -38,10 +37,10 @@ pnpm build
 
 ## Architecture notes
 
-- Names and pronouns are stored as **individual ATProto records** (`blue.pronouns.name`, `blue.pronouns.pronoun`) directly in the user's repo.
-- Profile pages and the settings page read records directly from the user's PDS via `com.atproto.repo.listRecords` — there is no local DB cache for record data.
-- The local DB (SQLite or Postgres) is used **only** for OAuth session state (`auth_state`, `auth_session`).
-- SSL for Postgres is enabled automatically when `DATABASE_URL` points to a non-local host.
+- Names and pronouns are stored as **individual ATProto records** (`blue.pronouns.name`, `blue.pronouns.pronoun`) directly in the user's repo. There is no database.
+- Profile pages and the settings page read records directly from the user's PDS via `com.atproto.repo.listRecords` (`lib/atproto/records.ts`).
+- OAuth state and session (tokens + DPoP key) are stored in `httpOnly` browser cookies (`oauth_state`, `session`, `did`). `lib/auth/client.ts` implements the `stateStore`/`sessionStore` interfaces using `cookies()` from `next/headers`.
+- In Server Components use `getDid()` (reads the `did` cookie). Only call `getSession()` in Route Handlers, where cookie writes (token refresh) are allowed.
 
 ## Pull request guidelines
 
