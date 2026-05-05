@@ -1,6 +1,7 @@
 import { getSession } from "@/lib/auth/session";
 import { getActorProfile } from "@/lib/atproto/profiles";
 import { HandleSearch } from "@/components/HandleSearch";
+import Image from "next/image";
 import Link from "next/link";
 
 export default async function Home() {
@@ -13,6 +14,17 @@ export default async function Home() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6">
       <main className="space-y-8">
+        <div className="flex justify-center pb-2">
+          <Image
+            src="/pronouns.blue.svg"
+            alt="pronouns.blue"
+            width={242}
+            height={99}
+            className="h-64 w-auto"
+            priority
+          />
+        </div>
+
         <section className="space-y-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center">
           <p className="text-lg text-[var(--muted)]">
             Find any user by handle and view their names and pronouns.

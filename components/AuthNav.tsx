@@ -189,6 +189,10 @@ export function AuthNav({
         <input
           value={loginHandle}
           onChange={(event) => setLoginHandle(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && loginHandle.trim() && !loading)
+              startLogin();
+          }}
           placeholder="handle.bsky.social"
           className="min-h-10 w-48 rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-2 text-sm text-[var(--text)]"
         />
