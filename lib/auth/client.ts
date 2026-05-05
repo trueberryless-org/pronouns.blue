@@ -10,12 +10,6 @@ import type {
   NodeSavedState,
   OAuthClientMetadataInput,
 } from "@atproto/oauth-client-node";
-// Use undici's native fetch to bypass Next.js's patched globalThis.fetch,
-// which can strip POST bodies when passing Request objects (DPoP flow).
-// NOTE: undici 8.x's Request type is incompatible with @atproto-labs/fetch-node's
-// safeFetchWrap transforms, so we provide an explicit handleResolver that uses
-// globalThis.fetch (fine for GET requests) while nativeFetch handles OAuth/DPoP POSTs.
-import { fetch as nativeFetch } from "undici";
 import { cookies } from "next/headers";
 
 export const SCOPE =
@@ -64,12 +58,15 @@ async function getKeyset(): Promise<Keyset | undefined> {
 export async function getOAuthClient(): Promise<NodeOAuthClient> {
   if (client) return client;
 
+  // Next.js patches globalThis.fetch for ISR caching, which can corrupt DPoP
+  // POST bodies. Use the original pre-patch fetch stored by Next at startup.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const originalFetch = (globalThis.fetch as any)._nextOriginalFetch ?? globalThis.fetch;
+
   client = new NodeOAuthClient({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fetch: nativeFetch as any,
-    // Explicit handleResolver using globalThis.fetch — undici 8.x's Request
-    // type is incompatible with the safeFetchWrap SSRF transforms used internally.
-    handleResolver: new AtprotoHandleResolverNode(),
+    fetch: originalFetch,
+    // Explicit handleResolver so it inherits the same originalFetch for consistency
+    handleResolver: new AtprotoHandleResolverNode({ fetch: originalFetch }),
     clientMetadata: getClientMetadata(),
     keyset: await getKeyset(),
 

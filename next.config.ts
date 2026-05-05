@@ -4,7 +4,6 @@ const nextConfig: NextConfig = {
   serverExternalPackages: [
     "thread-stream",
     "pino",
-    "undici",
     "@atproto/oauth-client-node",
     "@atproto/oauth-client",
     "@atproto/lex",
