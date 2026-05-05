@@ -37,13 +37,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { names, pronouns, preferredNames, preferredPronouns } =
-    (await request.json()) as {
-      names: unknown;
-      pronouns: unknown;
-      preferredNames: unknown;
-      preferredPronouns: unknown;
-    };
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
+  const { names, pronouns, preferredNames, preferredPronouns } = body as {
+    names: unknown;
+    pronouns: unknown;
+    preferredNames: unknown;
+    preferredPronouns: unknown;
+  };
   const cleanedNames = cleanEntries(names);
   const cleanedPronouns = cleanEntries(pronouns);
   const cleanedPreferredNames = cleanEntries(preferredNames).filter((entry) =>
@@ -66,50 +72,56 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const lexClient = new Client(session);
-  const now = new Date().toISOString();
-  const preferredNameSet = new Set(cleanedPreferredNames);
-  const preferredPronounSet = new Set(cleanedPreferredPronouns);
+  try {
+    const lexClient = new Client(session);
+    const now = new Date().toISOString();
+    const preferredNameSet = new Set(cleanedPreferredNames);
+    const preferredPronounSet = new Set(cleanedPreferredPronouns);
 
-  const [existingNameUris, existingPronounUris] = await Promise.all([
-    listAllRecordUris(lexClient, blue.pronouns.name.main),
-    listAllRecordUris(lexClient, blue.pronouns.pronoun.main),
-  ]);
+    const [existingNameUris, existingPronounUris] = await Promise.all([
+      listAllRecordUris(lexClient, blue.pronouns.name.main),
+      listAllRecordUris(lexClient, blue.pronouns.pronoun.main),
+    ]);
 
-  await Promise.all([
-    ...existingNameUris.map((uri) =>
-      lexClient.delete(blue.pronouns.name.main, { rkey: new AtUri(uri).rkey }),
-    ),
-    ...existingPronounUris.map((uri) =>
-      lexClient.delete(blue.pronouns.pronoun.main, {
-        rkey: new AtUri(uri).rkey,
-      }),
-    ),
-  ]);
+    await Promise.all([
+      ...existingNameUris.map((uri) =>
+        lexClient.delete(blue.pronouns.name.main, { rkey: new AtUri(uri).rkey }),
+      ),
+      ...existingPronounUris.map((uri) =>
+        lexClient.delete(blue.pronouns.pronoun.main, {
+          rkey: new AtUri(uri).rkey,
+        }),
+      ),
+    ]);
 
-  await Promise.all([
-    ...cleanedNames.map((value, index) =>
-      lexClient.create(blue.pronouns.name.main, {
-        value,
-        preferred: preferredNameSet.has(value),
-        sortOrder: index,
-        createdAt: now,
-        updatedAt: now,
-      }),
-    ),
-    ...cleanedPronouns.map((value, index) =>
-      lexClient.create(blue.pronouns.pronoun.main, {
-        value,
-        preferred: preferredPronounSet.has(value),
-        sortOrder: index,
-        createdAt: now,
-        updatedAt: now,
-      }),
-    ),
-  ]);
+    await Promise.all([
+      ...cleanedNames.map((value, index) =>
+        lexClient.create(blue.pronouns.name.main, {
+          value,
+          preferred: preferredNameSet.has(value),
+          sortOrder: index,
+          createdAt: now,
+          updatedAt: now,
+        }),
+      ),
+      ...cleanedPronouns.map((value, index) =>
+        lexClient.create(blue.pronouns.pronoun.main, {
+          value,
+          preferred: preferredPronounSet.has(value),
+          sortOrder: index,
+          createdAt: now,
+          updatedAt: now,
+        }),
+      ),
+    ]);
 
-  return NextResponse.json({
-    success: true,
-    counts: { names: cleanedNames.length, pronouns: cleanedPronouns.length },
-  });
+    return NextResponse.json({
+      success: true,
+      counts: { names: cleanedNames.length, pronouns: cleanedPronouns.length },
+    });
+  } catch (err) {
+    console.error("[api/status] Failed to publish records:", err);
+    const message = err instanceof Error ? err.message : "Failed to save profile";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

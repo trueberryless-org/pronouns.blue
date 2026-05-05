@@ -205,9 +205,11 @@ export function ProfileEditor({
           ),
         }),
       });
-      const data = (await response.json()) as { error?: string };
+      const data = response.headers.get("content-type")?.includes("application/json")
+        ? ((await response.json()) as { error?: string })
+        : ({} as { error?: string });
       if (!response.ok) {
-        throw new Error(data.error || "Failed to save profile");
+        throw new Error(data.error || `Server error ${response.status}`);
       }
       setSaved(true);
       router.refresh();
