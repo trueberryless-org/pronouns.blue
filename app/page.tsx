@@ -20,7 +20,7 @@ export default async function Home() {
             alt="pronouns.blue"
             width={242}
             height={99}
-            className="h-40 w-auto"
+            className="h-60 w-auto"
             style={{ viewTransitionName: "site-logo" }}
             priority
           />
