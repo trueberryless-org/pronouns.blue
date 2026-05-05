@@ -1,4 +1,14 @@
-export default function PrivacyPage() {
+import { getDid } from "@/lib/auth/session";
+
+export default async function PrivacyPage() {
+  const did = await getDid();
+  const pronounRecordsPdslsHref = did
+    ? `https://pdsls.dev/at://${did}/blue.pronouns.pronoun`
+    : null;
+  const nameRecordsPdslsHref = did
+    ? `https://pdsls.dev/at://${did}/blue.pronouns.name`
+    : null;
+
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-12 sm:px-6">
       <h1 className="mb-2 text-3xl font-bold text-[var(--text)]">
@@ -112,6 +122,45 @@ export default function PrivacyPage() {
           </ul>
         </section>
 
+        {pronounRecordsPdslsHref && nameRecordsPdslsHref && (
+          <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
+            <h2 className="mb-3 text-xl font-semibold text-[var(--text)]">
+              View your records in PDSLS
+            </h2>
+            <p className="text-[var(--muted)]">
+              If you are signed in, you can inspect your published lexicon
+              records directly in{" "}
+              <a
+                href="https://pdsls.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--accent)] underline underline-offset-4"
+              >
+                PDSLS
+              </a>
+              .
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <a
+                href={pronounRecordsPdslsHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-1.5 text-sm font-medium text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              >
+                blue.pronouns.pronoun
+              </a>
+              <a
+                href={nameRecordsPdslsHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-1.5 text-sm font-medium text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              >
+                blue.pronouns.name
+              </a>
+            </div>
+          </section>
+        )}
+
         <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
           <h2 className="mb-3 text-xl font-semibold text-[var(--text)]">
             Data deletion
@@ -119,8 +168,38 @@ export default function PrivacyPage() {
           <p className="text-[var(--muted)]">
             Sign out to delete your session cookies. Your name/pronoun records
             are stored in your own ATProto repo — delete them there (via your
-            PDS or any ATProto client) to remove them from your repo and from
-            public view.
+            PDS, any ATProto client, or{" "}
+            {pronounRecordsPdslsHref && nameRecordsPdslsHref ? (
+              <>
+                <a
+                  href={pronounRecordsPdslsHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--accent)] underline underline-offset-4"
+                >
+                  PDSLS for pronouns
+                </a>{" "}
+                and{" "}
+                <a
+                  href={nameRecordsPdslsHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--accent)] underline underline-offset-4"
+                >
+                  PDSLS for names
+                </a>
+              </>
+            ) : (
+              <a
+                href="https://pdsls.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--accent)] underline underline-offset-4"
+              >
+                PDSLS
+              </a>
+            )}
+            ) to remove them from your repo and from public view.
           </p>
         </section>
 

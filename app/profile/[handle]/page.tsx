@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getActorProfile } from "@/lib/atproto/profiles";
 import { getProfileRecordsFromPds } from "@/lib/atproto/records";
+import { getDid } from "@/lib/auth/session";
 import { ProfileDisplay } from "@/components/ProfileDisplay";
 
 export default async function HandleProfilePage({
@@ -14,7 +15,10 @@ export default async function HandleProfilePage({
   const actor = await getActorProfile(handle);
   if (!actor) notFound();
 
-  const profile = await getProfileRecordsFromPds(actor.did);
+  const [did, profile] = await Promise.all([
+    getDid(),
+    getProfileRecordsFromPds(actor.did),
+  ]);
   const title = actor.displayName ?? actor.handle;
 
   return (
@@ -26,6 +30,9 @@ export default async function HandleProfilePage({
       pronouns={profile.pronouns}
       preferredNames={profile.preferredNames}
       preferredPronouns={profile.preferredPronouns}
+      editHref={
+        did?.toLowerCase() === actor.did.toLowerCase() ? "/settings" : undefined
+      }
     />
   );
 }
