@@ -1,9 +1,8 @@
-import Link from "next/link";
-import Image from "next/image";
 import { getSession } from "@/lib/auth/session";
 import { getActorProfile } from "@/lib/atproto/profiles";
 import { AuthNav } from "@/components/AuthNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { NavLogo } from "@/components/NavLogo";
 
 export async function AppNav() {
   const session = await getSession();
@@ -11,18 +10,9 @@ export async function AppNav() {
 
   return (
     <nav className="mb-8 mt-4 border-b border-[var(--line)] pb-4">
-      <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-6">
-        <Link href="/" className="flex items-center">
-          <Image
-            src="/pronouns.blue.svg"
-            alt="pronouns.blue"
-            width={242}
-            height={99}
-            className="h-14 w-auto"
-            priority
-          />
-        </Link>
-        <div className="flex w-full flex-wrap items-center justify-end gap-8 sm:w-auto sm:gap-4">
+      <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-3 px-4 sm:min-h-14 sm:flex-row sm:px-6">
+        <NavLogo />
+        <div className="flex w-full flex-wrap items-center justify-end gap-8 sm:ms-auto sm:w-auto sm:gap-4">
           <ThemeToggle />
           <AuthNav
             signedIn={Boolean(session)}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ViewTransitions } from "next-view-transitions";
 import "./globals.css";
 import { AppNav } from "@/components/AppNav";
 
@@ -37,14 +38,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col antialiased`}
-      >
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <AppNav />
-        <main className="flex-1">{children}</main>
-      </body>
-    </html>
+    <ViewTransitions>
+      <html lang="en" data-theme="dark" suppressHydrationWarning>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col antialiased`}
+        >
+          <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+          <AppNav />
+          <main className="flex-1">{children}</main>
+        </body>
+      </html>
+    </ViewTransitions>
   );
 }

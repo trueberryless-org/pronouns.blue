@@ -26,6 +26,9 @@ dependencies:
   next:
     specifier: 16.1.1
     version: 16.1.1(@babel/core@7.28.6)(react-dom@19.2.3)(react@19.2.3)
+  next-view-transitions:
+    specifier: ^0.3.5
+    version: 0.3.5(next@16.1.1)(react-dom@19.2.3)(react@19.2.3)
   pg:
     specifier: ^8.20.0
     version: 8.20.0
@@ -3643,6 +3646,18 @@ packages:
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
+
+  /next-view-transitions@0.3.5(next@16.1.1)(react-dom@19.2.3)(react@19.2.3):
+    resolution: {integrity: sha512-yP8OPNydLmKpmE94hLurLGEzPsUy1uyl9iSv8oxaC2JwhSXTD86SVwk1NMMQT7Ado4kMENDJ7fNBIXHy3GU/Lg==}
+    peerDependencies:
+      next: '>=14.0.0'
+      react: '>=18.2.0 || ^19.0.0'
+      react-dom: '>=18.2.0 || ^19.0.0'
+    dependencies:
+      next: 16.1.1(@babel/core@7.28.6)(react-dom@19.2.3)(react@19.2.3)
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+    dev: false
 
   /next@16.1.1(@babel/core@7.28.6)(react-dom@19.2.3)(react@19.2.3):
     resolution: {integrity: sha512-QI+T7xrxt1pF6SQ/JYFz95ro/mg/1Znk5vBebsWwbpejj1T0A23hO7GYEaVac9QUOT2BIMiuzm0L99ooq7k0/w==}

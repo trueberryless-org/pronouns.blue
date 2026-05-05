@@ -1,8 +1,8 @@
 import { getSession } from "@/lib/auth/session";
 import { getActorProfile } from "@/lib/atproto/profiles";
 import { HandleSearch } from "@/components/HandleSearch";
+import { Link } from "next-view-transitions";
 import Image from "next/image";
-import Link from "next/link";
 
 export default async function Home() {
   const session = await getSession();
@@ -20,7 +20,8 @@ export default async function Home() {
             alt="pronouns.blue"
             width={242}
             height={99}
-            className="h-64 w-auto"
+            className="h-40 w-auto"
+            style={{ viewTransitionName: "site-logo" }}
             priority
           />
         </div>
