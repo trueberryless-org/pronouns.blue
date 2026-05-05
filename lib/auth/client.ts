@@ -9,6 +9,9 @@ import type {
   NodeSavedState,
   OAuthClientMetadataInput,
 } from "@atproto/oauth-client-node";
+// Use undici's native fetch to bypass Next.js's patched globalThis.fetch,
+// which can strip POST bodies when passing Request objects (DPoP flow).
+import { fetch as nativeFetch } from "undici";
 import { getDb } from "../db";
 
 export const SCOPE =
@@ -54,6 +57,8 @@ export async function getOAuthClient(): Promise<NodeOAuthClient> {
   if (client) return client;
 
   client = new NodeOAuthClient({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fetch: nativeFetch as any,
     clientMetadata: getClientMetadata(),
     keyset: await getKeyset(),
 
