@@ -210,7 +210,7 @@ export default async function PrivacyPage() {
           <p className="text-[var(--muted)]">
             Questions or concerns? Open an issue on{" "}
             <a
-              href="https://github.com/trueberryless-org/pronouns.blue"
+              href="https://github.com/trueberryless-org/pronouns.blue/issues/new/choose"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[var(--accent)] underline underline-offset-4"
