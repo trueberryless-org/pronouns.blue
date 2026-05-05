@@ -41,7 +41,10 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body" },
+      { status: 400 },
+    );
   }
 
   const { names, pronouns, preferredNames, preferredPronouns } = body as {
@@ -85,7 +88,9 @@ export async function POST(request: NextRequest) {
 
     await Promise.all([
       ...existingNameUris.map((uri) =>
-        lexClient.delete(blue.pronouns.name.main, { rkey: new AtUri(uri).rkey }),
+        lexClient.delete(blue.pronouns.name.main, {
+          rkey: new AtUri(uri).rkey,
+        }),
       ),
       ...existingPronounUris.map((uri) =>
         lexClient.delete(blue.pronouns.pronoun.main, {
@@ -121,7 +126,8 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error("[api/status] Failed to publish records:", err);
-    const message = err instanceof Error ? err.message : "Failed to save profile";
+    const message =
+      err instanceof Error ? err.message : "Failed to save profile";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

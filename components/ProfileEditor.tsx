@@ -205,7 +205,9 @@ export function ProfileEditor({
           ),
         }),
       });
-      const data = response.headers.get("content-type")?.includes("application/json")
+      const data = response.headers
+        .get("content-type")
+        ?.includes("application/json")
         ? ((await response.json()) as { error?: string })
         : ({} as { error?: string });
       if (!response.ok) {
