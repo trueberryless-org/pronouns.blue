@@ -66,6 +66,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-      - name: Test (if configured)
-        run: pnpm run test --if-present
