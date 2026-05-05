@@ -26,15 +26,15 @@ Tests are **not currently configured** in this repository (`package.json` has no
 This is a Next.js App Router app that combines:
 
 1. **UI + session-aware server rendering**  
-   `app/page.tsx` is a server component that reads auth state and recent profile projections from SQLite-backed query helpers (`lib/db/queries.ts`), then renders search and update surfaces.
+   `app/page.tsx` is a server component that reads auth state and renders the handle search and signed-in user card.
 2. **ATProto OAuth client flow**  
-   `/oauth/login`, `/oauth/callback`, and `/oauth/logout` routes orchestrate auth through `lib/auth/client.ts`. OAuth state/session objects are persisted in SQLite tables (`auth_state`, `auth_session`), while the browser cookie stores only the DID pointer.
+   `/oauth/login`, `/oauth/callback`, and `/oauth/logout` routes orchestrate auth through `lib/auth/client.ts`. OAuth state/session objects are persisted in Postgres tables (`auth_state`, `auth_session`), while the browser cookie stores only the DID pointer.
 3. **Name/pronoun record publishing + local projection**  
    `/api/status` publishes **one record per name/pronoun** using the `blue.pronouns.name` and `blue.pronouns.pronoun` lexicons, then updates local projection rows in `name_record` and `pronoun_record`.
-4. **Tap webhook ingestion for network truth**  
-   `/api/webhook` consumes Tap events (`parseTapEvent`) and upserts/deletes `account`, `name_record`, and `pronoun_record` rows. This keeps local data synchronized with identity and record changes from the network.
-5. **SQLite + Kysely data layer**  
-   `lib/db/index.ts` creates a singleton Kysely client (WAL mode). `scripts/migrate.ts` uses `lib/db/migrations.ts`; migrations are run automatically on `dev` and `start`.
+4. **Handle/actor resolution via Bluesky appview**  
+   Handle searches and profile-page actor lookups use `app.bsky.actor.searchActors` / `app.bsky.actor.getProfile` from the public Bluesky appview (`PUBLIC_APPVIEW_URL`).
+5. **Postgres + Kysely data layer**  
+   `lib/db/index.ts` creates a singleton Kysely client. When `DATABASE_URL` is set it uses Postgres (`pg`); otherwise it falls back to SQLite (`better-sqlite3`) at `DATABASE_PATH` (default `./app.db`). Migrations run automatically on `dev` and `start`.
 
 ## Key conventions in this codebase
 
@@ -42,5 +42,4 @@ This is a Next.js App Router app that combines:
 - **Use path alias imports** (`@/...`) rather than long relative paths (configured in `tsconfig.json`).
 - **Profiles are projections derived from per-entry records** in `name_record` and `pronoun_record`; avoid reintroducing single-record profile persistence.
 - **User-facing order is explicit** via `sortOrder` on entry records; preserve that when transforming/aggregating data.
-- **Boolean-like DB columns use SQLite integers** (`0 | 1`) in schema/types (for example `account.active`, `name_record.preferred`, `pronoun_record.preferred`).
-- **Webhook auth is conditional by environment**: if `TAP_ADMIN_PASSWORD` is set, `/api/webhook` enforces admin auth; otherwise it accepts unsigned events (useful for local setup).
+- **Boolean-like DB columns use integer flags** (`0 | 1`) in schema/types (for example `name_record.preferred`, `pronoun_record.preferred`).

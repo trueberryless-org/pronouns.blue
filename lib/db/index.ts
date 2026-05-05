@@ -1,18 +1,26 @@
+import { Kysely, PostgresDialect, SqliteDialect } from "kysely";
+import { Pool } from "pg";
 import Database from "better-sqlite3";
-import { Kysely, SqliteDialect } from "kysely";
 
-const DATABASE_PATH = process.env.DATABASE_PATH || "app.db";
+const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_PATH = process.env.DATABASE_PATH ?? "./app.db";
 
 let _db: Kysely<DatabaseSchema> | null = null;
 
 export const getDb = (): Kysely<DatabaseSchema> => {
   if (!_db) {
-    const sqlite = new Database(DATABASE_PATH);
-    sqlite.pragma("journal_mode = WAL");
-
-    _db = new Kysely<DatabaseSchema>({
-      dialect: new SqliteDialect({ database: sqlite }),
-    });
+    if (DATABASE_URL) {
+      const pool = new Pool({ connectionString: DATABASE_URL });
+      _db = new Kysely<DatabaseSchema>({
+        dialect: new PostgresDialect({ pool }),
+      });
+    } else {
+      _db = new Kysely<DatabaseSchema>({
+        dialect: new SqliteDialect({
+          database: new Database(DATABASE_PATH),
+        }),
+      });
+    }
   }
   return _db;
 };
@@ -20,9 +28,6 @@ export const getDb = (): Kysely<DatabaseSchema> => {
 export interface DatabaseSchema {
   auth_state: AuthStateTable;
   auth_session: AuthSessionTable;
-  account: AccountTable;
-  status: StatusTable;
-  profile: ProfileTable;
   name_record: NameRecordTable;
   pronoun_record: PronounRecordTable;
 }
@@ -35,34 +40,6 @@ interface AuthStateTable {
 interface AuthSessionTable {
   key: string;
   value: string;
-}
-
-export interface AccountTable {
-  did: string;
-  handle: string;
-  active: 0 | 1;
-}
-
-export interface StatusTable {
-  uri: string;
-  authorDid: string;
-  status: string;
-  createdAt: string;
-  indexedAt: string;
-  current: 0 | 1;
-}
-
-export interface ProfileTable {
-  uri: string;
-  authorDid: string;
-  names: string;
-  pronouns: string;
-  preferredNames: string;
-  preferredPronouns: string;
-  createdAt: string;
-  updatedAt: string;
-  indexedAt: string;
-  current: 0 | 1;
 }
 
 export interface NameRecordTable {

@@ -11,15 +11,14 @@ An AT Protocol app for publishing and viewing names + pronouns from user repos.
   - `blue.pronouns.pronoun`
 - Preferred entries are per-record (`preferred: boolean`).
 - Display order is user-controlled and persisted (`sortOrder`).
-- Home page includes searchable handles and recent profile updates.
+- Home page includes a handle search powered by the Bluesky appview.
 
 ## Tech stack
 
 - [Next.js App Router](https://nextjs.org/)
-- SQLite (`better-sqlite3`) + Kysely migrations
+- PostgreSQL (Supabase-compatible) + Kysely migrations
 - `@atproto/oauth-client-node` for OAuth
 - `@atproto/lex` + generated bindings from local lexicons
-- Tap webhook ingestion for network sync
 
 ## Setup
 
@@ -49,15 +48,21 @@ The app will run on `http://127.0.0.1:3000` by default.
 
 Required for local development:
 
-- `TAP_URL` (default in template: `http://localhost:2480`)
-- `PUBLIC_URL` (default in template: `http://127.0.0.1:3000`)
+- `PUBLIC_URL` (default: `http://127.0.0.1:3000`)
+
+Optional for local development:
+
+- `DATABASE_URL` — if not set, **SQLite** is used automatically at `./app.db` (zero config)
+- `DATABASE_PATH` — custom SQLite file path (default: `./app.db`, ignored when `DATABASE_URL` is set)
+
+Required for production:
+
+- `DATABASE_URL` (Postgres/Supabase connection string)
+- `PRIVATE_KEY` (JWK, required for production-style private_key_jwt client auth — generate with `pnpm gen-key`)
 
 Optional:
 
-- `PRIVATE_KEY` (JWK, required for production-style private_key_jwt client auth)
 - `PUBLIC_APPVIEW_URL` (defaults to `https://public.api.bsky.app`)
-- `TAP_ADMIN_PASSWORD` (enforces admin auth for `/api/webhook`)
-- `DATABASE_PATH` (defaults to `app.db`)
 
 Generate a `PRIVATE_KEY` value with:
 
@@ -82,11 +87,23 @@ pnpm gen-key
 - `.github/workflows/ci.yaml` runs lint, format check, migrate, build, and test-if-present on PRs/pushes.
 - `.github/workflows/format.yaml` runs lint autofix + Prettier and commits fixes via `autofix-ci`.
 
+`ci.yaml` starts a temporary Postgres service and uses `DATABASE_URL` against it.
+
+## Deploying to Vercel (Supabase)
+
+1. Create a Supabase project and copy the Postgres connection string.
+2. In Vercel project settings, set:
+   - `DATABASE_URL` (Supabase Postgres URI)
+   - `PUBLIC_URL` (`https://your-domain`)
+   - `PRIVATE_KEY` (from `pnpm gen-key`)
+   - optionally `PUBLIC_APPVIEW_URL`
+3. Deploy from GitHub as a Next.js project.
+4. Ensure migrations are applied (this app runs `pnpm migrate` on `dev` and `start`).
+
 ## Data model summary
 
-Primary synced tables:
+Primary tables:
 
-- `account` — DID/handle projection from Tap identity events
 - `name_record` — one row per `blue.pronouns.name` record
 - `pronoun_record` — one row per `blue.pronouns.pronoun` record
 

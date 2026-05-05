@@ -6,7 +6,6 @@ Thanks for contributing.
 
 - Node.js 24.x
 - pnpm (repo is pinned in `package.json`)
-- A running Tap instance if you want network ingestion/webhook behavior
 
 ## Local development
 
@@ -15,6 +14,8 @@ cp env.template .env.local
 pnpm install
 pnpm dev
 ```
+
+No database setup needed for local dev — if `DATABASE_URL` is not set, the app automatically uses SQLite at `./app.db`.
 
 ## Main commands
 

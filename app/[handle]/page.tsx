@@ -1,8 +1,5 @@
 import { notFound } from "next/navigation";
-import {
-  getCurrentProfileByDid,
-  getCurrentProfileByHandle,
-} from "@/lib/db/queries";
+import { getCurrentProfileByDid } from "@/lib/db/queries";
 import { getActorProfile } from "@/lib/atproto/profiles";
 import { ProfileDisplay } from "@/components/ProfileDisplay";
 
@@ -14,23 +11,19 @@ export default async function HandleProfilePage({
   const { handle: rawHandle } = await params;
   const handle = decodeURIComponent(rawHandle).replace(/^@/, "");
 
-  const direct = await getCurrentProfileByHandle(handle);
-  const actorFromHandle = direct ? null : await getActorProfile(handle);
-  const did = direct?.authorDid ?? actorFromHandle?.did;
-  if (!did) notFound();
+  const actor = await getActorProfile(handle);
+  if (!actor) notFound();
 
-  const profile = direct ?? (await getCurrentProfileByDid(did));
+  const profile = await getCurrentProfileByDid(actor.did);
   if (!profile) notFound();
 
-  const actor = actorFromHandle ?? (await getActorProfile(did));
-  const finalHandle = actor?.handle ?? handle;
-  const title = actor?.displayName ?? finalHandle;
+  const title = actor.displayName ?? actor.handle;
 
   return (
     <ProfileDisplay
       title={title}
-      handle={finalHandle}
-      avatar={actor?.avatar ?? null}
+      handle={actor.handle}
+      avatar={actor.avatar}
       names={profile.names}
       pronouns={profile.pronouns}
       preferredNames={profile.preferredNames}

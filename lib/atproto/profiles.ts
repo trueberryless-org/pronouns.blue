@@ -36,6 +36,33 @@ export async function getActorProfile(
   }
 }
 
+interface SearchActorsResponse {
+  actors: AppViewProfileResponse[];
+  cursor?: string;
+}
+
+export async function searchActors(
+  query: string,
+  limit = 8,
+): Promise<ActorProfile[]> {
+  try {
+    const response = await fetch(
+      `${APPVIEW_URL}/xrpc/app.bsky.actor.searchActors?q=${encodeURIComponent(query)}&limit=${limit}`,
+      { next: { revalidate: 60 } },
+    );
+    if (!response.ok) return [];
+    const data = (await response.json()) as SearchActorsResponse;
+    return data.actors.map((p) => ({
+      did: p.did,
+      handle: p.handle,
+      displayName: p.displayName ?? null,
+      avatar: p.avatar ?? null,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function getActorProfiles(
   actors: string[],
 ): Promise<Record<string, ActorProfile>> {

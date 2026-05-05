@@ -1,7 +1,4 @@
-import { getDb, AccountTable } from ".";
-import { getHandle } from "@atproto/common-web";
-import { getTap } from "@/lib/tap";
-import { sql } from "kysely";
+import { getDb } from ".";
 
 export interface ProfileRecord {
   uri: string;
@@ -14,15 +11,6 @@ export interface ProfileRecord {
   updatedAt: string;
   indexedAt: string;
   current: 0 | 1;
-}
-
-export interface PublicProfileRecord extends ProfileRecord {
-  handle: string | null;
-}
-
-export interface HandleSuggestion {
-  did: string;
-  handle: string;
 }
 
 export interface EntryRecord {
@@ -113,24 +101,6 @@ function aggregateEntries(rows: EntryRecord[]) {
   };
 }
 
-export async function getAccountHandle(did: string): Promise<string | null> {
-  const db = getDb();
-  const account = await db
-    .selectFrom("account")
-    .select("handle")
-    .where("did", "=", did)
-    .executeTakeFirst();
-  if (account) return account.handle;
-
-  try {
-    const didDoc = await getTap().resolveDid(did);
-    if (!didDoc) return null;
-    return getHandle(didDoc) ?? null;
-  } catch {
-    return null;
-  }
-}
-
 export async function getCurrentProfileByDid(
   did: string,
 ): Promise<ProfileRecord | null> {
@@ -175,172 +145,6 @@ export async function getCurrentProfileByDid(
     indexedAt,
     current: 1,
   };
-}
-
-export async function getCurrentProfileByHandle(
-  handle: string,
-): Promise<PublicProfileRecord | null> {
-  const db = getDb();
-  const account = await db
-    .selectFrom("account")
-    .select(["did", "handle"])
-    .where(sql`lower(account.handle)`, "=", handle.toLocaleLowerCase())
-    .limit(1)
-    .executeTakeFirst();
-  if (!account) return null;
-
-  const profile = await getCurrentProfileByDid(account.did);
-  if (!profile) return null;
-
-  return { ...profile, handle: account.handle };
-}
-
-export async function getFirehoseProfiles(
-  limit = 200,
-): Promise<PublicProfileRecord[]> {
-  const db = getDb();
-  const [nameLatestRows, pronounLatestRows] = await Promise.all([
-    db
-      .selectFrom("name_record")
-      .select((eb) => [
-        "authorDid",
-        eb.fn.max("indexedAt").as("latestIndexedAt"),
-      ])
-      .groupBy("authorDid")
-      .execute(),
-    db
-      .selectFrom("pronoun_record")
-      .select((eb) => [
-        "authorDid",
-        eb.fn.max("indexedAt").as("latestIndexedAt"),
-      ])
-      .groupBy("authorDid")
-      .execute(),
-  ]);
-
-  const latestByDid = new Map<string, string>();
-  for (const row of nameLatestRows) {
-    if (row.latestIndexedAt)
-      latestByDid.set(row.authorDid, row.latestIndexedAt);
-  }
-  for (const row of pronounLatestRows) {
-    if (!row.latestIndexedAt) continue;
-    const current = latestByDid.get(row.authorDid);
-    latestByDid.set(
-      row.authorDid,
-      current && current > row.latestIndexedAt ? current : row.latestIndexedAt,
-    );
-  }
-
-  const dids = Array.from(latestByDid.entries())
-    .sort((a, b) => (a[1] < b[1] ? 1 : -1))
-    .slice(0, limit)
-    .map(([did]) => did);
-  if (dids.length === 0) return [];
-
-  const [nameRows, pronounRows, accounts] = await Promise.all([
-    db
-      .selectFrom("name_record")
-      .selectAll()
-      .where("authorDid", "in", dids)
-      .execute(),
-    db
-      .selectFrom("pronoun_record")
-      .selectAll()
-      .where("authorDid", "in", dids)
-      .execute(),
-    db
-      .selectFrom("account")
-      .select(["did", "handle"])
-      .where("did", "in", dids)
-      .execute(),
-  ]);
-
-  const namesByDid = new Map<string, NameRecord[]>();
-  const pronounsByDid = new Map<string, PronounRecord[]>();
-  for (const row of nameRows) {
-    const current = namesByDid.get(row.authorDid) ?? [];
-    current.push(row);
-    namesByDid.set(row.authorDid, current);
-  }
-  for (const row of pronounRows) {
-    const current = pronounsByDid.get(row.authorDid) ?? [];
-    current.push(row);
-    pronounsByDid.set(row.authorDid, current);
-  }
-
-  const handleByDid = new Map(
-    accounts.map((account) => [account.did, account.handle]),
-  );
-  const profiles: PublicProfileRecord[] = [];
-  for (const did of dids) {
-    const nameList = namesByDid.get(did) ?? [];
-    const pronounList = pronounsByDid.get(did) ?? [];
-    if (nameList.length === 0 && pronounList.length === 0) continue;
-
-    const names = aggregateEntries(nameList);
-    const pronouns = aggregateEntries(pronounList);
-    const createdAt =
-      maxIsoTimestamp(names.latestCreatedAt, pronouns.latestCreatedAt) ??
-      new Date(0).toISOString();
-    const updatedAt =
-      maxIsoTimestamp(names.latestUpdatedAt, pronouns.latestUpdatedAt) ??
-      new Date(0).toISOString();
-    const indexedAt =
-      maxIsoTimestamp(names.latestIndexedAt, pronouns.latestIndexedAt) ??
-      updatedAt;
-
-    profiles.push({
-      uri: names.latestUri ?? pronouns.latestUri ?? did,
-      authorDid: did,
-      names: names.values,
-      pronouns: pronouns.values,
-      preferredNames: names.preferred,
-      preferredPronouns: pronouns.preferred,
-      createdAt,
-      updatedAt,
-      indexedAt,
-      current: 1,
-      handle: handleByDid.get(did) ?? null,
-    });
-  }
-
-  return profiles;
-}
-
-export async function searchHandles(
-  query: string,
-  limit = 8,
-): Promise<HandleSuggestion[]> {
-  const db = getDb();
-  const normalized = query.trim().toLocaleLowerCase();
-  if (!normalized) return [];
-
-  const rows = await db
-    .selectFrom("account")
-    .select(["account.did as did", "account.handle as handle"])
-    .where(sql`lower(account.handle)`, "like", `%${normalized}%`)
-    .where((eb) =>
-      eb.or([
-        eb.exists(
-          eb
-            .selectFrom("name_record")
-            .select("name_record.uri")
-            .whereRef("name_record.authorDid", "=", "account.did"),
-        ),
-        eb.exists(
-          eb
-            .selectFrom("pronoun_record")
-            .select("pronoun_record.uri")
-            .whereRef("pronoun_record.authorDid", "=", "account.did"),
-        ),
-      ]),
-    )
-    .orderBy("account.handle", "asc")
-    .limit(limit)
-    .execute();
-
-  return rows;
 }
 
 export async function upsertNameRecord(data: NameRecord) {
@@ -393,32 +197,6 @@ export async function deleteNameRecordsByDid(did: string) {
 }
 
 export async function deletePronounRecordsByDid(did: string) {
-  await getDb()
-    .deleteFrom("pronoun_record")
-    .where("authorDid", "=", did)
-    .execute();
-}
-
-export async function upsertAccount(data: AccountTable) {
-  await getDb()
-    .insertInto("account")
-    .values(data)
-    .onConflict((oc) =>
-      oc.column("did").doUpdateSet({
-        handle: data.handle,
-        active: data.active,
-      }),
-    )
-    .execute();
-}
-
-export async function deleteAccount(did: string) {
-  await getDb().deleteFrom("account").where("did", "=", did).execute();
-  await getDb().deleteFrom("profile").where("authorDid", "=", did).execute();
-  await getDb()
-    .deleteFrom("name_record")
-    .where("authorDid", "=", did)
-    .execute();
   await getDb()
     .deleteFrom("pronoun_record")
     .where("authorDid", "=", did)
