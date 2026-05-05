@@ -60,20 +60,19 @@ export default function PrivacyPage() {
                 Bluesky public appview
               </span>{" "}
               (<code className="text-xs">public.api.bsky.app</code>) — used to
-              resolve handles and search for users. This is a public, unauthenticated API.
+              resolve handles and search for users. This is a public,
+              unauthenticated API.
             </li>
             <li>
               <span className="font-medium text-[var(--text)]">
                 PLC directory
               </span>{" "}
-              (<code className="text-xs">plc.directory</code>) — used to look
-              up the PDS endpoint for a given DID.
+              (<code className="text-xs">plc.directory</code>) — used to look up
+              the PDS endpoint for a given DID.
             </li>
             <li>
-              <span className="font-medium text-[var(--text)]">
-                Your PDS
-              </span>{" "}
-              — all record reads and writes go to your personal data server,
+              <span className="font-medium text-[var(--text)]">Your PDS</span> —
+              all record reads and writes go to your personal data server,
               authenticated via OAuth.
             </li>
           </ul>
@@ -90,17 +89,23 @@ export default function PrivacyPage() {
           </p>
           <ul className="space-y-2 text-[var(--muted)]">
             <li>
-              <code className="text-xs font-medium text-[var(--text)]">did</code>{" "}
+              <code className="text-xs font-medium text-[var(--text)]">
+                did
+              </code>{" "}
               — your ATProto DID, used to identify your login session.
             </li>
             <li>
-              <code className="text-xs font-medium text-[var(--text)]">session</code>{" "}
+              <code className="text-xs font-medium text-[var(--text)]">
+                session
+              </code>{" "}
               — your OAuth tokens and DPoP private key, used to make
               authenticated requests to your PDS on your behalf. Expires after
               30 days or when you sign out.
             </li>
             <li>
-              <code className="text-xs font-medium text-[var(--text)]">oauth_state</code>{" "}
+              <code className="text-xs font-medium text-[var(--text)]">
+                oauth_state
+              </code>{" "}
               — temporary PKCE state during the sign-in redirect. Expires after
               10 minutes automatically.
             </li>
@@ -112,10 +117,10 @@ export default function PrivacyPage() {
             Data deletion
           </h2>
           <p className="text-[var(--muted)]">
-            Sign out to delete your session cookies. Your
-            name/pronoun records are stored in your own ATProto repo — delete
-            them there (via your PDS or any ATProto client) to remove them from
-            your repo and from public view.
+            Sign out to delete your session cookies. Your name/pronoun records
+            are stored in your own ATProto repo — delete them there (via your
+            PDS or any ATProto client) to remove them from your repo and from
+            public view.
           </p>
         </section>
 

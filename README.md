@@ -75,6 +75,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md), [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT
 This project was **fully generated with AI assistance** using [GitHub Copilot](https://github.com/features/copilot). All code, architecture decisions, and content were produced through an AI-assisted workflow with human direction.
 
 Inspired by these great projects in the pronoun-sharing space:
+
 - [pronouns.cc](https://pronouns.cc)
 - [pronouns.page](https://pronouns.page)
 - [pronouny.xyz](https://pronouny.xyz)

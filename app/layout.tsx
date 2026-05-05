@@ -48,9 +48,20 @@ export default function RootLayout({
           <main className="flex flex-1 flex-col">{children}</main>
           <footer className="border-t border-[var(--border)] py-4 text-center text-xs text-[var(--muted)]">
             <nav className="flex flex-wrap justify-center gap-x-5 gap-y-1">
-              <a href="/privacy" className="hover:text-[var(--text)]">Privacy Policy</a>
-              <a href="/credits" className="hover:text-[var(--text)]">Credits</a>
-              <a href="https://github.com/trueberryless-org/pronouns.blue" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text)]">GitHub</a>
+              <a href="/privacy" className="hover:text-[var(--text)]">
+                Privacy Policy
+              </a>
+              <a href="/credits" className="hover:text-[var(--text)]">
+                Credits
+              </a>
+              <a
+                href="https://github.com/trueberryless-org/pronouns.blue"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[var(--text)]"
+              >
+                GitHub
+              </a>
             </nav>
           </footer>
         </body>
