@@ -182,6 +182,15 @@ const migrations: Record<string, Migration> = {
         .execute();
     },
   },
+  "006": {
+    async up(db: Kysely<unknown>) {
+      await db.schema.dropTable("name_record").ifExists().execute();
+      await db.schema.dropTable("pronoun_record").ifExists().execute();
+    },
+    async down(_db: Kysely<unknown>) {
+      // name_record and pronoun_record are no longer used; records live on the PDS
+    },
+  },
 };
 
 export function getMigrator() {

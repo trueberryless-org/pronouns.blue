@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { getCurrentProfileByDid } from "@/lib/db/queries";
 import { getActorProfile } from "@/lib/atproto/profiles";
+import { getProfileRecordsFromPds } from "@/lib/atproto/records";
 import { ProfileDisplay } from "@/components/ProfileDisplay";
 
 export default async function HandleProfilePage({
@@ -14,9 +14,7 @@ export default async function HandleProfilePage({
   const actor = await getActorProfile(handle);
   if (!actor) notFound();
 
-  const profile = await getCurrentProfileByDid(actor.did);
-  if (!profile) notFound();
-
+  const profile = await getProfileRecordsFromPds(actor.did);
   const title = actor.displayName ?? actor.handle;
 
   return (

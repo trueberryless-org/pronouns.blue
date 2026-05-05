@@ -15,7 +15,7 @@ pnpm install
 pnpm dev
 ```
 
-No database setup needed for local dev — if `DATABASE_URL` is not set, the app automatically uses SQLite at `./app.db`.
+No database setup needed — if `DATABASE_URL` is not set, the app uses SQLite at `./app.db` automatically.
 
 ## Main commands
 
@@ -34,23 +34,19 @@ pnpm build
 - Source lexicons live in `lexicons/**`.
 - Generated bindings live in `lib/lexicons/**`.
 - Do **not** manually edit generated bindings.
-- After lexicon edits, run:
+- After lexicon edits, run `pnpm build:lex`.
 
-```bash
-pnpm build:lex
-```
+## Architecture notes
 
-## Data model conventions
-
-- Names and pronouns are stored as **individual records** (`blue.pronouns.name`, `blue.pronouns.pronoun`).
-- Local projection tables are `name_record` and `pronoun_record`.
-- Preserve per-entry ordering via `sortOrder`.
-- Use existing query helpers in `lib/db/queries.ts` instead of ad-hoc DB writes.
+- Names and pronouns are stored as **individual ATProto records** (`blue.pronouns.name`, `blue.pronouns.pronoun`) directly in the user's repo.
+- Profile pages and the settings page read records directly from the user's PDS via `com.atproto.repo.listRecords` — there is no local DB cache for record data.
+- The local DB (SQLite or Postgres) is used **only** for OAuth session state (`auth_state`, `auth_session`).
+- SSL for Postgres is enabled automatically when `DATABASE_URL` points to a non-local host.
 
 ## Pull request guidelines
 
 1. Keep changes focused and scoped.
-2. Update docs when behavior/setup changes.
+2. Update docs when behavior or setup changes.
 3. Run `pnpm lint` and `pnpm build` before opening a PR.
 4. Describe user-visible behavior changes in the PR description.
 

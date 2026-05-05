@@ -2,12 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { Client } from "@atproto/lex";
 import { AtUri } from "@atproto/syntax";
 import { getSession } from "@/lib/auth/session";
-import {
-  deleteNameRecordsByDid,
-  deletePronounRecordsByDid,
-  upsertNameRecord,
-  upsertPronounRecord,
-} from "@/lib/db/queries";
 import * as blue from "@/lib/lexicons/blue";
 
 function cleanEntries(value: unknown): string[] {
@@ -30,14 +24,10 @@ async function listAllRecordUris(
   const uris: string[] = [];
   let cursor: string | undefined;
   do {
-    const response = await lexClient.list(schema, {
-      limit: 100,
-      cursor,
-    });
+    const response = await lexClient.list(schema, { limit: 100, cursor });
     uris.push(...response.records.map((record) => record.uri));
     cursor = response.cursor;
   } while (cursor);
-
   return uris;
 }
 
@@ -88,9 +78,7 @@ export async function POST(request: NextRequest) {
 
   await Promise.all([
     ...existingNameUris.map((uri) =>
-      lexClient.delete(blue.pronouns.name.main, {
-        rkey: new AtUri(uri).rkey,
-      }),
+      lexClient.delete(blue.pronouns.name.main, { rkey: new AtUri(uri).rkey }),
     ),
     ...existingPronounUris.map((uri) =>
       lexClient.delete(blue.pronouns.pronoun.main, {
@@ -100,12 +88,7 @@ export async function POST(request: NextRequest) {
   ]);
 
   await Promise.all([
-    deleteNameRecordsByDid(session.did),
-    deletePronounRecordsByDid(session.did),
-  ]);
-
-  const createdNames = await Promise.all(
-    cleanedNames.map((value, index) =>
+    ...cleanedNames.map((value, index) =>
       lexClient.create(blue.pronouns.name.main, {
         value,
         preferred: preferredNameSet.has(value),
@@ -114,9 +97,7 @@ export async function POST(request: NextRequest) {
         updatedAt: now,
       }),
     ),
-  );
-  const createdPronouns = await Promise.all(
-    cleanedPronouns.map((value, index) =>
+    ...cleanedPronouns.map((value, index) =>
       lexClient.create(blue.pronouns.pronoun.main, {
         value,
         preferred: preferredPronounSet.has(value),
@@ -125,40 +106,10 @@ export async function POST(request: NextRequest) {
         updatedAt: now,
       }),
     ),
-  );
-
-  await Promise.all([
-    ...createdNames.map((record, index) =>
-      upsertNameRecord({
-        uri: record.uri,
-        authorDid: session.did,
-        value: cleanedNames[index],
-        preferred: preferredNameSet.has(cleanedNames[index]) ? 1 : 0,
-        sortOrder: index,
-        createdAt: now,
-        updatedAt: now,
-        indexedAt: now,
-      }),
-    ),
-    ...createdPronouns.map((record, index) =>
-      upsertPronounRecord({
-        uri: record.uri,
-        authorDid: session.did,
-        value: cleanedPronouns[index],
-        preferred: preferredPronounSet.has(cleanedPronouns[index]) ? 1 : 0,
-        sortOrder: index,
-        createdAt: now,
-        updatedAt: now,
-        indexedAt: now,
-      }),
-    ),
   ]);
 
   return NextResponse.json({
     success: true,
-    counts: {
-      names: cleanedNames.length,
-      pronouns: cleanedPronouns.length,
-    },
+    counts: { names: cleanedNames.length, pronouns: cleanedPronouns.length },
   });
 }

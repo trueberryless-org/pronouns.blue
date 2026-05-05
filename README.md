@@ -1,127 +1,81 @@
 # pronouns.blue
 
-An AT Protocol app for publishing and viewing names + pronouns from user repos.
+A small [AT Protocol](https://atproto.com/) app for sharing your names and pronouns.
 
-## Current behavior
-
-- OAuth sign in via ATProto.
-- Users manage names and pronouns in **Settings**.
-- Each name and each pronoun is stored as its own ATProto record:
-  - `blue.pronouns.name`
-  - `blue.pronouns.pronoun`
-- Preferred entries are per-record (`preferred: boolean`).
-- Display order is user-controlled and persisted (`sortOrder`).
-- Home page includes a handle search powered by the Bluesky appview.
+Users sign in with their ATProto account (Bluesky, etc.), then set their names and pronouns from the Settings page. Each name and pronoun is published as its own record in their ATProto repo under the `blue.pronouns.name` and `blue.pronouns.pronoun` lexicons. Anyone can view a profile at `pronouns.blue/@handle` — no account required.
 
 ## Tech stack
 
-- [Next.js App Router](https://nextjs.org/)
-- PostgreSQL (Supabase-compatible) + Kysely migrations
-- `@atproto/oauth-client-node` for OAuth
+- [Next.js](https://nextjs.org/) App Router
+- `@atproto/oauth-client-node` — sign in with any ATProto account
 - `@atproto/lex` + generated bindings from local lexicons
+- SQLite (local dev, zero config) or Postgres/Supabase (production)
+- Kysely for type-safe migrations and queries
 
-## Setup
+## Local setup
 
-Node.js requirement: **24.x**.
-
-1. Copy env file:
+Node.js 24.x and pnpm required.
 
 ```bash
 cp env.template .env.local
-```
-
-2. Install dependencies:
-
-```bash
 pnpm install
-```
-
-3. Run the app:
-
-```bash
 pnpm dev
 ```
 
-The app will run on `http://127.0.0.1:3000` by default.
+No database setup needed — SQLite is used automatically at `./app.db`.
 
 ## Environment variables
 
-Required for local development:
+**Required for production:**
 
-- `PUBLIC_URL` (default: `http://127.0.0.1:3000`)
+| Variable | Description |
+|---|---|
+| `PUBLIC_URL` | Canonical URL, e.g. `https://pronouns.blue` |
+| `DATABASE_URL` | Postgres connection string (Supabase or similar) |
+| `PRIVATE_KEY` | JWK for OAuth — generate with `pnpm gen-key` |
 
-Optional for local development:
+**Optional:**
 
-- `DATABASE_URL` — if not set, **SQLite** is used automatically at `./app.db` (zero config)
-- `DATABASE_PATH` — custom SQLite file path (default: `./app.db`, ignored when `DATABASE_URL` is set)
+| Variable | Description | Default |
+|---|---|---|
+| `DATABASE_PATH` | SQLite file path (local dev only) | `./app.db` |
+| `PUBLIC_APPVIEW_URL` | Bluesky appview base URL | `https://public.api.bsky.app` |
 
-Required for production:
-
-- `DATABASE_URL` (Postgres/Supabase connection string)
-- `PRIVATE_KEY` (JWK, required for production-style private_key_jwt client auth — generate with `pnpm gen-key`)
-
-Optional:
-
-- `PUBLIC_APPVIEW_URL` (defaults to `https://public.api.bsky.app`)
-
-Generate a `PRIVATE_KEY` value with:
-
-```bash
-pnpm gen-key
-```
+SSL is enabled automatically when `DATABASE_URL` points to a non-local host — no extra flag needed.
 
 ## Scripts
 
-- `pnpm dev` — run migrations, then start Next.js dev server
-- `pnpm migrate` — apply Kysely migrations
-- `pnpm build:lex` — regenerate TypeScript lexicon bindings
-- `pnpm lint` — run ESLint
-- `pnpm lint:fix` — run ESLint autofix
-- `pnpm format` — run Prettier write mode
-- `pnpm format:check` — run Prettier check mode
-- `pnpm build` — regenerate lexicon bindings, then build
-- `pnpm start` — run migrations, then start production server
+```bash
+pnpm dev           # migrate + Next.js dev server
+pnpm build         # regenerate lexicon bindings + Next.js build
+pnpm start         # migrate + Next.js production server
+pnpm migrate       # apply DB migrations
+pnpm build:lex     # regenerate TypeScript bindings from lexicons/
+pnpm lint          # ESLint
+pnpm lint:fix      # ESLint with autofix
+pnpm format        # Prettier write
+pnpm format:check  # Prettier check
+pnpm gen-key       # generate a PRIVATE_KEY JWK
+```
 
-## CI workflows
+## CI
 
-- `.github/workflows/ci.yaml` runs lint, format check, migrate, build, and test-if-present on PRs/pushes.
-- `.github/workflows/format.yaml` runs lint autofix + Prettier and commits fixes via `autofix-ci`.
+- `ci.yaml` — lint, format check, migrate, build on every PR/push (starts a local Postgres service)
+- `format.yaml` — autofix lint + Prettier and commits via `autofix-ci`
 
-`ci.yaml` starts a temporary Postgres service and uses `DATABASE_URL` against it.
+## Deploying to Vercel
 
-## Deploying to Vercel (Supabase)
+1. Create a [Supabase](https://supabase.com/) project and copy the Postgres connection string.
+2. In Vercel project settings add:
+   - `DATABASE_URL` — Supabase Postgres URI
+   - `PUBLIC_URL` — your domain, e.g. `https://pronouns.blue`
+   - `PRIVATE_KEY` — from `pnpm gen-key`
+3. Deploy from GitHub as a Next.js project. Migrations run automatically on every cold start via `instrumentation.ts`.
 
-1. Create a Supabase project and copy the Postgres connection string.
-2. In Vercel project settings, set:
-   - `DATABASE_URL` (Supabase Postgres URI)
-   - `PUBLIC_URL` (`https://your-domain`)
-   - `PRIVATE_KEY` (from `pnpm gen-key`)
-   - optionally `PUBLIC_APPVIEW_URL`
-3. Deploy from GitHub as a Next.js project.
-4. Ensure migrations are applied (this app runs `pnpm migrate` on `dev` and `start`).
+## Lexicon development
 
-## Data model summary
-
-Primary tables:
-
-- `name_record` — one row per `blue.pronouns.name` record
-- `pronoun_record` — one row per `blue.pronouns.pronoun` record
-
-Ordering and preference are preserved in record fields (`sortOrder`, `preferred`) and reflected in profile rendering.
-
-## Development notes
-
-- Edit source lexicons under `lexicons/**`.
-- Do not manually edit generated files in `lib/lexicons/**`.
-- After lexicon changes, run `pnpm build:lex`.
-- There is currently no test script configured in this repository.
+Source lexicons live in `lexicons/**`. Generated TypeScript bindings in `lib/lexicons/**` must not be edited by hand — regenerate with `pnpm build:lex` after any change.
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](./CONTRIBUTING.md).
-
-## Community health
-
-- [Code of Conduct](./CODE_OF_CONDUCT.md)
-- [Security Policy](./SECURITY.md)
-- [Support](./SUPPORT.md)
+See [CONTRIBUTING.md](./CONTRIBUTING.md), [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md), and [SECURITY.md](./SECURITY.md).

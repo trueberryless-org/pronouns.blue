@@ -10,9 +10,11 @@ let _db: Kysely<DatabaseSchema> | null = null;
 export const getDb = (): Kysely<DatabaseSchema> => {
   if (!_db) {
     if (DATABASE_URL) {
+      const url = new URL(DATABASE_URL);
+      const isLocal = ["localhost", "127.0.0.1", "::1"].includes(url.hostname);
       const pool = new Pool({
         connectionString: DATABASE_URL,
-        ssl: { rejectUnauthorized: false },
+        ssl: isLocal ? false : { rejectUnauthorized: false },
       });
       _db = new Kysely<DatabaseSchema>({
         dialect: new PostgresDialect({ pool }),
@@ -31,8 +33,6 @@ export const getDb = (): Kysely<DatabaseSchema> => {
 export interface DatabaseSchema {
   auth_state: AuthStateTable;
   auth_session: AuthSessionTable;
-  name_record: NameRecordTable;
-  pronoun_record: PronounRecordTable;
 }
 
 interface AuthStateTable {
@@ -43,26 +43,4 @@ interface AuthStateTable {
 interface AuthSessionTable {
   key: string;
   value: string;
-}
-
-export interface NameRecordTable {
-  uri: string;
-  authorDid: string;
-  value: string;
-  preferred: 0 | 1;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
-  indexedAt: string;
-}
-
-export interface PronounRecordTable {
-  uri: string;
-  authorDid: string;
-  value: string;
-  preferred: 0 | 1;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
-  indexedAt: string;
 }

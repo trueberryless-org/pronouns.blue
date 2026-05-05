@@ -19,27 +19,34 @@ pnpm build:lex    # regenerate TypeScript lexicon bindings from lexicons/
 pnpm gen-key      # generate a PRIVATE_KEY JWK for OAuth private_key_jwt
 ```
 
-Tests are **not currently configured** in this repository (`package.json` has no `test` script and no test files are present), so there is no single-test command yet.
+Tests are **not currently configured** in this repository.
 
 ## High-level architecture
 
-This is a Next.js App Router app that combines:
+This is a Next.js App Router app for sharing names and pronouns on AT Protocol.
 
-1. **UI + session-aware server rendering**  
-   `app/page.tsx` is a server component that reads auth state and renders the handle search and signed-in user card.
-2. **ATProto OAuth client flow**  
-   `/oauth/login`, `/oauth/callback`, and `/oauth/logout` routes orchestrate auth through `lib/auth/client.ts`. OAuth state/session objects are persisted in Postgres tables (`auth_state`, `auth_session`), while the browser cookie stores only the DID pointer.
-3. **Name/pronoun record publishing + local projection**  
-   `/api/status` publishes **one record per name/pronoun** using the `blue.pronouns.name` and `blue.pronouns.pronoun` lexicons, then updates local projection rows in `name_record` and `pronoun_record`.
-4. **Handle/actor resolution via Bluesky appview**  
-   Handle searches and profile-page actor lookups use `app.bsky.actor.searchActors` / `app.bsky.actor.getProfile` from the public Bluesky appview (`PUBLIC_APPVIEW_URL`).
-5. **Postgres + Kysely data layer**  
-   `lib/db/index.ts` creates a singleton Kysely client. When `DATABASE_URL` is set it uses Postgres (`pg`); otherwise it falls back to SQLite (`better-sqlite3`) at `DATABASE_PATH` (default `./app.db`). Migrations run automatically on `dev` and `start`.
+1. **ATProto OAuth**  
+   `/oauth/login`, `/oauth/callback`, `/oauth/logout` orchestrate auth via `lib/auth/client.ts`. OAuth state/session is persisted in Postgres/SQLite (`auth_state`, `auth_session`). The browser cookie stores only the DID.
 
-## Key conventions in this codebase
+2. **Record publishing**  
+   `POST /api/status` uses `@atproto/lex` to delete and recreate all `blue.pronouns.name` and `blue.pronouns.pronoun` records in the user's ATProto repo. No local DB write happens — records live exclusively on the user's PDS.
 
-- **Do not edit generated lexicon files manually** in `lib/lexicons/**`; edit source lexicons under `lexicons/**` and regenerate with `pnpm build:lex`.
+3. **Profile reading**  
+   `app/[handle]/page.tsx` resolves the handle via the Bluesky appview (`app.bsky.actor.getProfile`), then fetches name/pronoun records directly from the user's PDS via `com.atproto.repo.listRecords` (`lib/atproto/records.ts`). No local DB read is involved.
+
+4. **Settings page**  
+   `app/settings/page.tsx` also reads current records directly from the user's PDS to pre-fill the editor form.
+
+5. **Database — OAuth only**  
+   `lib/db/index.ts` creates a singleton Kysely client. If `DATABASE_URL` is set → Postgres (`pg`) with auto-SSL for non-local hosts. Otherwise → SQLite (`better-sqlite3`) at `DATABASE_PATH`. The DB schema contains only `auth_state` and `auth_session`. Migrations run on cold start via `instrumentation.ts`.
+
+6. **Handle search**  
+   `GET /api/search` proxies to `app.bsky.actor.searchActors` on the Bluesky appview.
+
+## Key conventions
+
+- **Do not edit generated lexicon files** in `lib/lexicons/**`; edit source lexicons under `lexicons/**` and regenerate with `pnpm build:lex`.
 - **Use path alias imports** (`@/...`) rather than long relative paths (configured in `tsconfig.json`).
-- **Profiles are projections derived from per-entry records** in `name_record` and `pronoun_record`; avoid reintroducing single-record profile persistence.
-- **User-facing order is explicit** via `sortOrder` on entry records; preserve that when transforming/aggregating data.
-- **Boolean-like DB columns use integer flags** (`0 | 1`) in schema/types (for example `name_record.preferred`, `pronoun_record.preferred`).
+- **Records live on the PDS, not in the local DB.** Do not add local projection tables for name/pronoun data.
+- **SSL is auto-detected** from `DATABASE_URL` hostname — no `DATABASE_SSL` env var.
+- **Migrations are idempotent** and run automatically via `instrumentation.ts` on every server cold start (Vercel) or via `pnpm dev`/`pnpm start` locally.
