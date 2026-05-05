@@ -1,0 +1,46 @@
+{
+  "name": "statusphere",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm migrate && next dev",
+    "build:lex": "ts-lex build --importExt=\"\" --out=./lib/lexicons --override",
+    "build": "pnpm build:lex && next build",
+    "start": "pnpm migrate && next start --port ${PORT-3000}",
+    "migrate": "tsx scripts/migrate.ts",
+    "gen-key": "tsx scripts/gen-key.ts",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
+  "dependencies": {
+    "@atproto/common-web": "^0.4.11",
+    "@atproto/lex": "^0.0.10",
+    "@atproto/oauth-client-node": "^0.3.15",
+    "@atproto/syntax": "^0.4.2",
+    "@atproto/tap": "^0.1.2",
+    "better-sqlite3": "^12.5.0",
+    "kysely": "^0.28.9",
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.10",
+    "prettier": "^3.8.3",
+    "tailwindcss": "^4",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "packageManager": "pnpm@8.15.9+sha512.499434c9d8fdd1a2794ebf4552b3b25c0a633abcee5bb15e7b5de90f32f47b513aca98cd5cfd001c31f0db454bc3804edccd578501e4ca293a6816166bbd9f81"
+}
