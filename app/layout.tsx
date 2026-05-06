@@ -17,6 +17,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "pronouns.blue",
   description: "Share your names and pronouns with the ATProto network.",
+  icons: {
+    icon: "/pronouns.blue-round.svg",
+    shortcut: "/pronouns.blue-round.svg",
+  },
 };
 
 const themeScript = `
