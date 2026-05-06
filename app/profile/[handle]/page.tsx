@@ -4,10 +4,7 @@ import { getActorProfile } from "@/lib/atproto/profiles";
 import { getProfileRecordsFromPds } from "@/lib/atproto/records";
 import { getDid } from "@/lib/auth/session";
 import { ProfileDisplay } from "@/components/ProfileDisplay";
-import {
-  FollowsSection,
-  FollowsSkeleton,
-} from "@/components/FollowsSection";
+import { FollowsSection, FollowsSkeleton } from "@/components/FollowsSection";
 import { FloatingProfileBack } from "@/components/FloatingProfileBack";
 
 export default async function HandleProfilePage({
@@ -50,4 +47,3 @@ export default async function HandleProfilePage({
     </>
   );
 }
-

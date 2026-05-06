@@ -19,7 +19,11 @@ export async function FollowsSection({ did, title }: FollowsSectionProps) {
         <p className="mb-6 text-sm text-[var(--muted)]">
           People {title} follows on Bluesky
         </p>
-        <FollowsGrid initialFollows={follows} initialCursor={cursor} did={did} />
+        <FollowsGrid
+          initialFollows={follows}
+          initialCursor={cursor}
+          did={did}
+        />
       </div>
     </section>
   );
