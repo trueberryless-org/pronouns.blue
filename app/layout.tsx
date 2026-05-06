@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: "pronouns.blue",
   description: "Share your names and pronouns with the ATProto network.",
   icons: {
-    icon: "/pronouns.blue-round.svg",
+    icon: [{ url: "/pronouns.blue-round.svg", type: "image/svg+xml" }],
     shortcut: "/pronouns.blue-round.svg",
   },
 };
