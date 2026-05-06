@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ViewTransitions } from "next-view-transitions";
+import { Link } from "next-view-transitions";
 import "./globals.css";
 import { AppNav } from "@/components/AppNav";
 
@@ -52,12 +53,12 @@ export default function RootLayout({
           <main className="flex flex-1 flex-col">{children}</main>
           <footer className="border-t border-[var(--border)] py-4 text-center text-xs text-[var(--muted)]">
             <nav className="flex flex-wrap justify-center gap-x-5 gap-y-1">
-              <a href="/privacy" className="hover:text-[var(--text)]">
+              <Link href="/privacy" className="hover:text-[var(--text)]">
                 Privacy Policy
-              </a>
-              <a href="/credits" className="hover:text-[var(--text)]">
+              </Link>
+              <Link href="/credits" className="hover:text-[var(--text)]">
                 Credits
-              </a>
+              </Link>
               <a
                 href="https://github.com/trueberryless-org/pronouns.blue"
                 target="_blank"

@@ -57,6 +57,62 @@ function moveEntry(entries: string[], from: number, to: number): string[] {
   return next;
 }
 
+function ArrowUpIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 19V5" />
+      <path d="m5 12 7-7 7 7" />
+    </svg>
+  );
+}
+
+function ArrowDownIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 5v14" />
+      <path d="m19 12-7 7-7-7" />
+    </svg>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M3 6h18" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </svg>
+  );
+}
+
+
 function EntryList({
   label,
   items,
@@ -91,44 +147,46 @@ function EntryList({
         return (
           <li
             key={item}
-            className="flex items-center justify-between gap-3 border-b border-[var(--line)] py-2"
+            className="flex items-center gap-3 border-b border-[var(--line)] py-2"
           >
-            <span className="text-base text-[var(--text)]">{item}</span>
-            <div className="flex items-center gap-1">
+            <span className="flex-1 truncate text-base text-[var(--text)]">
+              {item}
+            </span>
+            <div className="flex flex-shrink-0 items-center gap-0.5">
               <button
                 type="button"
                 onClick={() => onTogglePreferred(item)}
                 aria-pressed={isPreferred}
                 aria-label={`${isPreferred ? "Unmark" : "Mark"} ${item} as preferred`}
-                className={`rounded p-1 ${isPreferred ? "text-[var(--danger)]" : "text-[var(--muted)] hover:text-[var(--danger)]"}`}
+                className={`rounded p-1.5 ${isPreferred ? "text-[var(--danger)]" : "text-[var(--muted)] hover:text-[var(--danger)]"}`}
               >
-                <HeartIcon filled={isPreferred} className="h-5 w-5" />
+                <HeartIcon filled={isPreferred} className="h-4 w-4" />
               </button>
               <button
                 type="button"
                 onClick={() => onMoveUp(item)}
                 disabled={!canMoveUp}
-                className="rounded px-2 py-1 text-sm text-[var(--muted)] hover:text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label={`Move ${item} up`}
               >
-                Up
+                <ArrowUpIcon />
               </button>
               <button
                 type="button"
                 onClick={() => onMoveDown(item)}
                 disabled={!canMoveDown}
-                className="rounded px-2 py-1 text-sm text-[var(--muted)] hover:text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label={`Move ${item} down`}
               >
-                Down
+                <ArrowDownIcon />
               </button>
               <button
                 type="button"
                 onClick={() => onRemove(item)}
-                className="rounded px-2 py-1 text-sm text-[var(--muted)] hover:text-[var(--text)]"
+                className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--danger)]"
                 aria-label={`Remove ${item}`}
               >
-                Remove
+                <TrashIcon />
               </button>
             </div>
           </li>
