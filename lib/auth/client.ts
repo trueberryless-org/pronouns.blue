@@ -61,8 +61,8 @@ export async function getOAuthClient(): Promise<NodeOAuthClient> {
   // Next.js patches globalThis.fetch for ISR caching, which can corrupt DPoP
   // POST bodies. Use the original pre-patch fetch stored by Next at startup.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const originalFetch =
-    (globalThis.fetch as any)._nextOriginalFetch ?? globalThis.fetch;
+  const fetchAsAny = globalThis.fetch as any;
+  const originalFetch = fetchAsAny._nextOriginalFetch ?? globalThis.fetch;
 
   client = new NodeOAuthClient({
     fetch: originalFetch,
