@@ -101,7 +101,7 @@ export function ProfileDisplay(props: ProfileDisplayProps) {
   const hasAny = hasNames || hasPronouns;
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-12 pb-16 sm:pt-16">
+    <main className="mx-auto w-full max-w-3xl flex-1 min-h-screen px-4 pt-12 pb-16 sm:pt-16">
       <section className="w-full py-4">
         {props.editHref && (
           <div className="mb-4 flex justify-end">

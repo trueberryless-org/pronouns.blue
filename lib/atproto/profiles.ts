@@ -63,6 +63,36 @@ export async function searchActors(
   }
 }
 
+interface GetFollowsResponse {
+  follows: AppViewProfileResponse[];
+  cursor?: string;
+}
+
+export async function getActorFollows(
+  actor: string,
+  limit = 50,
+): Promise<{ follows: ActorProfile[]; cursor?: string }> {
+  try {
+    const response = await fetch(
+      `${APPVIEW_URL}/xrpc/app.bsky.graph.getFollows?actor=${encodeURIComponent(actor)}&limit=${limit}`,
+      { next: { revalidate: 300 } },
+    );
+    if (!response.ok) return { follows: [] };
+    const data = (await response.json()) as GetFollowsResponse;
+    return {
+      follows: data.follows.map((p) => ({
+        did: p.did,
+        handle: p.handle,
+        displayName: p.displayName ?? null,
+        avatar: p.avatar ?? null,
+      })),
+      cursor: data.cursor,
+    };
+  } catch {
+    return { follows: [] };
+  }
+}
+
 export async function getActorProfiles(
   actors: string[],
 ): Promise<Record<string, ActorProfile>> {
