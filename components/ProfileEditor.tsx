@@ -224,7 +224,7 @@ export function ProfileEditor({
   const [saved, setSaved] = useState(false);
 
   const canSave = useMemo(
-    () => names.length > 0 && pronouns.length > 0 && !isSaving,
+    () => (names.length > 0 || pronouns.length > 0) && !isSaving,
     [names.length, pronouns.length, isSaving],
   );
 

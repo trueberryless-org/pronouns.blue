@@ -64,15 +64,9 @@ export async function POST(request: NextRequest) {
     (entry) => cleanedPronouns.includes(entry),
   );
 
-  if (cleanedNames.length === 0) {
+  if (cleanedNames.length === 0 && cleanedPronouns.length === 0) {
     return NextResponse.json(
-      { error: "At least one name is required" },
-      { status: 400 },
-    );
-  }
-  if (cleanedPronouns.length === 0) {
-    return NextResponse.json(
-      { error: "At least one pronoun is required" },
+      { error: "At least one name or pronoun is required" },
       { status: 400 },
     );
   }

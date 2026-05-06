@@ -101,7 +101,7 @@ export function ProfileDisplay(props: ProfileDisplayProps) {
   const hasAny = hasNames || hasPronouns;
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 items-center justify-center px-4 pb-8">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-12 pb-16 sm:pt-16">
       <section className="w-full py-4">
         {props.editHref && (
           <div className="mb-4 flex justify-end">
@@ -128,7 +128,7 @@ export function ProfileDisplay(props: ProfileDisplayProps) {
               rel="noopener noreferrer"
               aria-label="View on Bluesky"
               title="View on Bluesky"
-              className="text-[var(--muted)] transition-colors hover:text-[var(--accent)]"
+              className="translate-y-0.3 text-[var(--muted)] transition-colors hover:text-[var(--accent)]"
             >
               <BlueskyIcon className="h-4 w-4" />
             </a>
