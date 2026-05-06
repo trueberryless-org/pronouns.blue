@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function CreditsPage() {
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-12 sm:px-6">
@@ -5,26 +7,63 @@ export default function CreditsPage() {
         Credits &amp; Inspiration
       </h1>
 
-      <section className="mb-10 space-y-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
+      <section className="relative mb-10 space-y-4 overflow-visible rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
+        <Image
+          src="/pronouns.blue-round.svg"
+          alt="pronouns.blue round logo"
+          width={120}
+          height={120}
+          className="pointer-events-none absolute right-0 top-0 h-20 w-20 -translate-y-1/3 translate-x-1/3 select-none -rotate-6 sm:h-24 sm:w-24"
+        />
         <h2 className="text-xl font-semibold text-[var(--text)]">
-          Built with AI
+          Project Credits
         </h2>
         <p className="text-[var(--muted)]">
-          This website was fully generated with AI assistance using{" "}
+          Huge thanks to{" "}
           <a
-            href="https://github.com/features/copilot"
+            href="https://bsky.app/profile/alfon.dev"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[var(--accent)] underline underline-offset-4"
           >
-            GitHub Copilot
-          </a>
-          . All code, design decisions, and content were produced through an
-          AI-assisted workflow with human direction.
+            @alfon.dev
+          </a>{" "}
+          and{" "}
+          <a
+            href="https://bsky.app/profile/alexdln.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent)] underline underline-offset-4"
+          >
+            @alexdln.com
+          </a>{" "}
+          for their amazing assistance and help creating all logo assets for
+          this project.
+        </p>
+        <p className="text-[var(--muted)]">
+          This website was created by{" "}
+          <a
+            href="https://bsky.app/profile/trueberryless.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent)] underline underline-offset-4"
+          >
+            @trueberryless.org
+          </a>{" "}
+          and used{" "}
+          <a
+            href="https://github.com/bluesky-social/statusphere-example-app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent)] underline underline-offset-4"
+          >
+            bluesky-social/statusphere-example-app
+          </a>{" "}
+          as a very convenient starting point.
         </p>
       </section>
 
-      <section className="space-y-6 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
+      <section className="mb-10 space-y-6 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
         <h2 className="text-xl font-semibold text-[var(--text)]">
           Inspiration
         </h2>
@@ -70,6 +109,25 @@ export default function CreditsPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="space-y-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
+        <h2 className="text-xl font-semibold text-[var(--text)]">
+          Built with AI
+        </h2>
+        <p className="text-[var(--muted)]">
+          This website was fully generated with AI assistance using{" "}
+          <a
+            href="https://github.com/features/copilot"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent)] underline underline-offset-4"
+          >
+            GitHub Copilot
+          </a>
+          . All code, design decisions, and content were produced through an
+          AI-assisted workflow with human direction.
+        </p>
       </section>
     </main>
   );
