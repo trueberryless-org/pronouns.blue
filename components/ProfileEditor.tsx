@@ -112,7 +112,6 @@ function TrashIcon() {
   );
 }
 
-
 function EntryList({
   label,
   items,

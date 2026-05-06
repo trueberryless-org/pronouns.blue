@@ -190,9 +190,7 @@ export function MobileNav({
               >
                 {loading ? "..." : "Log in / Sign up"}
               </button>
-              {error && (
-                <p className="text-xs text-[var(--danger)]">{error}</p>
-              )}
+              {error && <p className="text-xs text-[var(--danger)]">{error}</p>}
             </div>
           )}
         </div>

@@ -23,7 +23,9 @@ export default async function SettingsPage() {
       <section className="space-y-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold text-[var(--text)]">Settings</h1>
+            <h1 className="text-2xl font-semibold text-[var(--text)]">
+              Settings
+            </h1>
             <p className="text-sm text-[var(--muted)]">
               Update your names and pronouns.
             </p>
