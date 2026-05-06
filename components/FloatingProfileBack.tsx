@@ -54,6 +54,8 @@ export function FloatingProfileBack({
     function onScroll() {
       setVisible(window.scrollY > window.innerHeight * 0.65);
     }
+    // Check immediately on mount so back-navigation scroll restoration is handled
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
