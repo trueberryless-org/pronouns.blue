@@ -76,7 +76,7 @@ export default async function Image() {
             fontSize: 42,
           }}
         >
-          ✦
+          ✨
         </div>
 
         <div
