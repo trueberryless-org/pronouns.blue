@@ -56,6 +56,9 @@ export default function RootLayout({
               <Link href="/privacy" className="hover:text-[var(--text)]">
                 Privacy Policy
               </Link>
+              <Link href="/terms" className="hover:text-[var(--text)]">
+                Terms of Service
+              </Link>
               <Link href="/credits" className="hover:text-[var(--text)]">
                 Credits
               </Link>
