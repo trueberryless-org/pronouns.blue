@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getActorProfile } from "@/lib/atproto/profiles";
@@ -6,6 +7,25 @@ import { getDid } from "@/lib/auth/session";
 import { ProfileDisplay } from "@/components/ProfileDisplay";
 import { FollowsSection, FollowsSkeleton } from "@/components/FollowsSection";
 import { FloatingProfileBack } from "@/components/FloatingProfileBack";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ handle: string }>;
+}): Promise<Metadata> {
+  const { handle: rawHandle } = await params;
+  const handle = decodeURIComponent(rawHandle).replace(/^@/, "");
+  const actor = await getActorProfile(handle);
+  if (!actor) return { title: "Profile not found – pronouns.blue" };
+  const name = actor.displayName ?? actor.handle;
+  const description = `View ${name}'s preferred names and pronouns on pronouns.blue`;
+  return {
+    title: `${name} – pronouns.blue`,
+    description,
+    openGraph: { title: `${name} – pronouns.blue`, description },
+    twitter: { title: `${name} – pronouns.blue`, description },
+  };
+}
 
 export default async function HandleProfilePage({
   params,
