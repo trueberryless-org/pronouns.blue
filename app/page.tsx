@@ -24,10 +24,10 @@ export default async function Home() {
       <main className="space-y-8">
         <div className="flex justify-center pb-2">
           <Image
-            src="/pronouns.blue.svg"
+            src="/pronouns.blue.png"
             alt="pronouns.blue"
-            width={242}
-            height={99}
+            width={966}
+            height={396}
             className="h-60 w-auto"
             style={{ viewTransitionName: "site-logo" }}
             priority

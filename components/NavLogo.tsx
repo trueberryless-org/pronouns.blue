@@ -11,10 +11,10 @@ export function NavLogo() {
   return (
     <Link href="/" className="flex items-center">
       <Image
-        src="/pronouns.blue.svg"
+        src="/pronouns.blue.png"
         alt="pronouns.blue"
-        width={242}
-        height={99}
+        width={966}
+        height={396}
         className="h-14 w-auto"
         style={{ viewTransitionName: "site-logo" }}
       />
