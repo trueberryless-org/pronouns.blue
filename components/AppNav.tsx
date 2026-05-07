@@ -4,6 +4,7 @@ import { AuthNav } from "@/components/AuthNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NavLogo } from "@/components/NavLogo";
 import { MobileNav } from "@/components/MobileNav";
+import { SearchModal } from "@/components/SearchModal";
 
 export async function AppNav() {
   const did = await getDid();
@@ -14,6 +15,7 @@ export async function AppNav() {
       <div className="mx-auto flex w-full max-w-6xl min-h-14 items-center gap-3 px-4 sm:px-6">
         <NavLogo />
         <div className="ml-auto flex items-center gap-4">
+          <SearchModal />
           {/* Desktop: items shown inline */}
           <div className="hidden items-center gap-4 sm:flex">
             <ThemeToggle />
