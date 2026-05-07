@@ -45,9 +45,11 @@ export default async function Image({
 
   // Flatten across all language groups for the OG image
   const allNames = profile?.groups.flatMap((g) => g.names) ?? [];
-  const allPreferredNames = profile?.groups.flatMap((g) => g.preferredNames) ?? [];
+  const allPreferredNames =
+    profile?.groups.flatMap((g) => g.preferredNames) ?? [];
   const allPronouns = profile?.groups.flatMap((g) => g.pronouns) ?? [];
-  const allPreferredPronouns = profile?.groups.flatMap((g) => g.preferredPronouns) ?? [];
+  const allPreferredPronouns =
+    profile?.groups.flatMap((g) => g.preferredPronouns) ?? [];
 
   const hasNames = allNames.length > 0;
   const hasPronouns = allPronouns.length > 0;
@@ -269,8 +271,7 @@ export default async function Image({
               <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
                 {hasPronouns ? (
                   pronouns.map((pronoun, i) => {
-                    const preferred =
-                      allPreferredPronouns.includes(pronoun);
+                    const preferred = allPreferredPronouns.includes(pronoun);
                     return (
                       <div
                         key={i}

@@ -42,7 +42,9 @@ function cleanLang(value: unknown): string {
   try {
     const name = serverDisplayNames.of(v);
     if (name && name.toLowerCase() !== v.toLowerCase()) return v;
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return DEFAULT_LANG;
 }
 
@@ -137,32 +139,34 @@ export async function POST(request: NextRequest) {
     ]);
 
     await Promise.all(
-      groups.flatMap(({ lang, names, pronouns, preferredNames, preferredPronouns }) => {
-        const preferredNameSet = new Set(preferredNames);
-        const preferredPronounSet = new Set(preferredPronouns);
-        return [
-          ...names.map((value, index) =>
-            lexClient.create(blue.pronouns.name.main, {
-              value,
-              preferred: preferredNameSet.has(value),
-              lang,
-              sortOrder: index,
-              createdAt: now,
-              updatedAt: now,
-            }),
-          ),
-          ...pronouns.map((value, index) =>
-            lexClient.create(blue.pronouns.pronoun.main, {
-              value,
-              preferred: preferredPronounSet.has(value),
-              lang,
-              sortOrder: index,
-              createdAt: now,
-              updatedAt: now,
-            }),
-          ),
-        ];
-      }),
+      groups.flatMap(
+        ({ lang, names, pronouns, preferredNames, preferredPronouns }) => {
+          const preferredNameSet = new Set(preferredNames);
+          const preferredPronounSet = new Set(preferredPronouns);
+          return [
+            ...names.map((value, index) =>
+              lexClient.create(blue.pronouns.name.main, {
+                value,
+                preferred: preferredNameSet.has(value),
+                lang,
+                sortOrder: index,
+                createdAt: now,
+                updatedAt: now,
+              }),
+            ),
+            ...pronouns.map((value, index) =>
+              lexClient.create(blue.pronouns.pronoun.main, {
+                value,
+                preferred: preferredPronounSet.has(value),
+                lang,
+                sortOrder: index,
+                createdAt: now,
+                updatedAt: now,
+              }),
+            ),
+          ];
+        },
+      ),
     );
 
     revalidateTag(getProfileRecordsTag(session.did), "max");

@@ -216,9 +216,7 @@ export function ProfileDisplay(props: ProfileDisplayProps) {
             ))}
           </div>
         ) : hasBskyPronouns ? (
-          <div
-            className="grid gap-6"
-          >
+          <div className="grid gap-6">
             <EntryColumn
               label="Pronouns"
               items={[]}

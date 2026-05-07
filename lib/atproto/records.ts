@@ -117,10 +117,7 @@ function aggregateEntriesByLang(
   }[],
 ): Map<string, { values: string[]; preferred: string[] }> {
   // Group by lang, then deduplicate by (lang, value) keeping the freshest record
-  const byLang = new Map<
-    string,
-    Map<string, (typeof records)[0]>
-  >();
+  const byLang = new Map<string, Map<string, (typeof records)[0]>>();
 
   for (const r of records) {
     let langMap = byLang.get(r.lang);
@@ -143,7 +140,8 @@ function aggregateEntriesByLang(
   for (const [lang, langMap] of byLang) {
     const sorted = Array.from(langMap.values()).sort((a, b) => {
       if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
-      if (a.updatedAt !== b.updatedAt) return a.updatedAt < b.updatedAt ? 1 : -1;
+      if (a.updatedAt !== b.updatedAt)
+        return a.updatedAt < b.updatedAt ? 1 : -1;
       return a.value.localeCompare(b.value);
     });
     result.set(lang, {
@@ -159,8 +157,7 @@ export async function getProfileRecordsFromPds(
 ): Promise<PdsProfile> {
   const pdsUrl = await resolvePdsUrl(did);
 
-  if (!pdsUrl)
-    return { groups: [] };
+  if (!pdsUrl) return { groups: [] };
 
   const [nameRecords, pronounRecords] = await Promise.all([
     listAllRecords<NameValue>(pdsUrl, did, "blue.pronouns.name"),
