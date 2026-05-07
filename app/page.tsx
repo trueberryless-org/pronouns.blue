@@ -158,9 +158,7 @@ export default async function Home() {
                 )}
                 <span className="min-w-0">
                   <p className="truncate text-lg font-semibold text-[var(--text)]">
-                    {signedInActor?.displayName ??
-                      signedInActor?.handle ??
-                      did}
+                    {signedInActor?.displayName ?? signedInActor?.handle ?? did}
                   </p>
                   <p className="truncate text-sm text-[var(--muted)]">
                     @{signedInActor?.handle ?? did}
