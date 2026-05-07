@@ -11,8 +11,6 @@ interface ProfileDisplayProps {
   preferredPronouns: string[];
   /** Pronouns string from the Bluesky profile record — shown only when no blue.pronouns records exist. */
   bskyFallbackPronouns?: string | null;
-  /** Display name from Bluesky — shown as a name fallback only when no blue.pronouns.name records exist. */
-  bskyFallbackName?: string | null;
   editHref?: string;
 }
 
@@ -116,9 +114,8 @@ function EntryColumn({
 export function ProfileDisplay(props: ProfileDisplayProps) {
   const hasNames = props.names.length > 0;
   const hasPronouns = props.pronouns.length > 0;
-  const hasBskyName = !hasNames && !!props.bskyFallbackName;
   const hasBskyPronouns = !hasPronouns && !!props.bskyFallbackPronouns;
-  const hasAny = hasNames || hasPronouns || hasBskyName || hasBskyPronouns;
+  const hasAny = hasNames || hasPronouns || hasBskyPronouns;
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 min-h-screen px-4 pt-12 pb-16 sm:pt-16">
@@ -157,14 +154,13 @@ export function ProfileDisplay(props: ProfileDisplayProps) {
 
         {hasAny ? (
           <div
-            className={`grid gap-6 ${(hasNames || hasBskyName) && (hasPronouns || hasBskyPronouns) ? "md:grid-cols-2" : ""}`}
+            className={`grid gap-6 ${hasNames && (hasPronouns || hasBskyPronouns) ? "md:grid-cols-2" : ""}`}
           >
-            {(hasNames || hasBskyName) && (
+            {hasNames && (
               <EntryColumn
                 label="Names"
                 items={props.names}
                 preferred={props.preferredNames}
-                bskyFallback={props.bskyFallbackName}
               />
             )}
             {(hasPronouns || hasBskyPronouns) && (
