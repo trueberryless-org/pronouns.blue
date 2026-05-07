@@ -12,8 +12,7 @@ let fontPromise: Promise<{
 
 function preloadFonts() {
   if (!fontPromise) {
-    const base =
-      "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.1/files";
+    const base = "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.1/files";
     fontPromise = Promise.all([
       fetch(`${base}/inter-latin-400-normal.woff`).then((r) => r.arrayBuffer()),
       fetch(`${base}/inter-latin-600-normal.woff`).then((r) => r.arrayBuffer()),
@@ -25,7 +24,17 @@ function preloadFonts() {
 export async function getOgFontList() {
   const { regular, semiBold } = await preloadFonts();
   return [
-    { name: "Inter", data: regular, style: "normal" as const, weight: 400 as const },
-    { name: "Inter", data: semiBold, style: "normal" as const, weight: 600 as const },
+    {
+      name: "Inter",
+      data: regular,
+      style: "normal" as const,
+      weight: 400 as const,
+    },
+    {
+      name: "Inter",
+      data: semiBold,
+      style: "normal" as const,
+      weight: 600 as const,
+    },
   ];
 }

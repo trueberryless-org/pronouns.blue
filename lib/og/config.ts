@@ -1,4 +1,4 @@
-export const OG_SIZE = { width: 1200, height: 630 }
+export const OG_SIZE = { width: 1200, height: 630 };
 
 /** Fixed dark-theme palette — OG images always render in dark mode. */
 export const C = {
