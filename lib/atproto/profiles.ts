@@ -61,6 +61,7 @@ export async function searchActors(
       handle: p.handle,
       displayName: p.displayName ?? null,
       avatar: p.avatar ?? null,
+      pronouns: p.pronouns ?? null,
     }));
   } catch {
     return [];
@@ -89,6 +90,7 @@ export async function getActorFollows(
         handle: p.handle,
         displayName: p.displayName ?? null,
         avatar: p.avatar ?? null,
+        pronouns: p.pronouns ?? null,
       })),
       cursor: data.cursor,
     };
