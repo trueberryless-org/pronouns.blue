@@ -44,8 +44,7 @@ export default async function Image({
   const displayHandle = truncate(actor?.handle ?? handle, 26);
   const hasNames = (profile?.names.length ?? 0) > 0;
   const hasPronouns = (profile?.pronouns.length ?? 0) > 0;
-  const bskyPronouns =
-    !hasPronouns && actor?.pronouns ? actor.pronouns : null;
+  const bskyPronouns = !hasPronouns && actor?.pronouns ? actor.pronouns : null;
   const hasAny = hasNames || hasPronouns || !!bskyPronouns;
   const names = profile?.names.slice(0, MAX_NAMES) ?? [];
   const extraNames = (profile?.names.length ?? 0) - names.length;
@@ -261,43 +260,43 @@ export default async function Image({
                 Pronouns
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                {hasPronouns
-                  ? pronouns.map((pronoun, i) => {
-                      const preferred =
-                        profile!.preferredPronouns.includes(pronoun);
-                      return (
-                        <div
-                          key={i}
-                          style={{
-                            display: "flex",
-                            background: preferred ? C.accentFill : C.surface,
-                            border: `1px solid ${preferred ? C.accentRing : C.border}`,
-                            borderRadius: 10,
-                            padding: "9px 22px",
-                            fontSize: 23,
-                            fontWeight: preferred ? 600 : 400,
-                            color: C.text,
-                          }}
-                        >
-                          {pronoun}
-                        </div>
-                      );
-                    })
-                  : (
-                    <div
-                      style={{
-                        display: "flex",
-                        background: C.surface,
-                        border: `1px solid ${C.border}`,
-                        borderRadius: 10,
-                        padding: "9px 22px",
-                        fontSize: 23,
-                        color: C.muted,
-                      }}
-                    >
-                      {bskyPronouns}
-                    </div>
-                  )}
+                {hasPronouns ? (
+                  pronouns.map((pronoun, i) => {
+                    const preferred =
+                      profile!.preferredPronouns.includes(pronoun);
+                    return (
+                      <div
+                        key={i}
+                        style={{
+                          display: "flex",
+                          background: preferred ? C.accentFill : C.surface,
+                          border: `1px solid ${preferred ? C.accentRing : C.border}`,
+                          borderRadius: 10,
+                          padding: "9px 22px",
+                          fontSize: 23,
+                          fontWeight: preferred ? 600 : 400,
+                          color: C.text,
+                        }}
+                      >
+                        {pronoun}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      background: C.surface,
+                      border: `1px solid ${C.border}`,
+                      borderRadius: 10,
+                      padding: "9px 22px",
+                      fontSize: 23,
+                      color: C.muted,
+                    }}
+                  >
+                    {bskyPronouns}
+                  </div>
+                )}
                 {hasPronouns && extraPronouns > 0 && (
                   <div
                     style={{
