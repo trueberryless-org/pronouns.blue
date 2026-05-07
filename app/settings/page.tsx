@@ -18,16 +18,21 @@ export default async function SettingsPage() {
     ? `/profile/${encodeURIComponent(normalizedHandle)}`
     : null;
 
+  const isFirstTime =
+    profile.names.length === 0 && profile.pronouns.length === 0;
+
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6">
       <section className="space-y-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold text-[var(--text)]">
-              Settings
+              {isFirstTime ? "Set up your profile" : "Settings"}
             </h1>
             <p className="text-sm text-[var(--muted)]">
-              Update your names and pronouns.
+              {isFirstTime
+                ? "Add your names and pronouns to get started."
+                : "Update your names and pronouns."}
             </p>
           </div>
           {profileHref && (
@@ -57,6 +62,8 @@ export default async function SettingsPage() {
           initialPronouns={profile.pronouns}
           initialPreferredNames={profile.preferredNames}
           initialPreferredPronouns={profile.preferredPronouns}
+          isFirstTime={isFirstTime}
+          profileHref={profileHref ?? undefined}
         />
       </section>
     </main>

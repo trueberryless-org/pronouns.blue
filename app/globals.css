@@ -51,11 +51,23 @@
   --danger-bg: #2f1a22;
 }
 
-@theme inline {
+@theme {
+  --animate-fade-in-up: fade-in-up 0.2s ease-out both;
   --color-background: var(--bg);
   --color-foreground: var(--text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 body {
