@@ -38,6 +38,8 @@ pnpm build
 ## Architecture notes
 
 - Names and pronouns are stored as **individual ATProto records** (`blue.pronouns.name`, `blue.pronouns.pronoun`) directly in the user's repo. There is no database.
+- Each record carries an optional **`lang`** field — a [BCP-47](https://www.rfc-editor.org/rfc/rfc5646) language tag (e.g. `en`, `de`, `zh-CN`). Records without `lang` default to English. New saves always write the field.
+- `lib/atproto/records.ts` groups records by `lang` and returns `LanguageGroup[]` — the data shape used by both `ProfileDisplay` and `ProfileEditor`.
 - Profile pages and the settings page read records directly from the user's PDS via `com.atproto.repo.listRecords` (`lib/atproto/records.ts`).
 - OAuth state and session (tokens + DPoP key) are stored in `httpOnly` browser cookies (`oauth_state`, `session`, `did`). `lib/auth/client.ts` implements the `stateStore`/`sessionStore` interfaces using `cookies()` from `next/headers`.
 - In Server Components use `getDid()` (reads the `did` cookie). Only call `getSession()` in Route Handlers, where cookie writes (token refresh) are allowed.

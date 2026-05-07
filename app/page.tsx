@@ -16,8 +16,9 @@ export default async function Home() {
   const isFirstTime =
     Boolean(did) &&
     profile !== null &&
-    profile.names.length === 0 &&
-    profile.pronouns.length === 0;
+    profile.groups.every(
+      (g) => g.names.length === 0 && g.pronouns.length === 0,
+    );
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6">

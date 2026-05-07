@@ -42,14 +42,21 @@ export default async function Image({
     ? truncate(actor.displayName ?? actor.handle, 24)
     : handle;
   const displayHandle = truncate(actor?.handle ?? handle, 26);
-  const hasNames = (profile?.names.length ?? 0) > 0;
-  const hasPronouns = (profile?.pronouns.length ?? 0) > 0;
+
+  // Flatten across all language groups for the OG image
+  const allNames = profile?.groups.flatMap((g) => g.names) ?? [];
+  const allPreferredNames = profile?.groups.flatMap((g) => g.preferredNames) ?? [];
+  const allPronouns = profile?.groups.flatMap((g) => g.pronouns) ?? [];
+  const allPreferredPronouns = profile?.groups.flatMap((g) => g.preferredPronouns) ?? [];
+
+  const hasNames = allNames.length > 0;
+  const hasPronouns = allPronouns.length > 0;
   const bskyPronouns = !hasPronouns && actor?.pronouns ? actor.pronouns : null;
   const hasAny = hasNames || hasPronouns || !!bskyPronouns;
-  const names = profile?.names.slice(0, MAX_NAMES) ?? [];
-  const extraNames = (profile?.names.length ?? 0) - names.length;
-  const pronouns = profile?.pronouns.slice(0, MAX_PRONOUNS) ?? [];
-  const extraPronouns = (profile?.pronouns.length ?? 0) - pronouns.length;
+  const names = allNames.slice(0, MAX_NAMES);
+  const extraNames = allNames.length - names.length;
+  const pronouns = allPronouns.slice(0, MAX_PRONOUNS);
+  const extraPronouns = allPronouns.length - pronouns.length;
 
   return new ImageResponse(
     <div
@@ -208,7 +215,7 @@ export default async function Image({
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
                 {names.map((name, i) => {
-                  const preferred = profile!.preferredNames.includes(name);
+                  const preferred = allPreferredNames.includes(name);
                   return (
                     <div
                       key={i}
@@ -263,7 +270,7 @@ export default async function Image({
                 {hasPronouns ? (
                   pronouns.map((pronoun, i) => {
                     const preferred =
-                      profile!.preferredPronouns.includes(pronoun);
+                      allPreferredPronouns.includes(pronoun);
                     return (
                       <div
                         key={i}

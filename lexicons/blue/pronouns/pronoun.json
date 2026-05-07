@@ -17,6 +17,12 @@
           "preferred": {
             "type": "boolean"
           },
+          "lang": {
+            "type": "string",
+            "description": "BCP-47 language tag (e.g. 'en', 'de', 'zh-CN'). Omit or default to 'en' for English.",
+            "maxLength": 35,
+            "minLength": 2
+          },
           "sortOrder": {
             "type": "integer",
             "minimum": 0,

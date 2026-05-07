@@ -1,14 +1,22 @@
 import { HeartIcon } from "@/components/HeartIcon";
 import { Link } from "next-view-transitions";
+import type { LanguageGroup } from "@/lib/atproto/records";
+
+const LANG_NAMES = new Intl.DisplayNames(["en"], { type: "language" });
+
+function langLabel(tag: string): string {
+  try {
+    return LANG_NAMES.of(tag) ?? tag;
+  } catch {
+    return tag;
+  }
+}
 
 interface ProfileDisplayProps {
   title: string;
   handle: string;
   avatar: string | null;
-  names: string[];
-  pronouns: string[];
-  preferredNames: string[];
-  preferredPronouns: string[];
+  groups: LanguageGroup[];
   /** Pronouns string from the Bluesky profile record — shown only when no blue.pronouns records exist. */
   bskyFallbackPronouns?: string | null;
   editHref?: string;
@@ -111,11 +119,56 @@ function EntryColumn({
   );
 }
 
+function LanguageGroupSection({
+  group,
+  showLangLabel,
+}: {
+  group: LanguageGroup;
+  showLangLabel: boolean;
+}) {
+  const hasNames = group.names.length > 0;
+  const hasPronouns = group.pronouns.length > 0;
+  if (!hasNames && !hasPronouns) return null;
+
+  return (
+    <div className="space-y-4">
+      {showLangLabel && (
+        <div className="flex items-center gap-2">
+          <span className="rounded-full border border-[var(--border)] px-2.5 py-0.5 text-xs font-medium text-[var(--muted)]">
+            {langLabel(group.lang)}
+          </span>
+          <div className="h-px flex-1 bg-[var(--line)]" />
+        </div>
+      )}
+      <div
+        className={`grid gap-6 ${hasNames && hasPronouns ? "md:grid-cols-2" : ""}`}
+      >
+        {hasNames && (
+          <EntryColumn
+            label="Names"
+            items={group.names}
+            preferred={group.preferredNames}
+          />
+        )}
+        {hasPronouns && (
+          <EntryColumn
+            label="Pronouns"
+            items={group.pronouns}
+            preferred={group.preferredPronouns}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function ProfileDisplay(props: ProfileDisplayProps) {
-  const hasNames = props.names.length > 0;
-  const hasPronouns = props.pronouns.length > 0;
-  const hasBskyPronouns = !hasPronouns && !!props.bskyFallbackPronouns;
-  const hasAny = hasNames || hasPronouns || hasBskyPronouns;
+  const activeGroups = props.groups.filter(
+    (g) => g.names.length > 0 || g.pronouns.length > 0,
+  );
+  const hasAny = activeGroups.length > 0;
+  const hasBskyPronouns = !hasAny && !!props.bskyFallbackPronouns;
+  const showLangLabels = activeGroups.length > 1;
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 min-h-screen px-4 pt-12 pb-16 sm:pt-16">
@@ -153,24 +206,25 @@ export function ProfileDisplay(props: ProfileDisplayProps) {
         </div>
 
         {hasAny ? (
+          <div className="space-y-8">
+            {activeGroups.map((group) => (
+              <LanguageGroupSection
+                key={group.lang}
+                group={group}
+                showLangLabel={showLangLabels}
+              />
+            ))}
+          </div>
+        ) : hasBskyPronouns ? (
           <div
-            className={`grid gap-6 ${hasNames && (hasPronouns || hasBskyPronouns) ? "md:grid-cols-2" : ""}`}
+            className="grid gap-6"
           >
-            {hasNames && (
-              <EntryColumn
-                label="Names"
-                items={props.names}
-                preferred={props.preferredNames}
-              />
-            )}
-            {(hasPronouns || hasBskyPronouns) && (
-              <EntryColumn
-                label="Pronouns"
-                items={props.pronouns}
-                preferred={props.preferredPronouns}
-                bskyFallback={props.bskyFallbackPronouns}
-              />
-            )}
+            <EntryColumn
+              label="Pronouns"
+              items={[]}
+              preferred={[]}
+              bskyFallback={props.bskyFallbackPronouns}
+            />
           </div>
         ) : (
           <p className="text-center text-[var(--muted)]">

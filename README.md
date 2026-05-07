@@ -66,6 +66,10 @@ pnpm gen-key       # generate a PRIVATE_KEY JWK
 
 Source lexicons live in `lexicons/**`. Generated TypeScript bindings in `lib/lexicons/**` must not be edited by hand — regenerate with `pnpm build:lex` after any change.
 
+### Language field
+
+Both `blue.pronouns.name` and `blue.pronouns.pronoun` records carry an optional `lang` field — a [BCP-47](https://www.rfc-editor.org/rfc/rfc5646) language tag (e.g. `en`, `de`, `zh-CN`). When absent the UI treats the record as English (`en`). New records always write the field explicitly.
+
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md), [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md), and [SECURITY.md](./SECURITY.md).

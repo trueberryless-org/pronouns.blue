@@ -1,5 +1,7 @@
 import { getProfileRecordsTag } from "@/lib/atproto/cache";
 
+export const DEFAULT_LANG = "en";
+
 interface DidDocument {
   service?: { id: string; type: string; serviceEndpoint: string }[];
 }
@@ -18,6 +20,7 @@ interface ListRecordsResponse<T> {
 interface NameValue {
   value: string;
   preferred: boolean;
+  lang?: string;
   sortOrder?: number;
   createdAt: string;
   updatedAt: string;
@@ -26,16 +29,23 @@ interface NameValue {
 interface PronounValue {
   value: string;
   preferred: boolean;
+  lang?: string;
   sortOrder?: number;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface PdsProfile {
+export interface LanguageGroup {
+  /** BCP-47 language tag, e.g. "en", "de", "zh-CN" */
+  lang: string;
   names: string[];
-  pronouns: string[];
   preferredNames: string[];
+  pronouns: string[];
   preferredPronouns: string[];
+}
+
+export interface PdsProfile {
+  groups: LanguageGroup[];
 }
 
 async function resolvePdsUrl(did: string): Promise<string | null> {
@@ -96,36 +106,52 @@ async function listAllRecords<T>(
   return records;
 }
 
-function aggregateEntries(
+function aggregateEntriesByLang(
   records: {
     uri: string;
     value: string;
     preferred: boolean;
+    lang: string;
     sortOrder: number;
     updatedAt: string;
   }[],
-): { values: string[]; preferred: string[] } {
-  const byNorm = new Map<string, (typeof records)[0]>();
+): Map<string, { values: string[]; preferred: string[] }> {
+  // Group by lang, then deduplicate by (lang, value) keeping the freshest record
+  const byLang = new Map<
+    string,
+    Map<string, (typeof records)[0]>
+  >();
+
   for (const r of records) {
+    let langMap = byLang.get(r.lang);
+    if (!langMap) {
+      langMap = new Map();
+      byLang.set(r.lang, langMap);
+    }
     const key = r.value.toLocaleLowerCase();
-    const cur = byNorm.get(key);
+    const cur = langMap.get(key);
     if (
       !cur ||
       r.updatedAt > cur.updatedAt ||
       (r.updatedAt === cur.updatedAt && r.uri > cur.uri)
     ) {
-      byNorm.set(key, r);
+      langMap.set(key, r);
     }
   }
-  const sorted = Array.from(byNorm.values()).sort((a, b) => {
-    if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
-    if (a.updatedAt !== b.updatedAt) return a.updatedAt < b.updatedAt ? 1 : -1;
-    return a.value.localeCompare(b.value);
-  });
-  return {
-    values: sorted.map((e) => e.value),
-    preferred: sorted.filter((e) => e.preferred).map((e) => e.value),
-  };
+
+  const result = new Map<string, { values: string[]; preferred: string[] }>();
+  for (const [lang, langMap] of byLang) {
+    const sorted = Array.from(langMap.values()).sort((a, b) => {
+      if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
+      if (a.updatedAt !== b.updatedAt) return a.updatedAt < b.updatedAt ? 1 : -1;
+      return a.value.localeCompare(b.value);
+    });
+    result.set(lang, {
+      values: sorted.map((e) => e.value),
+      preferred: sorted.filter((e) => e.preferred).map((e) => e.value),
+    });
+  }
+  return result;
 }
 
 export async function getProfileRecordsFromPds(
@@ -134,42 +160,58 @@ export async function getProfileRecordsFromPds(
   const pdsUrl = await resolvePdsUrl(did);
 
   if (!pdsUrl)
-    return {
-      names: [],
-      pronouns: [],
-      preferredNames: [],
-      preferredPronouns: [],
-    };
+    return { groups: [] };
 
   const [nameRecords, pronounRecords] = await Promise.all([
     listAllRecords<NameValue>(pdsUrl, did, "blue.pronouns.name"),
     listAllRecords<PronounValue>(pdsUrl, did, "blue.pronouns.pronoun"),
   ]);
 
-  const names = aggregateEntries(
+  const namesByLang = aggregateEntriesByLang(
     nameRecords.map((r) => ({
       uri: r.uri,
       value: r.value.value,
       preferred: r.value.preferred,
+      lang: r.value.lang ?? DEFAULT_LANG,
       sortOrder: r.value.sortOrder ?? 0,
       updatedAt: r.value.updatedAt,
     })),
   );
 
-  const pronouns = aggregateEntries(
+  const pronounsByLang = aggregateEntriesByLang(
     pronounRecords.map((r) => ({
       uri: r.uri,
       value: r.value.value,
       preferred: r.value.preferred,
+      lang: r.value.lang ?? DEFAULT_LANG,
       sortOrder: r.value.sortOrder ?? 0,
       updatedAt: r.value.updatedAt,
     })),
   );
 
-  return {
-    names: names.values,
-    pronouns: pronouns.values,
-    preferredNames: names.preferred,
-    preferredPronouns: pronouns.preferred,
-  };
+  // Collect all langs, English first
+  const allLangs = new Set<string>([
+    ...namesByLang.keys(),
+    ...pronounsByLang.keys(),
+  ]);
+  const sortedLangs = [
+    DEFAULT_LANG,
+    ...Array.from(allLangs)
+      .filter((l) => l !== DEFAULT_LANG)
+      .sort(),
+  ].filter((l) => allLangs.has(l));
+
+  const groups: LanguageGroup[] = sortedLangs.map((lang) => {
+    const n = namesByLang.get(lang) ?? { values: [], preferred: [] };
+    const p = pronounsByLang.get(lang) ?? { values: [], preferred: [] };
+    return {
+      lang,
+      names: n.values,
+      preferredNames: n.preferred,
+      pronouns: p.values,
+      preferredPronouns: p.preferred,
+    };
+  });
+
+  return { groups };
 }

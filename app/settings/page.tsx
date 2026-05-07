@@ -19,7 +19,10 @@ export default async function SettingsPage() {
     : null;
 
   const isFirstTime =
-    profile.names.length === 0 && profile.pronouns.length === 0;
+    profile.groups.length === 0 ||
+    profile.groups.every(
+      (g) => g.names.length === 0 && g.pronouns.length === 0,
+    );
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6">
@@ -58,10 +61,7 @@ export default async function SettingsPage() {
           )}
         </div>
         <ProfileEditor
-          initialNames={profile.names}
-          initialPronouns={profile.pronouns}
-          initialPreferredNames={profile.preferredNames}
-          initialPreferredPronouns={profile.preferredPronouns}
+          initialGroups={profile.groups}
           isFirstTime={isFirstTime}
           profileHref={profileHref ?? undefined}
         />

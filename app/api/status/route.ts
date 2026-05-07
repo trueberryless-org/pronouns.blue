@@ -4,7 +4,16 @@ import { Client } from "@atproto/lex";
 import { AtUri } from "@atproto/syntax";
 import { getSession } from "@/lib/auth/session";
 import { getProfileRecordsTag } from "@/lib/atproto/cache";
+import { DEFAULT_LANG } from "@/lib/atproto/records";
 import * as blue from "@/lib/lexicons/blue";
+
+interface IncomingGroup {
+  lang: string;
+  names: unknown;
+  pronouns: unknown;
+  preferredNames: unknown;
+  preferredPronouns: unknown;
+}
 
 function cleanEntries(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
@@ -17,6 +26,24 @@ function cleanEntries(value: unknown): string[] {
         .map((item) => [item.toLocaleLowerCase(), item]),
     ).values(),
   );
+}
+
+const serverDisplayNames = new Intl.DisplayNames(["en"], { type: "language" });
+
+function cleanLang(value: unknown): string {
+  if (typeof value !== "string") return DEFAULT_LANG;
+  const v = value.trim();
+  if (v.length < 2 || v.length > 35) return DEFAULT_LANG;
+  try {
+    new Intl.Locale(v);
+  } catch {
+    return DEFAULT_LANG;
+  }
+  try {
+    const name = serverDisplayNames.of(v);
+    if (name && name.toLowerCase() !== v.toLowerCase()) return v;
+  } catch { /* ignore */ }
+  return DEFAULT_LANG;
 }
 
 async function listAllRecordUris(
@@ -49,22 +76,38 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { names, pronouns, preferredNames, preferredPronouns } = body as {
-    names: unknown;
-    pronouns: unknown;
-    preferredNames: unknown;
-    preferredPronouns: unknown;
-  };
-  const cleanedNames = cleanEntries(names);
-  const cleanedPronouns = cleanEntries(pronouns);
-  const cleanedPreferredNames = cleanEntries(preferredNames).filter((entry) =>
-    cleanedNames.includes(entry),
-  );
-  const cleanedPreferredPronouns = cleanEntries(preferredPronouns).filter(
-    (entry) => cleanedPronouns.includes(entry),
-  );
+  const rawGroups = (body as { groups?: unknown }).groups;
+  if (!Array.isArray(rawGroups) || rawGroups.length === 0) {
+    return NextResponse.json(
+      { error: "At least one language group is required" },
+      { status: 400 },
+    );
+  }
 
-  if (cleanedNames.length === 0 && cleanedPronouns.length === 0) {
+  const groups: {
+    lang: string;
+    names: string[];
+    pronouns: string[];
+    preferredNames: string[];
+    preferredPronouns: string[];
+  }[] = [];
+
+  for (const raw of rawGroups as IncomingGroup[]) {
+    const lang = cleanLang(raw.lang);
+    const names = cleanEntries(raw.names);
+    const pronouns = cleanEntries(raw.pronouns);
+    const preferredNames = cleanEntries(raw.preferredNames).filter((e) =>
+      names.includes(e),
+    );
+    const preferredPronouns = cleanEntries(raw.preferredPronouns).filter((e) =>
+      pronouns.includes(e),
+    );
+    if (names.length > 0 || pronouns.length > 0) {
+      groups.push({ lang, names, pronouns, preferredNames, preferredPronouns });
+    }
+  }
+
+  if (groups.length === 0) {
     return NextResponse.json(
       { error: "At least one name or pronoun is required" },
       { status: 400 },
@@ -74,8 +117,6 @@ export async function POST(request: NextRequest) {
   try {
     const lexClient = new Client(session);
     const now = new Date().toISOString();
-    const preferredNameSet = new Set(cleanedPreferredNames);
-    const preferredPronounSet = new Set(cleanedPreferredPronouns);
 
     const [existingNameUris, existingPronounUris] = await Promise.all([
       listAllRecordUris(lexClient, blue.pronouns.name.main),
@@ -95,32 +136,43 @@ export async function POST(request: NextRequest) {
       ),
     ]);
 
-    await Promise.all([
-      ...cleanedNames.map((value, index) =>
-        lexClient.create(blue.pronouns.name.main, {
-          value,
-          preferred: preferredNameSet.has(value),
-          sortOrder: index,
-          createdAt: now,
-          updatedAt: now,
-        }),
-      ),
-      ...cleanedPronouns.map((value, index) =>
-        lexClient.create(blue.pronouns.pronoun.main, {
-          value,
-          preferred: preferredPronounSet.has(value),
-          sortOrder: index,
-          createdAt: now,
-          updatedAt: now,
-        }),
-      ),
-    ]);
+    await Promise.all(
+      groups.flatMap(({ lang, names, pronouns, preferredNames, preferredPronouns }) => {
+        const preferredNameSet = new Set(preferredNames);
+        const preferredPronounSet = new Set(preferredPronouns);
+        return [
+          ...names.map((value, index) =>
+            lexClient.create(blue.pronouns.name.main, {
+              value,
+              preferred: preferredNameSet.has(value),
+              lang,
+              sortOrder: index,
+              createdAt: now,
+              updatedAt: now,
+            }),
+          ),
+          ...pronouns.map((value, index) =>
+            lexClient.create(blue.pronouns.pronoun.main, {
+              value,
+              preferred: preferredPronounSet.has(value),
+              lang,
+              sortOrder: index,
+              createdAt: now,
+              updatedAt: now,
+            }),
+          ),
+        ];
+      }),
+    );
 
     revalidateTag(getProfileRecordsTag(session.did), "max");
 
     return NextResponse.json({
       success: true,
-      counts: { names: cleanedNames.length, pronouns: cleanedPronouns.length },
+      counts: {
+        names: groups.reduce((s, g) => s + g.names.length, 0),
+        pronouns: groups.reduce((s, g) => s + g.pronouns.length, 0),
+      },
     });
   } catch (err) {
     console.error("[api/status] Failed to publish records:", err);

@@ -50,10 +50,7 @@ export default async function HandleProfilePage({
         title={title}
         handle={actor.handle}
         avatar={actor.avatar}
-        names={profile.names}
-        pronouns={profile.pronouns}
-        preferredNames={profile.preferredNames}
-        preferredPronouns={profile.preferredPronouns}
+        groups={profile.groups}
         bskyFallbackPronouns={actor.pronouns}
         editHref={
           did?.toLowerCase() === actor.did.toLowerCase()
