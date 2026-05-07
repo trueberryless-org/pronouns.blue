@@ -3,6 +3,7 @@ interface AppViewProfileResponse {
   handle: string;
   displayName?: string;
   avatar?: string;
+  pronouns?: string;
 }
 
 export interface ActorProfile {
@@ -10,6 +11,8 @@ export interface ActorProfile {
   handle: string;
   displayName: string | null;
   avatar: string | null;
+  /** Free-form pronouns string from the Bluesky profile record, if set. */
+  pronouns: string | null;
 }
 
 const APPVIEW_URL =
@@ -30,6 +33,7 @@ export async function getActorProfile(
       handle: profile.handle,
       displayName: profile.displayName ?? null,
       avatar: profile.avatar ?? null,
+      pronouns: profile.pronouns ?? null,
     };
   } catch {
     return null;

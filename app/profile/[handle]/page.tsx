@@ -54,6 +54,12 @@ export default async function HandleProfilePage({
         pronouns={profile.pronouns}
         preferredNames={profile.preferredNames}
         preferredPronouns={profile.preferredPronouns}
+        bskyFallbackPronouns={actor.pronouns}
+        bskyFallbackName={
+          actor.displayName && actor.displayName !== actor.handle
+            ? actor.displayName
+            : null
+        }
         editHref={
           did?.toLowerCase() === actor.did.toLowerCase()
             ? "/settings"
