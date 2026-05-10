@@ -1,3 +1,5 @@
+"use client";
+
 import { HeartIcon } from "@/components/HeartIcon";
 import type { LanguageGroup } from "@/lib/atproto/records";
 import { ProfileEditButton } from "@/components/ProfileEditButton";

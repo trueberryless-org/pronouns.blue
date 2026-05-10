@@ -2,16 +2,10 @@
 
 import { useSyncExternalStore } from "react";
 import { Link } from "next-view-transitions";
-
-function subscribe() {
-  // Cookie values don't fire DOM events; return a no-op unsubscribe.
-  return () => {};
-}
-
-function getDidPublic(): string | null {
-  const match = document.cookie.match(/(?:^|;\s*)did-public=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
-}
+import {
+  subscribeToCookies,
+  getDidPublicCookie,
+} from "@/lib/auth/client-cookie";
 
 function EditIcon() {
   return (
@@ -38,7 +32,11 @@ function EditIcon() {
  */
 export function ProfileEditButton({ profileDid }: { profileDid: string }) {
   // null on the server (no cookie access); actual DID on the client after hydration.
-  const userDid = useSyncExternalStore(subscribe, getDidPublic, () => null);
+  const userDid = useSyncExternalStore(
+    subscribeToCookies,
+    getDidPublicCookie,
+    () => null,
+  );
 
   if (userDid?.toLowerCase() !== profileDid.toLowerCase()) return null;
 

@@ -1,23 +1,17 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import {
+  subscribeToCookies,
+  getDidPublicCookie,
+} from "@/lib/auth/client-cookie";
 
-function subscribe() {
-  return () => {};
-}
-
-function getDidPublic(): string | null {
-  const match = document.cookie.match(/(?:^|;\s*)did-public=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
-}
-
-/**
- * Shows personalised PDSLS links for the signed-in user's lexicon records.
- * Uses useSyncExternalStore to read `did-public` cookie synchronously on the
- * client with no effect required, keeping the privacy page itself static.
- */
 export function PrivacyUserSection() {
-  const did = useSyncExternalStore(subscribe, getDidPublic, () => null);
+  const did = useSyncExternalStore(
+    subscribeToCookies,
+    getDidPublicCookie,
+    () => null,
+  );
 
   if (!did) return null;
 

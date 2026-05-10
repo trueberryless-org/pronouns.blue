@@ -40,9 +40,18 @@ export function NavUser() {
       Promise.resolve().then(() => setUser(null));
       return;
     }
-    fetch("/api/me")
+    fetch(
+      `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${did}`,
+    )
       .then((r) => r.json())
-      .then(({ user }: { user: UserInfo | null }) => setUser(user ?? null))
+      .then((p) =>
+        setUser({
+          did,
+          handle: p.handle,
+          displayName: p.displayName ?? null,
+          avatar: p.avatar ?? null,
+        }),
+      )
       .catch(() => setUser(null));
   }, []);
 
