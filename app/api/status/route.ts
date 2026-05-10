@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
       ),
     );
 
-    revalidateTag(getProfileRecordsTag(session.did));
+    revalidateTag(getProfileRecordsTag(session.did), "seconds");
 
     return NextResponse.json({
       success: true,
