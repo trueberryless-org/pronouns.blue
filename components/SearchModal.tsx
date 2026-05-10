@@ -67,16 +67,31 @@ export function SearchModal() {
     }
 
     const controller = new AbortController();
+    const APPVIEW = "https://public.api.bsky.app";
     const timeout = setTimeout(async () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `/api/search?q=${encodeURIComponent(normalizedQuery)}`,
+          `${APPVIEW}/xrpc/app.bsky.actor.searchActors?q=${encodeURIComponent(normalizedQuery)}&limit=8`,
           { signal: controller.signal },
         );
         if (!response.ok) return;
-        const data = (await response.json()) as { results?: Suggestion[] };
-        setSuggestions(data.results ?? []);
+        const data = (await response.json()) as {
+          actors?: {
+            did: string;
+            handle: string;
+            displayName?: string;
+            avatar?: string;
+          }[];
+        };
+        setSuggestions(
+          (data.actors ?? []).map((a) => ({
+            did: a.did,
+            handle: a.handle,
+            displayName: a.displayName ?? null,
+            avatar: a.avatar ?? null,
+          })),
+        );
       } catch {
         setSuggestions([]);
       } finally {
@@ -107,7 +122,7 @@ export function SearchModal() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Search handles (Ctrl+K)"
-        className="flex h-10 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--text)] transition-colors"
+        className="flex h-10 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 text-[var(--muted)] outline-none transition-colors hover:border-[var(--accent)] hover:text-[var(--text)] focus-visible:border-[var(--accent)] focus-visible:text-[var(--text)]"
       >
         <SearchIcon className="h-4 w-4 shrink-0" />
         <span className="hidden text-sm sm:inline">Search…</span>
@@ -127,7 +142,7 @@ export function SearchModal() {
           aria-label="Search"
         >
           <div className="mx-4 w-full max-w-lg overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl">
-            <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3">
+            <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3 focus-within:border-[var(--accent)]">
               <SearchIcon />
               <input
                 ref={inputRef}
