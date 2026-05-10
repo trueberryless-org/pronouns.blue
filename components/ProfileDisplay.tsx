@@ -156,7 +156,9 @@ export function ProfileDisplay(props: ProfileDisplayProps) {
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 min-h-screen px-4 pt-12 pb-16 sm:pt-16">
       <section className="w-full py-4">
-        {props.profileDid && <ProfileEditButton profileDid={props.profileDid} />}
+        {props.profileDid && (
+          <ProfileEditButton profileDid={props.profileDid} />
+        )}
         <div className="mb-8 flex flex-col items-center text-center">
           <Avatar src={props.avatar} label={props.title} />
           <h1 className="mt-4 text-3xl font-bold text-[var(--text)]">

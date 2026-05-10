@@ -1,7 +1,6 @@
 import { PrivacyUserSection } from "@/components/PrivacyUserSection";
 
 export default function PrivacyPage() {
-
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-12 sm:px-6">
       <h1 className="mb-2 text-3xl font-bold text-[var(--text)]">
@@ -86,11 +85,11 @@ export default function PrivacyPage() {
             Cookies
           </h2>
           <p className="mb-3 text-[var(--muted)]">
-          We set the following cookies. The session cookies are{" "}
-          <code className="text-xs">httpOnly</code> and never accessible to
-          JavaScript. The <code className="text-xs">did-public</code> cookie is
-          intentionally readable by JavaScript — your DID is a public identifier
-          on ATProto and does not reveal any sensitive information.
+            We set the following cookies. The session cookies are{" "}
+            <code className="text-xs">httpOnly</code> and never accessible to
+            JavaScript. The <code className="text-xs">did-public</code> cookie
+            is intentionally readable by JavaScript — your DID is a public
+            identifier on ATProto and does not reveal any sensitive information.
           </p>
           <ul className="space-y-2 text-[var(--muted)]">
             <li>
