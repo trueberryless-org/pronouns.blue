@@ -7,7 +7,7 @@ interface FollowsSectionProps {
 }
 
 export async function FollowsSection({ did, title }: FollowsSectionProps) {
-  const { follows, cursor } = await getActorFollows(did, 50);
+  const { follows, cursor } = await getActorFollows(did, 48);
   if (follows.length === 0) return null;
 
   return (

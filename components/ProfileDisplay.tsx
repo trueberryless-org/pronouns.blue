@@ -1,6 +1,6 @@
 import { HeartIcon } from "@/components/HeartIcon";
-import { Link } from "next-view-transitions";
 import type { LanguageGroup } from "@/lib/atproto/records";
+import { ProfileEditButton } from "@/components/ProfileEditButton";
 
 const LANG_NAMES = new Intl.DisplayNames(["en"], { type: "language" });
 
@@ -19,25 +19,8 @@ interface ProfileDisplayProps {
   groups: LanguageGroup[];
   /** Pronouns string from the Bluesky profile record — shown only when no blue.pronouns records exist. */
   bskyFallbackPronouns?: string | null;
-  editHref?: string;
-}
-
-function EditIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-    </svg>
-  );
+  /** DID of the profile owner. When provided, a client-side edit button is shown to the profile owner. */
+  profileDid?: string;
 }
 
 function BlueskyIcon({ className }: { className?: string }) {
@@ -173,18 +156,7 @@ export function ProfileDisplay(props: ProfileDisplayProps) {
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 min-h-screen px-4 pt-12 pb-16 sm:pt-16">
       <section className="w-full py-4">
-        {props.editHref && (
-          <div className="mb-4 flex justify-end">
-            <Link
-              href={props.editHref}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
-              aria-label="Edit your names and pronouns"
-              title="Edit profile"
-            >
-              <EditIcon />
-            </Link>
-          </div>
-        )}
+        {props.profileDid && <ProfileEditButton profileDid={props.profileDid} />}
         <div className="mb-8 flex flex-col items-center text-center">
           <Avatar src={props.avatar} label={props.title} />
           <h1 className="mt-4 text-3xl font-bold text-[var(--text)]">

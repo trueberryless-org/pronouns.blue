@@ -38,15 +38,22 @@ export async function GET(request: NextRequest) {
 
     const data = (await response.json()) as GetFollowsResponse;
 
-    return NextResponse.json({
-      follows: data.follows.map((p) => ({
-        did: p.did,
-        handle: p.handle,
-        displayName: p.displayName ?? null,
-        avatar: p.avatar ?? null,
-      })),
-      cursor: data.cursor ?? null,
-    });
+    return NextResponse.json(
+      {
+        follows: data.follows.map((p) => ({
+          did: p.did,
+          handle: p.handle,
+          displayName: p.displayName ?? null,
+          avatar: p.avatar ?? null,
+        })),
+        cursor: data.cursor ?? null,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+        },
+      },
+    );
   } catch {
     return NextResponse.json({ follows: [], cursor: null });
   }

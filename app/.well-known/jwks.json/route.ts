@@ -9,7 +9,12 @@ export async function GET() {
   }
 
   const key = await JoseKey.fromJWK(JSON.parse(PRIVATE_KEY));
-  return NextResponse.json({
-    keys: [key.publicJwk],
-  });
+  return NextResponse.json(
+    { keys: [key.publicJwk] },
+    {
+      headers: {
+        "Cache-Control": "public, max-age=3600, s-maxage=3600",
+      },
+    },
+  );
 }

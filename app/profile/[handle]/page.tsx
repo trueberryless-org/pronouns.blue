@@ -3,10 +3,13 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getActorProfile } from "@/lib/atproto/profiles";
 import { getProfileRecordsFromPds } from "@/lib/atproto/records";
-import { getDid } from "@/lib/auth/session";
 import { ProfileDisplay } from "@/components/ProfileDisplay";
 import { FollowsSection, FollowsSkeleton } from "@/components/FollowsSection";
 import { FloatingProfileBack } from "@/components/FloatingProfileBack";
+
+// ISR: re-render the page at most every 60 s. Profile content does not depend
+// on who is viewing it — the edit button is handled client-side by ProfileEditButton.
+export const revalidate = 60;
 
 export async function generateMetadata({
   params,
@@ -38,10 +41,7 @@ export default async function HandleProfilePage({
   const actor = await getActorProfile(handle);
   if (!actor) notFound();
 
-  const [did, profile] = await Promise.all([
-    getDid(),
-    getProfileRecordsFromPds(actor.did),
-  ]);
+  const profile = await getProfileRecordsFromPds(actor.did);
   const title = actor.displayName ?? actor.handle;
 
   return (
@@ -52,11 +52,7 @@ export default async function HandleProfilePage({
         avatar={actor.avatar}
         groups={profile.groups}
         bskyFallbackPronouns={actor.pronouns}
-        editHref={
-          did?.toLowerCase() === actor.did.toLowerCase()
-            ? "/settings"
-            : undefined
-        }
+        profileDid={actor.did}
       />
       <Suspense fallback={<FollowsSkeleton />}>
         <FollowsSection did={actor.did} title={title} />

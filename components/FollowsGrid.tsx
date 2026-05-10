@@ -65,6 +65,12 @@ function CardSkeleton() {
   );
 }
 
+// 12 skeletons = LCM(2,3,4) × 1 → clean row boundaries on every grid breakpoint:
+// grid-cols-2: 6 rows, sm:grid-cols-3: 4 rows, md:grid-cols-4: 3 rows.
+const SKELETON_COUNT = 12;
+// 48 = LCM(2,3,4) × 4 → same clean-row guarantee for each fetched page.
+const PAGE_LIMIT = 48;
+
 export function FollowsGrid({
   initialFollows,
   initialCursor,
@@ -73,10 +79,16 @@ export function FollowsGrid({
   const [follows, setFollows] = useState<ActorProfile[]>(initialFollows);
   const [hasMore, setHasMore] = useState(Boolean(initialCursor));
   const [loading, setLoading] = useState(false);
-  // Use refs for values read inside the async observer callback to avoid
-  // stale closures without re-creating the observer on every state change.
+  // Refs for values read inside the async observer callback — avoids stale
+  // closures without re-creating the observer on every state change.
   const cursorRef = useRef<string | undefined>(initialCursor);
   const loadingRef = useRef(false);
+  // Timestamp (ms) before which retries are suppressed. Set after each failed
+  // fetch to break the sentinel-oscillation loop: when a fetch fails the
+  // skeletons are removed, the sentinel moves back up into the IntersectionObserver
+  // trigger zone, and the observer would immediately fire again — causing an
+  // infinite loop. The cooldown prevents that re-trigger.
+  const retryAfterRef = useRef(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -92,6 +104,10 @@ export function FollowsGrid({
         )
           return;
 
+        // Cooldown after a failed fetch — prevents the sentinel from
+        // bouncing back into the trigger zone and immediately re-fetching.
+        if (Date.now() < retryAfterRef.current) return;
+
         loadingRef.current = true;
         setLoading(true);
 
@@ -99,10 +115,13 @@ export function FollowsGrid({
           const params = new URLSearchParams({
             actor: did,
             cursor: cursorRef.current,
-            limit: "50",
+            limit: String(PAGE_LIMIT),
           });
           const res = await fetch(`/api/follows?${params}`);
-          if (!res.ok) return;
+          if (!res.ok) {
+            retryAfterRef.current = Date.now() + 3000;
+            return;
+          }
           const data = (await res.json()) as {
             follows: ActorProfile[];
             cursor?: string;
@@ -111,14 +130,14 @@ export function FollowsGrid({
           cursorRef.current = data.cursor;
           setHasMore(Boolean(data.cursor));
         } catch {
-          // silently fail — user can scroll back and trigger another attempt
+          retryAfterRef.current = Date.now() + 3000;
         } finally {
           loadingRef.current = false;
           setLoading(false);
         }
       },
-      // Start fetching before the sentinel actually enters the viewport so
-      // cards appear before the user hits the very bottom.
+      // Start fetching before the sentinel enters the viewport so cards appear
+      // before the user scrolls all the way to the bottom.
       { rootMargin: "400px" },
     );
 
@@ -128,6 +147,8 @@ export function FollowsGrid({
 
   return (
     <div>
+      {/* Single unified grid — skeletons are inline with follow cards so there
+          is no visual gap between loaded and loading items. */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
         {follows.map((actor) => (
           <FollowCard
@@ -138,10 +159,14 @@ export function FollowsGrid({
           />
         ))}
         {loading &&
-          Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)}
+          Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+            <CardSkeleton key={i} />
+          ))}
       </div>
 
-      {/* Sentinel — observed by IntersectionObserver to trigger the next page */}
+      {/* Sentinel positioned after the grid (including any inline skeletons).
+          Adding skeletons pushes the sentinel down; retryAfterRef prevents an
+          immediate re-fetch if removing them on failure pulls it back up. */}
       {hasMore && <div ref={sentinelRef} className="mt-8 h-px" />}
 
       {!hasMore && follows.length > 0 && (
@@ -152,3 +177,4 @@ export function FollowsGrid({
     </div>
   );
 }
+

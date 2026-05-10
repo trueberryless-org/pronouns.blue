@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
       ),
     );
 
-    revalidateTag(getProfileRecordsTag(session.did), "max");
+    revalidateTag(getProfileRecordsTag(session.did));
 
     return NextResponse.json({
       success: true,
