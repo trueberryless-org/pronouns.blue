@@ -7,9 +7,11 @@ import { ProfileDisplay } from "@/components/ProfileDisplay";
 import { FollowsSection, FollowsSkeleton } from "@/components/FollowsSection";
 import { FloatingProfileBack } from "@/components/FloatingProfileBack";
 
-// ISR: re-render the page at most every 60 s. Profile content does not depend
-// on who is viewing it — the edit button is handled client-side by ProfileEditButton.
-export const revalidate = 60;
+// ISR: re-render the page at most every 5 minutes. Profile content does not
+// depend on who is viewing it — the edit button is handled client-side by
+// ProfileEditButton. Tag-based revalidation via /api/status handles
+// immediate refreshes when the user saves their profile.
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,

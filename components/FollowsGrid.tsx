@@ -112,21 +112,39 @@ export function FollowsGrid({
         setLoading(true);
 
         try {
+          // Call the public Bluesky appview directly — it supports CORS and
+          // this avoids a serverless function invocation per scroll page.
+          const APPVIEW = "https://public.api.bsky.app";
           const params = new URLSearchParams({
             actor: did,
             cursor: cursorRef.current,
             limit: String(PAGE_LIMIT),
           });
-          const res = await fetch(`/api/follows?${params}`);
+          const res = await fetch(
+            `${APPVIEW}/xrpc/app.bsky.graph.getFollows?${params}`,
+          );
           if (!res.ok) {
             retryAfterRef.current = Date.now() + 3000;
             return;
           }
           const data = (await res.json()) as {
-            follows: ActorProfile[];
+            follows: {
+              did: string;
+              handle: string;
+              displayName?: string;
+              avatar?: string;
+            }[];
             cursor?: string;
           };
-          setFollows((prev) => [...prev, ...data.follows]);
+          setFollows((prev) => [
+            ...prev,
+            ...data.follows.map((f) => ({
+              did: f.did,
+              handle: f.handle,
+              displayName: f.displayName ?? null,
+              avatar: f.avatar ?? null,
+            })),
+          ]);
           cursorRef.current = data.cursor;
           setHasMore(Boolean(data.cursor));
         } catch {

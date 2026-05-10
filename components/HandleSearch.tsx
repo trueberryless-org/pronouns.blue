@@ -47,16 +47,33 @@ export function HandleSearch() {
     }
 
     const controller = new AbortController();
+    // Call the public Bluesky appview directly — it supports CORS and this
+    // avoids a serverless function invocation on every keystroke.
+    const APPVIEW = "https://public.api.bsky.app";
     const timeout = setTimeout(async () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `/api/search?q=${encodeURIComponent(normalizedQuery)}`,
+          `${APPVIEW}/xrpc/app.bsky.actor.searchActors?q=${encodeURIComponent(normalizedQuery)}&limit=8`,
           { signal: controller.signal },
         );
         if (!response.ok) return;
-        const data = (await response.json()) as { results?: Suggestion[] };
-        setSuggestions(data.results ?? []);
+        const data = (await response.json()) as {
+          actors?: {
+            did: string;
+            handle: string;
+            displayName?: string;
+            avatar?: string;
+          }[];
+        };
+        setSuggestions(
+          (data.actors ?? []).map((a) => ({
+            did: a.did,
+            handle: a.handle,
+            displayName: a.displayName ?? null,
+            avatar: a.avatar ?? null,
+          })),
+        );
       } catch {
         setSuggestions([]);
       } finally {
