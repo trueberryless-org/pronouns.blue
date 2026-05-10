@@ -17,6 +17,7 @@ export function NavLogo() {
         height={396}
         className="h-14 w-auto"
         style={{ viewTransitionName: "site-logo" }}
+        loading="eager"
       />
     </Link>
   );

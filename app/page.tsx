@@ -19,6 +19,7 @@ export default function Home() {
             className="h-auto w-auto max-h-60 max-w-full"
             style={{ viewTransitionName: "site-logo" }}
             priority
+            loading="eager"
           />
         </div>
 
