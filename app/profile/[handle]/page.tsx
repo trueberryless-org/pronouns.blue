@@ -25,4 +25,3 @@ export default async function HandleProfilePage({
   const handle = decodeURIComponent((await params).handle).replace(/^@/, "");
   return <ProfilePageClient handle={handle} />;
 }
-
