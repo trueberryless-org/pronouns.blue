@@ -64,6 +64,23 @@ export default function CreditsPage() {
       </section>
 
       <section className="mb-10 space-y-6 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
+        <h2 className="text-xl font-semibold text-[var(--text)]">Deployment</h2>
+        <p className="text-[var(--muted)]">
+          This site is proudly hosted and deployed by{" "}
+          <a
+            href="https://www.netlify.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent)] underline underline-offset-4"
+          >
+            Netlify
+          </a>
+          , providing the fast and reliable infrastructure that keeps this
+          project accessible to everyone.
+        </p>
+      </section>
+
+      <section className="mb-10 space-y-6 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
         <h2 className="text-xl font-semibold text-[var(--text)]">
           Inspiration
         </h2>
