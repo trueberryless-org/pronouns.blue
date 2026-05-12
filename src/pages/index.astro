@@ -1,36 +1,90 @@
 ---
 export const prerender = true;
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { HandleSearch } from "@/components/HandleSearch";
-import { HomeUserSection } from "@/components/HomeUserSection";
+import HomeUserSection from "@/components/HomeUserSection.astro";
 ---
 
 <BaseLayout>
   <main class="flex flex-1 flex-col">
-  <div class="mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6">
-    <div class="space-y-8">
-      <div class="flex justify-center pb-2">
-        <img
-          src="/pronouns.blue.png"
-          alt="pronouns.blue"
-          width="966"
-          height="396"
-          class="h-auto w-auto max-h-60 max-w-full"
-          style="view-transition-name: site-logo;"
-          fetchpriority="high"
-        />
+    <div class="mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6">
+      <div class="space-y-8">
+        <div class="flex justify-center pb-2">
+          <img
+            src="/pronouns.blue.png"
+            alt="pronouns.blue"
+            width="966"
+            height="396"
+            class="h-auto w-auto max-h-60 max-w-full"
+            style="view-transition-name: site-logo;"
+            fetchpriority="high"
+          />
+        </div>
+        <HomeUserSection />
+        <section class="space-y-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center">
+          <p class="text-lg text-[var(--muted)]">Find any user by handle and view their names and pronouns.</p>
+          <div class="relative mx-auto w-full max-w-2xl" id="home-search-container">
+            <input
+              id="home-search-input"
+              type="text"
+              placeholder="Search handle (for example: trueberryless.org)"
+              class="min-h-14 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-5 py-3 text-lg text-[var(--text)] shadow-sm outline-none focus:border-[var(--accent)]"
+            />
+            <div id="home-search-results" class="hidden absolute left-0 right-0 top-16 z-20 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-lg">
+            </div>
+          </div>
+        </section>
       </div>
-
-      <!-- Personalised welcome / profile cards — rendered client-side -->
-      <HomeUserSection client:load />
-
-      <section class="space-y-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center">
-        <p class="text-lg text-[var(--muted)]">
-          Find any user by handle and view their names and pronouns.
-        </p>
-        <HandleSearch client:load />
-      </section>
     </div>
-  </div>
   </main>
 </BaseLayout>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+  const input = document.getElementById("home-search-input") as HTMLInputElement;
+  const resultsEl = document.getElementById("home-search-results")!;
+  const container = document.getElementById("home-search-container")!;
+
+  interface Suggestion { did: string; handle: string; displayName: string | null; avatar: string | null; }
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let ctrl: AbortController | null = null;
+
+  function renderResults(items: Suggestion[]) {
+    if (items.length === 0) { resultsEl.classList.add("hidden"); return; }
+    resultsEl.classList.remove("hidden");
+    resultsEl.innerHTML = `<ul>${items.map(s => `
+      <li><button type="button" data-handle="${s.handle}"
+        class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-[var(--surface-strong)]">
+        ${s.avatar ? `<img src="${s.avatar}" alt="" loading="lazy" width="36" height="36" class="size-9 shrink-0 rounded-full object-cover">` : `<span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-strong)] text-sm font-semibold text-[var(--text)]">${(s.displayName ?? s.handle).charAt(0).toUpperCase()}</span>`}
+        <span class="flex min-w-0 flex-col">
+          <span class="truncate text-sm font-medium text-[var(--text)]">${s.displayName ?? s.handle}</span>
+          <span class="truncate text-xs text-[var(--muted)]">@${s.handle}</span>
+        </span>
+      </button></li>`).join("")}</ul>`;
+    resultsEl.querySelectorAll<HTMLButtonElement>("button[data-handle]").forEach(btn => {
+      btn.addEventListener("click", () => { void navigate(`/profile/${encodeURIComponent(btn.dataset.handle!)}`); });
+    });
+  }
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().replace(/^@/, "");
+    if (timer) clearTimeout(timer);
+    if (ctrl) ctrl.abort();
+    if (!q) { resultsEl.classList.add("hidden"); return; }
+    ctrl = new AbortController();
+    const c = ctrl;
+    timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: c.signal });
+        const data = await res.json() as { results?: Suggestion[] };
+        renderResults(data.results ?? []);
+      } catch {}
+    }, 120);
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && input.value.trim()) void navigate(`/profile/${encodeURIComponent(input.value.trim().replace(/^@/, ""))}`);
+    if (e.key === "Escape") resultsEl.classList.add("hidden");
+  });
+  document.addEventListener("mousedown", (e) => {
+    if (!container.contains(e.target as Node)) resultsEl.classList.add("hidden");
+  });
+</script>

@@ -1,0 +1,52 @@
+---
+interface Props {
+  title: string;
+  avatar: string | null;
+}
+const { title, avatar } = Astro.props;
+---
+
+<div id="floating-back"
+  class="pointer-events-none fixed bottom-6 right-6 z-30 flex translate-y-6 overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface)] opacity-0 shadow-lg shadow-black/10 transition-all duration-300">
+  <button type="button" id="scroll-top-btn" title="Back to profile"
+    aria-label={`Scroll back to ${title}'s profile`}
+    class="flex items-center gap-2 py-2 pl-2 pr-3 transition-colors hover:bg-[var(--surface-strong)]">
+    {avatar ? (
+      <span class="h-8 w-8 flex-shrink-0 rounded-full border border-[var(--border)] bg-cover bg-center"
+        style={`background-image: url(${avatar})`} role="img" aria-label={title} />
+    ) : (
+      <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--tag-bg)] text-sm font-semibold text-[var(--text)]">
+        {title.slice(0, 1).toUpperCase()}
+      </span>
+    )}
+    <span class="max-w-28 truncate text-sm font-medium text-[var(--text)]">{title}</span>
+    <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 text-[var(--muted)]" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m18 15-6-6-6 6"/>
+    </svg>
+  </button>
+  <div class="my-2 w-px bg-[var(--border)]"></div>
+  <button type="button" id="go-back-btn" title="Go back" aria-label="Go back to previous page"
+    class="flex items-center px-3 text-[var(--muted)] transition-colors hover:bg-[var(--surface-strong)] hover:text-[var(--text)]">
+    <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+  const el = document.getElementById("floating-back")!;
+  function onScroll() {
+    const visible = window.scrollY > window.innerHeight * 0.65;
+    if (visible) {
+      el.classList.remove("opacity-0", "translate-y-6", "pointer-events-none");
+      el.classList.add("opacity-100", "translate-y-0");
+    } else {
+      el.classList.add("opacity-0", "translate-y-6", "pointer-events-none");
+      el.classList.remove("opacity-100", "translate-y-0");
+    }
+  }
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  document.getElementById("scroll-top-btn")?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+  document.getElementById("go-back-btn")?.addEventListener("click", () => window.history.back());
+</script>

@@ -1,0 +1,89 @@
+---
+import { getFollows } from "@/lib/atproto/follows";
+
+interface Props {
+  did: string;
+  title: string;
+}
+
+const { did, title } = Astro.props;
+const { follows: initialFollows, cursor: initialCursor } = await getFollows(did, 48);
+---
+
+{initialFollows.length > 0 && (
+  <section class="mx-auto w-full max-w-3xl px-4 pb-16 sm:px-6" id="follows-section">
+    <div class="border-t border-[var(--border)] pt-10">
+      <h2 class="mb-1 text-lg font-semibold text-[var(--text)]">More to explore</h2>
+      <p class="mb-6 text-sm text-[var(--muted)]">People {title} follows on Bluesky</p>
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4" id="follows-grid">
+        {initialFollows.map(actor => (
+          <a href={`/profile/${encodeURIComponent(actor.handle)}`}
+            class="group flex flex-col items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-center transition-colors hover:border-[var(--accent)]">
+            {actor.avatar ? (
+              <div class="h-12 w-12 flex-shrink-0 rounded-full border border-[var(--border)] bg-cover bg-center"
+                style={`background-image: url(${actor.avatar})`} role="img" aria-label={actor.displayName ?? actor.handle} />
+            ) : (
+              <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--tag-bg)] text-lg font-semibold text-[var(--text)]">
+                {(actor.displayName ?? actor.handle).slice(0, 1).toUpperCase()}
+              </div>
+            )}
+            <div class="min-w-0 w-full">
+              <p class="truncate text-sm font-medium text-[var(--text)] transition-colors group-hover:text-[var(--accent)]">
+                {actor.displayName ?? actor.handle}
+              </p>
+              <p class="truncate text-xs text-[var(--muted)]">@{actor.handle}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+      <div id="follows-sentinel" class="mt-8 h-px"></div>
+      <p id="follows-all-done" class="hidden mt-8 text-center text-xs text-[var(--muted)]">All caught up &#10003;</p>
+    </div>
+  </section>
+)}
+
+<script define:vars={{ did, initialCursor }}>
+  const grid = document.getElementById("follows-grid");
+  const sentinel = document.getElementById("follows-sentinel");
+  const allDone = document.getElementById("follows-all-done");
+  if (!grid || !sentinel) { /* no follows */ }
+  else {
+    let cursor = initialCursor;
+    let loading = false;
+    let retryAfter = 0;
+
+    function makeCard(actor) {
+      const a = document.createElement("a");
+      a.href = `/profile/${encodeURIComponent(actor.handle)}`;
+      a.className = "group flex flex-col items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-center transition-colors hover:border-[var(--accent)]";
+      const label = actor.displayName ?? actor.handle;
+      a.innerHTML = actor.avatar
+        ? `<div class="h-12 w-12 flex-shrink-0 rounded-full border border-[var(--border)] bg-cover bg-center" style="background-image:url(${actor.avatar})" role="img" aria-label="${label}"></div>`
+        : `<div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--tag-bg)] text-lg font-semibold text-[var(--text)]">${label.slice(0,1).toUpperCase()}</div>`;
+      a.innerHTML += `<div class="min-w-0 w-full">
+        <p class="truncate text-sm font-medium text-[var(--text)] transition-colors group-hover:text-[var(--accent)]">${label}</p>
+        <p class="truncate text-xs text-[var(--muted)]">@${actor.handle}</p>
+      </div>`;
+      return a;
+    }
+
+    async function loadMore() {
+      if (loading || !cursor || Date.now() < retryAfter) return;
+      loading = true;
+      try {
+        const params = new URLSearchParams({ actor: did, cursor, limit: "48" });
+        const res = await fetch(`/api/follows?${params}`);
+        if (!res.ok) { retryAfter = Date.now() + 3000; return; }
+        const data = await res.json();
+        data.follows.forEach(actor => grid.insertBefore(makeCard(actor), sentinel));
+        cursor = data.cursor ?? null;
+        if (!cursor && allDone) { sentinel.remove(); allDone.classList.remove("hidden"); }
+      } catch { retryAfter = Date.now() + 3000; }
+      finally { loading = false; }
+    }
+
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) loadMore(); }, { rootMargin: "400px" });
+    if (cursor) observer.observe(sentinel);
+    else if (allDone) { sentinel.remove(); allDone.classList.remove("hidden"); }
+  }
+</script>

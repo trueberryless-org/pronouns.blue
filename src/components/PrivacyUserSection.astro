@@ -1,0 +1,25 @@
+---
+---
+<div id="privacy-user-section"></div>
+<script>
+  function init() {
+    const m = document.cookie.match(/(?:^|;\s*)did-public=([^;]+)/);
+    const did = m ? decodeURIComponent(m[1]) : null;
+    if (!did) return;
+    const el = document.getElementById("privacy-user-section");
+    if (!el) return;
+    const pronounHref = `https://pdsls.dev/at://${did}/blue.pronouns.pronoun`;
+    const nameHref = `https://pdsls.dev/at://${did}/blue.pronouns.name`;
+    el.innerHTML = `
+      <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
+        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">View your records in PDSLS</h2>
+        <p class="text-[var(--muted)]">Since you are signed in, you can inspect your published lexicon records directly in <a href="https://pdsls.dev" target="_blank" rel="noopener noreferrer" class="text-[var(--accent)] underline underline-offset-4">PDSLS</a>.</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <a href="${pronounHref}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-1.5 text-sm font-medium text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]">blue.pronouns.pronoun</a>
+          <a href="${nameHref}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-1.5 text-sm font-medium text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]">blue.pronouns.name</a>
+        </div>
+      </section>`;
+  }
+  init();
+  document.addEventListener("astro:page-load", init);
+</script>

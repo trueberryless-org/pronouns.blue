@@ -1,8 +1,8 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { ProfileDisplay } from "@/components/ProfileDisplay";
-import { FollowsSection, FollowsSkeleton } from "@/components/FollowsSection";
-import { FloatingProfileBack } from "@/components/FloatingProfileBack";
+import ProfileDisplay from "@/components/ProfileDisplay.astro";
+import FollowsSection from "@/components/FollowsSection.astro";
+import FloatingProfileBack from "@/components/FloatingProfileBack.astro";
 import { getActorProfile } from "@/lib/atproto/profiles";
 import { getProfileRecordsFromPds } from "@/lib/atproto/records";
 
@@ -18,13 +18,8 @@ const description = `View ${title}'s preferred names and pronouns on pronouns.bl
 const ogImageUrl = new URL(`/profile/${encodeURIComponent(handle)}/og.png`, Astro.url).toString();
 ---
 
-<BaseLayout
-  title={`${title} – pronouns.blue`}
-  description={description}
-  ogImage={ogImageUrl}
->
+<BaseLayout title={`${title} – pronouns.blue`} description={description} ogImage={ogImageUrl}>
   <ProfileDisplay
-    client:load
     title={title}
     handle={actor.handle}
     avatar={actor.avatar ?? null}
@@ -32,6 +27,6 @@ const ogImageUrl = new URL(`/profile/${encodeURIComponent(handle)}/og.png`, Astr
     bskyFallbackPronouns={actor.pronouns}
     profileDid={actor.did}
   />
-  <FollowsSection client:load did={actor.did} title={title} />
-  <FloatingProfileBack client:load title={title} avatar={actor.avatar ?? null} />
+  <FollowsSection did={actor.did} title={title} />
+  <FloatingProfileBack title={title} avatar={actor.avatar ?? null} />
 </BaseLayout>

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { ProfileEditor } from "@/components/ProfileEditor";
+import ProfileEditor from "@/components/ProfileEditor.astro";
 import { getDid } from "@/lib/auth/session";
 import { getActorProfile } from "@/lib/atproto/profiles";
 import { getProfileRecordsFromPds } from "@/lib/atproto/records";
@@ -49,7 +49,6 @@ const isFirstTime =
         )}
       </div>
       <ProfileEditor
-        client:load
         initialGroups={profile.groups}
         isFirstTime={isFirstTime}
         profileHref={profileHref ?? undefined}

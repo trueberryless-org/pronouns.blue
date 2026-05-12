@@ -1,0 +1,392 @@
+---
+interface Props {
+  pathname: string;
+}
+const { pathname } = Astro.props;
+const isHome = pathname === "/";
+---
+
+<nav class="mb-8 mt-4 border-b border-[var(--line)] pb-4">
+  <div class="mx-auto flex w-full max-w-6xl min-h-14 items-center gap-3 px-4 sm:px-6">
+
+    {!isHome && (
+      <a href="/" class="flex items-center shrink-0" id="nav-logo">
+        <img
+          src="/pronouns.blue.png"
+          alt="pronouns.blue"
+          width="966"
+          height="396"
+          class="h-14 w-auto"
+          style="view-transition-name: site-logo;"
+        />
+      </a>
+    )}
+
+    <div class="ml-auto flex items-center gap-3">
+      <!-- Search button -->
+      <button type="button" id="search-open-btn" aria-label="Search handles (Ctrl+K)"
+        class="flex h-10 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--text)] transition-colors">
+        <svg viewBox="0 0 24 24" class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span class="hidden text-sm sm:inline">Search&hellip;</span>
+        <kbd class="hidden items-center gap-0.5 rounded border border-[var(--border)] px-1.5 py-0.5 font-mono text-[10px] leading-none lg:inline-flex"><span class="text-xs">⌘</span>K</kbd>
+      </button>
+
+      <!-- Theme toggle — desktop only -->
+      <div class="hidden sm:flex items-center">
+        <label class="text-sm text-[var(--muted)]">
+          <span class="sr-only">Theme</span>
+          <select id="theme-select"
+            class="min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm capitalize text-[var(--text)]">
+            <option value="light">light</option>
+            <option value="dark">dark</option>
+            <option value="black">black</option>
+          </select>
+        </label>
+      </div>
+
+      <!-- Desktop user section -->
+      <div class="hidden sm:flex items-center" id="desktop-user-area">
+        <div class="h-10 w-10 animate-pulse rounded-full bg-[var(--surface-strong)]" id="user-skeleton"></div>
+
+        <!-- Logged-in: avatar button + dropdown -->
+        <div class="relative hidden" id="user-avatar-wrap">
+          <button type="button" id="user-avatar-btn"
+            class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-strong)] text-sm font-semibold text-[var(--text)] hover:border-[var(--accent)]"
+            aria-haspopup="menu" aria-expanded="false" aria-label="Open account menu">
+            <span id="user-avatar-img" class="hidden h-full w-full bg-cover bg-center" role="img"></span>
+            <span id="user-avatar-initial"></span>
+          </button>
+          <div id="user-dropdown" class="hidden absolute right-0 z-20 mt-2 min-w-44 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1 shadow-md" role="menu">
+            <a id="user-profile-link" href="/settings" role="menuitem"
+              class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
+              Profile
+            </a>
+            <a href="/settings" role="menuitem"
+              class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.2a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 0 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.2a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 0 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 .9-1.4V3a2 2 0 1 1 4 0v.2a1.6 1.6 0 0 0 1 1.5h.1a1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.4.9h.2a2 2 0 1 1 0 4h-.2a1.6 1.6 0 0 0-1.5 1Z"/></svg>
+              Settings
+            </a>
+            <button type="button" id="logout-btn-desktop" role="menuitem"
+              class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+              Log out
+            </button>
+          </div>
+        </div>
+
+        <!-- Logged-out: login form -->
+        <div class="hidden flex-col items-end gap-1" id="user-login-area">
+          <div class="flex items-center gap-2">
+            <input id="login-handle-desktop" type="text" placeholder="handle.bsky.social"
+              class="min-h-10 w-48 rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-2 text-sm text-[var(--text)]" />
+            <button type="button" id="login-btn-desktop"
+              class="min-h-10 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">
+              Log in / Sign up
+            </button>
+          </div>
+          <p class="hidden text-xs text-[var(--danger)]" id="login-error-desktop"></p>
+        </div>
+      </div>
+
+      <!-- Mobile burger -->
+      <button type="button" id="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" aria-haspopup="menu"
+        class="flex sm:hidden h-10 w-10 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)]">
+        <svg id="mobile-burger-icon" viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg id="mobile-x-icon" viewBox="0 0 24 24" class="hidden h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu dropdown -->
+  <div id="mobile-menu" class="hidden sm:hidden absolute left-0 right-0 z-20 mt-2 border-b border-[var(--border)] bg-[var(--surface)] shadow-lg px-4 py-3 space-y-3">
+    <div class="border-b border-[var(--border)] pb-3">
+      <p class="mb-1.5 text-xs font-medium text-[var(--muted)]">Theme</p>
+      <label class="text-sm text-[var(--muted)]">
+        <span class="sr-only">Theme</span>
+        <select id="theme-select-mobile"
+          class="min-h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm capitalize text-[var(--text)]">
+          <option value="light">light</option>
+          <option value="dark">dark</option>
+          <option value="black">black</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="mobile-user-area">
+      <!-- JS fills this in -->
+    </div>
+  </div>
+</nav>
+
+<!-- Search modal -->
+<div id="search-modal" class="hidden fixed inset-0 z-50 flex items-start justify-center bg-black/50 pt-[15vh] backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="mx-4 w-full max-w-lg overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl">
+    <div class="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3">
+      <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-[var(--muted)]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search-input" type="text" placeholder="Search handle&hellip;"
+        class="flex-1 bg-transparent text-base text-[var(--text)] placeholder-[var(--muted)] outline-none" />
+      <kbd class="inline-flex h-6 items-center rounded border border-[var(--border)] px-1.5 font-mono text-xs text-[var(--muted)]">esc</kbd>
+    </div>
+    <div id="search-results" class="max-h-72 overflow-auto p-2">
+    </div>
+  </div>
+</div>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  const STORAGE_KEY = "pronounsblue-theme";
+
+  // ── Theme ──────────────────────────────────────────────────────────────────
+  function getTheme(): string {
+    try { return localStorage.getItem(STORAGE_KEY) || "dark"; } catch { return "dark"; }
+  }
+  function applyTheme(theme: string) {
+    document.documentElement.setAttribute("data-theme", theme);
+    try { localStorage.setItem(STORAGE_KEY, theme); } catch {}
+  }
+
+  const themeDesktop = document.getElementById("theme-select") as HTMLSelectElement | null;
+  const themeMobile = document.getElementById("theme-select-mobile") as HTMLSelectElement | null;
+
+  function initTheme() {
+    const t = getTheme();
+    if (themeDesktop) themeDesktop.value = t;
+    if (themeMobile) themeMobile.value = t;
+  }
+  initTheme();
+  themeDesktop?.addEventListener("change", () => applyTheme(themeDesktop.value));
+  themeMobile?.addEventListener("change", () => applyTheme(themeMobile.value));
+
+  // ── Search ─────────────────────────────────────────────────────────────────
+  const searchModal = document.getElementById("search-modal")!;
+  const searchInput = document.getElementById("search-input") as HTMLInputElement;
+  const searchResults = document.getElementById("search-results")!;
+  const searchOpenBtn = document.getElementById("search-open-btn")!;
+
+  interface Suggestion { did: string; handle: string; displayName: string | null; avatar: string | null; }
+
+  let searchTimer: ReturnType<typeof setTimeout> | null = null;
+  let searchController: AbortController | null = null;
+
+  function openSearch() {
+    searchModal.classList.remove("hidden");
+    requestAnimationFrame(() => searchInput.focus());
+  }
+  function closeSearch() {
+    searchModal.classList.add("hidden");
+    searchInput.value = "";
+    searchResults.innerHTML = "";
+  }
+  function navigateToProfile(handle: string) {
+    closeSearch();
+    void navigate(`/profile/${encodeURIComponent(handle)}`);
+  }
+  function renderSearchResults(items: Suggestion[]) {
+    if (items.length === 0) {
+      searchResults.innerHTML = `<p class="px-3 py-2 text-sm text-[var(--muted)]">No results</p>`;
+      return;
+    }
+    searchResults.innerHTML = `<ul>${items.map(s => `
+      <li>
+        <button type="button" data-handle="${s.handle}" class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-[var(--surface-strong)]">
+          ${s.avatar
+            ? `<img src="${s.avatar}" alt="" loading="lazy" width="36" height="36" class="size-9 shrink-0 rounded-full object-cover">`
+            : `<span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-strong)] text-sm font-semibold text-[var(--text)]">${(s.displayName ?? s.handle).charAt(0).toUpperCase()}</span>`}
+          <span class="flex min-w-0 flex-col">
+            <span class="truncate text-sm font-medium text-[var(--text)]">${s.displayName ?? s.handle}</span>
+            <span class="truncate text-xs text-[var(--muted)]">@${s.handle}</span>
+          </span>
+        </button>
+      </li>`).join("")}</ul>`;
+    searchResults.querySelectorAll<HTMLButtonElement>("button[data-handle]").forEach(btn => {
+      btn.addEventListener("click", () => navigateToProfile(btn.dataset.handle!));
+    });
+  }
+
+  searchOpenBtn.addEventListener("click", openSearch);
+  searchModal.addEventListener("click", (e) => { if (e.target === searchModal) closeSearch(); });
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSearch();
+    if (e.key === "Enter" && searchInput.value.trim()) navigateToProfile(searchInput.value.trim().replace(/^@/, ""));
+  });
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().replace(/^@/, "");
+    if (searchTimer) clearTimeout(searchTimer);
+    if (searchController) searchController.abort();
+    if (!q) { searchResults.innerHTML = ""; return; }
+    searchResults.innerHTML = `<p class="px-3 py-2 text-sm text-[var(--muted)]">Searching&hellip;</p>`;
+    searchController = new AbortController();
+    const ctrl = searchController;
+    searchTimer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });
+        if (!res.ok) return;
+        const data = await res.json() as { results?: Suggestion[] };
+        renderSearchResults(data.results ?? []);
+      } catch { /* aborted or error */ }
+    }, 120);
+  });
+  document.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); openSearch(); }
+  });
+
+  // ── User section ───────────────────────────────────────────────────────────
+  function readDidPublic(): string | null {
+    const m = document.cookie.match(/(?:^|;\s*)did-public=([^;]+)/);
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+
+  interface UserInfo { did: string; handle: string | null; displayName: string | null; avatar: string | null; }
+
+  function renderUserLoggedIn(user: UserInfo) {
+    const label = user.displayName ?? user.handle ?? user.did ?? "U";
+    const normalizedHandle = user.handle?.replace(/^@/, "");
+    const profileHref = normalizedHandle ? `/profile/${encodeURIComponent(normalizedHandle)}` : "/settings";
+
+    // Desktop
+    const skeleton = document.getElementById("user-skeleton");
+    skeleton?.classList.add("hidden");
+    const avatarWrap = document.getElementById("user-avatar-wrap");
+    avatarWrap?.classList.remove("hidden");
+
+    const avatarBtn = document.getElementById("user-avatar-btn")!;
+    const avatarImg = document.getElementById("user-avatar-img") as HTMLElement;
+    const avatarInitial = document.getElementById("user-avatar-initial")!;
+    if (user.avatar) {
+      avatarImg.style.backgroundImage = `url(${user.avatar})`;
+      avatarImg.setAttribute("aria-label", label);
+      avatarImg.classList.remove("hidden");
+      avatarInitial.classList.add("hidden");
+    } else {
+      avatarInitial.textContent = label.slice(0, 1).toUpperCase();
+    }
+    const profileLink = document.getElementById("user-profile-link") as HTMLAnchorElement;
+    if (profileLink) profileLink.href = profileHref;
+
+    // Dropdown toggle
+    const dropdown = document.getElementById("user-dropdown")!;
+    avatarBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = dropdown.classList.toggle("hidden");
+      avatarBtn.setAttribute("aria-expanded", String(!open));
+    });
+    document.addEventListener("mousedown", (e) => {
+      if (!avatarWrap?.contains(e.target as Node)) {
+        dropdown.classList.add("hidden");
+        avatarBtn.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    // Mobile
+    const mobileArea = document.getElementById("mobile-user-area")!;
+    mobileArea.innerHTML = `
+      ${user.avatar ? `<div class="flex items-center gap-2 px-1 py-1 mb-1">
+        <span class="h-7 w-7 flex-shrink-0 rounded-full border border-[var(--border)] bg-cover bg-center" style="background-image:url(${user.avatar})" role="img" aria-label="${label}"></span>
+        <span class="truncate text-sm font-medium text-[var(--text)]">${label}</span>
+      </div>` : ""}
+      <a href="${profileHref}" class="flex items-center rounded-md px-2 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Profile</a>
+      <a href="/settings" class="flex items-center rounded-md px-2 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Settings</a>
+      <button type="button" id="logout-btn-mobile" class="flex w-full items-center rounded-md px-2 py-2 text-left text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Log out</button>`;
+    document.getElementById("logout-btn-mobile")?.addEventListener("click", handleLogout);
+  }
+
+  function renderUserLoggedOut() {
+    document.getElementById("user-skeleton")?.classList.add("hidden");
+    document.getElementById("user-login-area")?.classList.remove("hidden");
+    document.getElementById("user-login-area")?.classList.add("flex");
+
+    const mobileArea = document.getElementById("mobile-user-area")!;
+    mobileArea.innerHTML = `
+      <div class="flex flex-col gap-2">
+        <input id="login-handle-mobile" type="text" placeholder="handle.bsky.social"
+          class="min-h-10 rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-2 text-sm text-[var(--text)]" />
+        <button type="button" id="login-btn-mobile"
+          class="min-h-10 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">
+          Log in / Sign up
+        </button>
+        <p class="hidden text-xs text-[var(--danger)]" id="login-error-mobile"></p>
+      </div>`;
+    setupLoginButton("login-btn-mobile", "login-handle-mobile", "login-error-mobile");
+  }
+
+  function setupLoginButton(btnId: string, inputId: string, errorId: string) {
+    const btn = document.getElementById(btnId) as HTMLButtonElement | null;
+    const input = document.getElementById(inputId) as HTMLInputElement | null;
+    const errorEl = document.getElementById(errorId);
+    if (!btn || !input) return;
+    async function doLogin() {
+      const handle = input!.value.trim();
+      if (!handle) return;
+      btn!.disabled = true;
+      btn!.textContent = "...";
+      if (errorEl) errorEl.classList.add("hidden");
+      try {
+        const res = await fetch("/oauth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ handle }),
+        });
+        const data = await res.json() as { redirectUrl?: string; error?: string };
+        if (!res.ok || !data.redirectUrl) throw new Error(data.error ?? "Login failed");
+        window.location.href = data.redirectUrl;
+      } catch (err) {
+        if (errorEl) { errorEl.textContent = err instanceof Error ? err.message : "Login failed"; errorEl.classList.remove("hidden"); }
+        btn!.disabled = false;
+        btn!.textContent = "Log in / Sign up";
+      }
+    }
+    btn.addEventListener("click", doLogin);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
+  }
+
+  async function handleLogout() {
+    await fetch("/oauth/logout", { method: "POST" });
+    window.location.href = "/";
+  }
+
+  async function initUserSection() {
+    const did = readDidPublic();
+    if (!did) { renderUserLoggedOut(); return; }
+    try {
+      const res = await fetch("/api/me");
+      const { user } = await res.json() as { user: UserInfo | null };
+      if (user) { renderUserLoggedIn(user); }
+      else { renderUserLoggedOut(); }
+    } catch { renderUserLoggedOut(); }
+  }
+
+  // Desktop login button
+  setupLoginButton("login-btn-desktop", "login-handle-desktop", "login-error-desktop");
+  document.getElementById("logout-btn-desktop")?.addEventListener("click", handleLogout);
+
+  // Mobile menu toggle
+  const mobileMenuBtn = document.getElementById("mobile-menu-btn")!;
+  const mobileMenu = document.getElementById("mobile-menu")!;
+  const burgerIcon = document.getElementById("mobile-burger-icon")!;
+  const xIcon = document.getElementById("mobile-x-icon")!;
+  mobileMenuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const open = mobileMenu.classList.toggle("hidden");
+    burgerIcon.classList.toggle("hidden", !open);
+    xIcon.classList.toggle("hidden", open);
+    mobileMenuBtn.setAttribute("aria-expanded", String(!open));
+  });
+  document.addEventListener("mousedown", (e) => {
+    if (!mobileMenuBtn.contains(e.target as Node) && !mobileMenu.contains(e.target as Node)) {
+      mobileMenu.classList.add("hidden");
+      burgerIcon.classList.remove("hidden");
+      xIcon.classList.add("hidden");
+      mobileMenuBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  initUserSection();
+
+  // Re-run on Astro page transitions
+  document.addEventListener("astro:page-load", () => {
+    initTheme();
+    initUserSection();
+  });
+</script>

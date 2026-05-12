@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { PrivacyUserSection } from "@/components/PrivacyUserSection";
+import PrivacyUserSection from "@/components/PrivacyUserSection.astro";
 ---
 
 <BaseLayout title="Privacy Policy – pronouns.blue" description="Privacy policy for pronouns.blue.">
@@ -44,7 +44,7 @@ import { PrivacyUserSection } from "@/components/PrivacyUserSection";
         </ul>
       </section>
 
-      <PrivacyUserSection client:load />
+      <PrivacyUserSection />
 
       <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
         <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">Data deletion</h2>

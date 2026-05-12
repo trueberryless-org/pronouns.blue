@@ -1,6 +1,6 @@
 ---
 import { ClientRouter } from "astro:transitions";
-import { AppNav } from "@/components/AppNav";
+import AppNav from "@/components/AppNav.astro";
 import "@/styles/global.css";
 
 interface Props {
@@ -54,7 +54,7 @@ const themeScript = `
   >
     <!-- Inline theme init before first paint to prevent flash -->
     <script set:html={themeScript} is:inline />
-    <AppNav pathname={Astro.url.pathname} client:load />
+    <AppNav pathname={Astro.url.pathname} />
     <div class="flex flex-1 flex-col">
       <slot />
     </div>

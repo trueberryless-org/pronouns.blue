@@ -1,0 +1,210 @@
+---
+import type { LanguageGroup } from "@/lib/atproto/records";
+
+interface Props {
+  initialGroups: LanguageGroup[];
+  isFirstTime: boolean;
+  profileHref?: string;
+}
+
+const { initialGroups, isFirstTime, profileHref } = Astro.props;
+
+const initialState = initialGroups.map(g => ({
+  lang: g.lang,
+  names: g.names.map(v => ({ value: v, preferred: g.preferredNames.includes(v) })),
+  pronouns: g.pronouns.map(v => ({ value: v, preferred: g.preferredPronouns.includes(v) })),
+}));
+---
+
+<div id="profile-editor">
+  <div id="editor-root"></div>
+  <div class="mt-6 flex items-center gap-4 flex-wrap">
+    <button type="button" id="save-btn"
+      class="rounded-full bg-[var(--accent)] px-6 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50 hover:opacity-90">
+      {isFirstTime ? "Publish" : "Save changes"}
+    </button>
+    {profileHref && (
+      <a href={profileHref} class="text-sm text-[var(--muted)] hover:text-[var(--text)]">View profile &rarr;</a>
+    )}
+    <p class="hidden text-sm text-[var(--danger)]" id="editor-error"></p>
+    <p class="hidden text-sm text-[var(--accent)]" id="editor-saved">&#10003; Saved!</p>
+  </div>
+</div>
+
+<script define:vars={{ initialState }}>
+  let groups = initialState.length > 0 ? initialState : [{ lang: "en", names: [], pronouns: [] }];
+
+  const LANGS = [
+    { code: "en", label: "English" }, { code: "de", label: "German" }, { code: "fr", label: "French" },
+    { code: "es", label: "Spanish" }, { code: "it", label: "Italian" }, { code: "pt", label: "Portuguese" },
+    { code: "nl", label: "Dutch" }, { code: "pl", label: "Polish" }, { code: "sv", label: "Swedish" },
+    { code: "no", label: "Norwegian" }, { code: "da", label: "Danish" }, { code: "fi", label: "Finnish" },
+    { code: "ru", label: "Russian" }, { code: "ja", label: "Japanese" }, { code: "zh", label: "Chinese" },
+    { code: "ko", label: "Korean" }, { code: "ar", label: "Arabic" }, { code: "tr", label: "Turkish" },
+    { code: "cs", label: "Czech" }, { code: "sk", label: "Slovak" }, { code: "hu", label: "Hungarian" },
+    { code: "ro", label: "Romanian" }, { code: "uk", label: "Ukrainian" }, { code: "hr", label: "Croatian" },
+  ];
+
+  function render() {
+    const root = document.getElementById("editor-root");
+    if (!root) return;
+    root.innerHTML = "";
+
+    groups.forEach((group, gi) => {
+      const section = document.createElement("div");
+      section.className = "mb-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 space-y-4";
+
+      const header = document.createElement("div");
+      header.className = "flex items-center gap-3 flex-wrap";
+      const langSel = document.createElement("select");
+      langSel.className = "rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-2 text-sm text-[var(--text)]";
+      LANGS.forEach(({ code, label }) => {
+        const opt = document.createElement("option");
+        opt.value = code; opt.textContent = label;
+        if (code === group.lang) opt.selected = true;
+        langSel.appendChild(opt);
+      });
+      langSel.addEventListener("change", () => { groups[gi].lang = langSel.value; });
+      header.appendChild(langSel);
+
+      if (groups.length > 1) {
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "ml-auto text-xs text-[var(--muted)] hover:text-[var(--danger)]";
+        removeBtn.textContent = "Remove group";
+        removeBtn.addEventListener("click", () => { groups.splice(gi, 1); render(); });
+        header.appendChild(removeBtn);
+      }
+      section.appendChild(header);
+
+      const cols = document.createElement("div");
+      cols.className = "grid gap-4 sm:grid-cols-2";
+      cols.appendChild(makeEntryColumn(gi, "names", "Names"));
+      cols.appendChild(makeEntryColumn(gi, "pronouns", "Pronouns"));
+      section.appendChild(cols);
+
+      root.appendChild(section);
+    });
+
+    const addGroup = document.createElement("button");
+    addGroup.type = "button";
+    addGroup.className = "text-sm text-[var(--muted)] hover:text-[var(--text)] border border-dashed border-[var(--border)] rounded-xl px-4 py-2 w-full";
+    addGroup.textContent = "+ Add language group";
+    addGroup.addEventListener("click", () => {
+      const usedLangs = new Set(groups.map(g => g.lang));
+      const next = LANGS.find(l => !usedLangs.has(l.code))?.code ?? "en";
+      groups.push({ lang: next, names: [], pronouns: [] });
+      render();
+    });
+    root.appendChild(addGroup);
+  }
+
+  function makeEntryColumn(gi, field, label) {
+    const group = groups[gi];
+    const entries = group[field];
+
+    const wrap = document.createElement("div");
+    wrap.className = "space-y-2";
+
+    const h = document.createElement("p");
+    h.className = "text-sm font-semibold text-[var(--muted)] uppercase tracking-wide";
+    h.textContent = label;
+    wrap.appendChild(h);
+
+    entries.forEach((entry, ei) => {
+      const row = document.createElement("div");
+      row.className = "flex items-center gap-2";
+
+      const tag = document.createElement("span");
+      tag.className = `flex-1 rounded-full border px-3 py-1 text-sm cursor-pointer select-none transition-colors ${entry.preferred ? "border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] text-[var(--text)]" : "border-[var(--border)] bg-[var(--surface-strong)] text-[var(--text)]"}`;
+      tag.textContent = entry.value;
+      tag.title = entry.preferred ? "Preferred (click to unmark)" : "Click to mark as preferred";
+      tag.addEventListener("click", () => { entries[ei].preferred = !entries[ei].preferred; render(); });
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "text-[var(--muted)] hover:text-[var(--danger)]";
+      del.innerHTML = `<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+      del.setAttribute("aria-label", `Remove ${entry.value}`);
+      del.addEventListener("click", () => { entries.splice(ei, 1); render(); });
+
+      row.appendChild(tag);
+      row.appendChild(del);
+      wrap.appendChild(row);
+    });
+
+    const inputRow = document.createElement("div");
+    inputRow.className = "flex items-center gap-2";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = `Add ${label.toLowerCase().slice(0, -1)}\u2026`;
+    input.className = "flex-1 rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-1.5 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]";
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-1.5 text-sm text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--accent)]";
+    addBtn.textContent = "+";
+
+    function addEntry() {
+      const val = input.value.trim();
+      if (!val) return;
+      if (entries.some(e => e.value.toLowerCase() === val.toLowerCase())) { input.value = ""; return; }
+      if (entries.length >= 128) return;
+      entries.push({ value: val, preferred: false });
+      input.value = "";
+      render();
+    }
+    addBtn.addEventListener("click", addEntry);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addEntry(); } });
+
+    inputRow.appendChild(input);
+    inputRow.appendChild(addBtn);
+    wrap.appendChild(inputRow);
+
+    return wrap;
+  }
+
+  const saveBtn = document.getElementById("save-btn");
+  const errorEl = document.getElementById("editor-error");
+  const savedEl = document.getElementById("editor-saved");
+
+  saveBtn?.addEventListener("click", async () => {
+    if (saveBtn.disabled) return;
+    saveBtn.disabled = true;
+    errorEl?.classList.add("hidden");
+    savedEl?.classList.add("hidden");
+
+    const payload = {
+      groups: groups.map(g => ({
+        lang: g.lang,
+        names: g.names.map(n => n.value),
+        pronouns: g.pronouns.map(p => p.value),
+        preferredNames: g.names.filter(n => n.preferred).map(n => n.value),
+        preferredPronouns: g.pronouns.filter(p => p.preferred).map(p => p.value),
+      })).filter(g => g.names.length > 0 || g.pronouns.length > 0),
+    };
+
+    if (payload.groups.length === 0) {
+      if (errorEl) { errorEl.textContent = "Add at least one name or pronoun."; errorEl.classList.remove("hidden"); }
+      saveBtn.disabled = false;
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `Error ${res.status}`);
+      savedEl?.classList.remove("hidden");
+      setTimeout(() => savedEl?.classList.add("hidden"), 3000);
+    } catch (err) {
+      if (errorEl) { errorEl.textContent = err instanceof Error ? err.message : "Failed to save"; errorEl.classList.remove("hidden"); }
+    } finally {
+      saveBtn.disabled = false;
+    }
+  });
+
+  render();
+</script>

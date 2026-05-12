@@ -16,8 +16,7 @@
     "format:check": "prettier . --check"
   },
   "dependencies": {
-    "@astrojs/node": "^10.1.0",
-    "@astrojs/react": "^5.0.4",
+    "@astrojs/netlify": "^7.0.8",
     "@atproto/common-web": "^0.4.11",
     "@atproto/lex": "^0.0.10",
     "@atproto/oauth-client-node": "^0.3.15",
@@ -27,14 +26,11 @@
     "@resvg/resvg-js": "^2.6.2",
     "astro": "^6.3.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
     "satori": "^0.12.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "^24.12.2",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
     "eslint": "^9",
     "prettier": "^3.8.3",
     "tailwindcss": "^4.3.0",
