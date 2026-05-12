@@ -24,8 +24,22 @@ const IS_PROD = process.env.NODE_ENV === "production";
 const STATE_COOKIE = "oauth_state";
 const SESSION_COOKIE = "session";
 
+function isLoopbackUrl(url: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(url);
+    if (protocol !== "https:") return true;
+    return (
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname.startsWith("127.")
+    );
+  } catch {
+    return true;
+  }
+}
+
 function getClientMetadata(): OAuthClientMetadataInput {
-  if (PUBLIC_URL) {
+  if (PUBLIC_URL && !isLoopbackUrl(PUBLIC_URL)) {
     return {
       client_id: `${PUBLIC_URL}/oauth-client-metadata.json`,
       client_name: "pronouns.blue",
@@ -39,16 +53,28 @@ function getClientMetadata(): OAuthClientMetadataInput {
       jwks_uri: `${PUBLIC_URL}/.well-known/jwks.json`,
       dpop_bound_access_tokens: true,
     };
-  } else {
-    return buildAtprotoLoopbackClientMetadata({
-      scope: SCOPE,
-      redirect_uris: ["http://127.0.0.1:3000/oauth/callback"],
-    });
   }
+
+  // Local development: use ATProto loopback client (no HTTPS / JWKS required).
+  // Derive the callback URL from PUBLIC_URL if it looks like a loopback address,
+  // otherwise fall back to the standard 127.0.0.1:3000 default.
+  let callbackBase = "http://127.0.0.1:3000";
+  if (PUBLIC_URL) {
+    try {
+      const { protocol, hostname, port } = new URL(PUBLIC_URL);
+      callbackBase = `${protocol}//${hostname}${port ? `:${port}` : ""}`;
+    } catch {
+      // ignore — keep default
+    }
+  }
+  return buildAtprotoLoopbackClientMetadata({
+    scope: SCOPE,
+    redirect_uris: [`${callbackBase}/oauth/callback`],
+  });
 }
 
 async function getKeyset(): Promise<Keyset | undefined> {
-  if (PUBLIC_URL && PRIVATE_KEY) {
+  if (PUBLIC_URL && !isLoopbackUrl(PUBLIC_URL) && PRIVATE_KEY) {
     return new Keyset([await JoseKey.fromJWK(JSON.parse(PRIVATE_KEY))]);
   } else {
     return undefined;
