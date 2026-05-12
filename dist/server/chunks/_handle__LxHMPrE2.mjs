@@ -1,7 +1,7 @@
 import { c as createComponent } from './astro-component_Ci2BsCNc.mjs';
 import { U as renderTemplate } from './params-and-props_CGkvChX8.mjs';
-import { r as renderComponent } from './server_BDtFSrzz.mjs';
-import { H as HeartIcon, n as navigate, $ as $$BaseLayout } from './HeartIcon_C3TPgyN_.mjs';
+import { r as renderComponent } from './server_ByVkxL6M.mjs';
+import { H as HeartIcon, n as navigate, $ as $$BaseLayout } from './HeartIcon_BXK0kP2Z.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useSyncExternalStore, useState, useRef, useEffect } from 'react';
 import { g as getActorProfile } from './profiles_BoBmfCD2.mjs';

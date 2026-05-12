@@ -54,7 +54,7 @@ const themeScript = `
   >
     <!-- Inline theme init before first paint to prevent flash -->
     <script set:html={themeScript} is:inline />
-    <AppNav client:load />
+    <AppNav pathname={Astro.url.pathname} client:load />
     <div class="flex flex-1 flex-col">
       <slot />
     </div>

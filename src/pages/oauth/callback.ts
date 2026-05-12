@@ -3,9 +3,9 @@ import { getOAuthClient, runWithCookies } from "@/lib/auth/client";
 
 export const prerender = false;
 
-const PUBLIC_URL = import.meta.env.PUBLIC_URL || "http://127.0.0.1:4321";
+const IS_PROD = import.meta.env.PROD;
 
-export const GET: APIRoute = async ({ url, cookies }) => {
+export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   try {
     const params = url.searchParams;
 
@@ -14,24 +14,17 @@ export const GET: APIRoute = async ({ url, cookies }) => {
       return client.callback(params);
     });
 
-    const isSecure = new URL(PUBLIC_URL).protocol === "https:";
     cookies.set("did", session.did, {
       httpOnly: true,
-      secure: isSecure,
+      secure: IS_PROD,
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
 
-    return new Response(null, {
-      status: 302,
-      headers: { Location: "/" },
-    });
+    return redirect("/");
   } catch (error) {
     console.error("OAuth callback error:", error);
-    return new Response(null, {
-      status: 302,
-      headers: { Location: "/?error=login_failed" },
-    });
+    return redirect("/?error=login_failed");
   }
 };

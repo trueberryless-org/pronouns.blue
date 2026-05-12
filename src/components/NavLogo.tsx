@@ -2,15 +2,21 @@
 
 import { useEffect, useState } from "react";
 
-export function NavLogo() {
-  const [pathname, setPathname] = useState<string | null>(null);
+interface NavLogoProps {
+  pathname?: string;
+}
+
+export function NavLogo({ pathname: initialPathname = "/" }: NavLogoProps) {
+  const [pathname, setPathname] = useState(initialPathname);
 
   useEffect(() => {
-    setPathname(window.location.pathname);
+    // Keep in sync with Astro's client-side navigations
+    const handler = () => setPathname(window.location.pathname);
+    document.addEventListener("astro:page-load", handler);
+    return () => document.removeEventListener("astro:page-load", handler);
   }, []);
 
-  // Hide on the homepage; show nothing while determining pathname (avoids flash)
-  if (pathname === null || pathname === "/") return null;
+  if (pathname === "/") return null;
 
   return (
     <a href="/" className="flex items-center">

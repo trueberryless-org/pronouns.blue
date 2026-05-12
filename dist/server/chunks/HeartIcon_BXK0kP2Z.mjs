@@ -1,6 +1,6 @@
 import { c as createComponent } from './astro-component_Ci2BsCNc.mjs';
 import { V as createRenderInstruction, a5 as addAttribute, U as renderTemplate, D as renderSlot, bi as unescapeHTML, bm as renderHead } from './params-and-props_CGkvChX8.mjs';
-import { r as renderComponent } from './server_BDtFSrzz.mjs';
+import { r as renderComponent } from './server_ByVkxL6M.mjs';
 import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
 import { useSyncExternalStore, useState, useEffect, useRef, useMemo } from 'react';
 
@@ -74,12 +74,14 @@ function ThemeToggle() {
   ] });
 }
 
-function NavLogo() {
-  const [pathname, setPathname] = useState(null);
+function NavLogo({ pathname: initialPathname = "/" }) {
+  const [pathname, setPathname] = useState(initialPathname);
   useEffect(() => {
-    setPathname(window.location.pathname);
+    const handler = () => setPathname(window.location.pathname);
+    document.addEventListener("astro:page-load", handler);
+    return () => document.removeEventListener("astro:page-load", handler);
   }, []);
-  if (pathname === null || pathname === "/") return null;
+  if (pathname === "/") return null;
   return /* @__PURE__ */ jsx("a", { href: "/", className: "flex items-center", children: /* @__PURE__ */ jsx(
     "img",
     {
@@ -428,9 +430,9 @@ function NavUser() {
   ] });
 }
 
-function AppNav() {
+function AppNav({ pathname = "/" }) {
   return /* @__PURE__ */ jsx("nav", { className: "mb-8 mt-4 border-b border-[var(--line)] pb-4", children: /* @__PURE__ */ jsxs("div", { className: "mx-auto flex w-full max-w-6xl min-h-14 items-center gap-3 px-4 sm:px-6", children: [
-    /* @__PURE__ */ jsx(NavLogo, {}),
+    /* @__PURE__ */ jsx(NavLogo, { pathname }),
     /* @__PURE__ */ jsxs("div", { className: "ml-auto flex items-center gap-4", children: [
       /* @__PURE__ */ jsx(SearchModal, {}),
       /* @__PURE__ */ jsx("div", { className: "hidden items-center gap-4 sm:flex", children: /* @__PURE__ */ jsx(ThemeToggle, {}) }),
@@ -464,7 +466,7 @@ const $$BaseLayout = createComponent(($$result, $$props, $$slots) => {
   }
 })();
 `;
-  return renderTemplate(_a || (_a = __template(['<html lang="en" data-theme="dark"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>', '</title><meta name="description"', '><link rel="icon" type="image/svg+xml" href="/pronouns.blue-round.svg"><meta property="og:title"', '><meta property="og:description"', '><meta property="og:image"', '><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title"', '><meta name="twitter:description"', '><meta name="twitter:image"', ">", "", '</head> <body class="flex min-h-screen flex-col antialiased" style="font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;"> <!-- Inline theme init before first paint to prevent flash --> <script>', "<\/script> ", ' <div class="flex flex-1 flex-col"> ', ' </div> <footer class="border-t border-[var(--border)] py-4 text-center text-xs text-[var(--muted)]"> <nav class="flex flex-wrap justify-center gap-x-5 gap-y-1"> <a href="/privacy" class="hover:text-[var(--text)]">Privacy Policy</a> <a href="/terms" class="hover:text-[var(--text)]">Terms of Service</a> <a href="/credits" class="hover:text-[var(--text)]">Credits</a> <a href="https://github.com/trueberryless-org/pronouns.blue" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--text)]">\nGitHub\n</a> </nav> </footer> </body></html>'])), title, addAttribute(description, "content"), addAttribute(title, "content"), addAttribute(description, "content"), addAttribute(resolvedOgImage, "content"), addAttribute(title, "content"), addAttribute(description, "content"), addAttribute(resolvedOgImage, "content"), renderComponent($$result, "ClientRouter", $$ClientRouter, {}), renderHead(), unescapeHTML(themeScript), renderComponent($$result, "AppNav", AppNav, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/AppNav", "client:component-export": "AppNav" }), renderSlot($$result, $$slots["default"]));
+  return renderTemplate(_a || (_a = __template(['<html lang="en" data-theme="dark"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>', '</title><meta name="description"', '><link rel="icon" type="image/svg+xml" href="/pronouns.blue-round.svg"><meta property="og:title"', '><meta property="og:description"', '><meta property="og:image"', '><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title"', '><meta name="twitter:description"', '><meta name="twitter:image"', ">", "", '</head> <body class="flex min-h-screen flex-col antialiased" style="font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;"> <!-- Inline theme init before first paint to prevent flash --> <script>', "<\/script> ", ' <div class="flex flex-1 flex-col"> ', ' </div> <footer class="border-t border-[var(--border)] py-4 text-center text-xs text-[var(--muted)]"> <nav class="flex flex-wrap justify-center gap-x-5 gap-y-1"> <a href="/privacy" class="hover:text-[var(--text)]">Privacy Policy</a> <a href="/terms" class="hover:text-[var(--text)]">Terms of Service</a> <a href="/credits" class="hover:text-[var(--text)]">Credits</a> <a href="https://github.com/trueberryless-org/pronouns.blue" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--text)]">\nGitHub\n</a> </nav> </footer> </body></html>'])), title, addAttribute(description, "content"), addAttribute(title, "content"), addAttribute(description, "content"), addAttribute(resolvedOgImage, "content"), addAttribute(title, "content"), addAttribute(description, "content"), addAttribute(resolvedOgImage, "content"), renderComponent($$result, "ClientRouter", $$ClientRouter, {}), renderHead(), unescapeHTML(themeScript), renderComponent($$result, "AppNav", AppNav, { "pathname": Astro2.url.pathname, "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/AppNav", "client:component-export": "AppNav" }), renderSlot($$result, $$slots["default"]));
 }, "/Users/trueberryless/repos/trueberryless-org/pronouns.blue/src/layouts/BaseLayout.astro", void 0);
 
 function HeartIcon({

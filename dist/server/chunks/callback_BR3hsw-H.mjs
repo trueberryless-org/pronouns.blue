@@ -1,32 +1,25 @@
 import { r as runWithCookies, g as getOAuthClient } from './client_BKFXYDiu.mjs';
 
 const prerender = false;
-const PUBLIC_URL = "http://127.0.0.1:3000";
-const GET = async ({ url, cookies }) => {
+const IS_PROD = true;
+const GET = async ({ url, cookies, redirect }) => {
   try {
     const params = url.searchParams;
     const { session } = await runWithCookies(cookies, async () => {
       const client = await getOAuthClient();
       return client.callback(params);
     });
-    const isSecure = new URL(PUBLIC_URL).protocol === "https:";
     cookies.set("did", session.did, {
       httpOnly: true,
-      secure: isSecure,
+      secure: IS_PROD,
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7,
       path: "/"
     });
-    return new Response(null, {
-      status: 302,
-      headers: { Location: "/" }
-    });
+    return redirect("/");
   } catch (error) {
     console.error("OAuth callback error:", error);
-    return new Response(null, {
-      status: 302,
-      headers: { Location: "/?error=login_failed" }
-    });
+    return redirect("/?error=login_failed");
   }
 };
 

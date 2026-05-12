@@ -1,5 +1,5 @@
 import { a as AstroError, ba as UnsupportedImageFormat, bo as MissingSharp } from './params-and-props_CGkvChX8.mjs';
-import { b as baseService, d as detector, p as parseQuality } from './node_DTNMIqE9.mjs';
+import { b as baseService, d as detector, p as parseQuality } from './node_CaLJS3P1.mjs';
 
 let sharp;
 const qualityTable = {
@@ -52,7 +52,7 @@ function resolveSharpEncoderOptions(transform, inputFormat, serviceConfig = {}) 
 async function loadSharp() {
   let sharpImport;
   try {
-    sharpImport = (await import('./index_l0JQFsP1.mjs').then(n => n.i)).default;
+    sharpImport = (await import('./index_B6aYrGAv.mjs').then(n => n.i)).default;
   } catch {
     throw new AstroError(MissingSharp);
   }
