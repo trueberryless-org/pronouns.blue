@@ -1,0 +1,79 @@
+---
+import { ClientRouter } from "astro:transitions";
+import { AppNav } from "@/components/AppNav";
+import "@/styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title = "pronouns.blue",
+  description = "Share your names and pronouns with the ATProto network.",
+  ogImage,
+} = Astro.props;
+
+const resolvedOgImage = ogImage ?? new URL("/og.png", Astro.url).toString();
+
+const themeScript = `
+(() => {
+  try {
+    const key = "pronounsblue-theme";
+    const saved = localStorage.getItem(key);
+    const theme = saved || "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+  } catch {
+    document.documentElement.setAttribute("data-theme", "dark");
+  }
+})();
+`;
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/pronouns.blue-round.svg" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={resolvedOgImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={resolvedOgImage} />
+    <ClientRouter />
+  </head>
+  <body
+    class="flex min-h-screen flex-col antialiased"
+    style="font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;"
+  >
+    <!-- Inline theme init before first paint to prevent flash -->
+    <script set:html={themeScript} is:inline />
+    <AppNav client:load />
+    <div class="flex flex-1 flex-col">
+      <slot />
+    </div>
+    <footer
+      class="border-t border-[var(--border)] py-4 text-center text-xs text-[var(--muted)]"
+    >
+      <nav class="flex flex-wrap justify-center gap-x-5 gap-y-1">
+        <a href="/privacy" class="hover:text-[var(--text)]">Privacy Policy</a>
+        <a href="/terms" class="hover:text-[var(--text)]">Terms of Service</a>
+        <a href="/credits" class="hover:text-[var(--text)]">Credits</a>
+        <a
+          href="https://github.com/trueberryless-org/pronouns.blue"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-[var(--text)]"
+        >
+          GitHub
+        </a>
+      </nav>
+    </footer>
+  </body>
+</html>

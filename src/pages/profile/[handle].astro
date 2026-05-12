@@ -1,0 +1,37 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { ProfileDisplay } from "@/components/ProfileDisplay";
+import { FollowsSection, FollowsSkeleton } from "@/components/FollowsSection";
+import { FloatingProfileBack } from "@/components/FloatingProfileBack";
+import { getActorProfile } from "@/lib/atproto/profiles";
+import { getProfileRecordsFromPds } from "@/lib/atproto/records";
+
+const { handle: rawHandle } = Astro.params;
+const handle = decodeURIComponent(rawHandle ?? "").replace(/^@/, "");
+
+const actor = await getActorProfile(handle);
+if (!actor) return Astro.redirect("/404");
+
+const profile = await getProfileRecordsFromPds(actor.did);
+const title = actor.displayName ?? actor.handle;
+const description = `View ${title}'s preferred names and pronouns on pronouns.blue`;
+const ogImageUrl = new URL(`/profile/${encodeURIComponent(handle)}/og.png`, Astro.url).toString();
+---
+
+<BaseLayout
+  title={`${title} – pronouns.blue`}
+  description={description}
+  ogImage={ogImageUrl}
+>
+  <ProfileDisplay
+    client:load
+    title={title}
+    handle={actor.handle}
+    avatar={actor.avatar ?? null}
+    groups={profile.groups}
+    bskyFallbackPronouns={actor.pronouns}
+    profileDid={actor.did}
+  />
+  <FollowsSection client:load did={actor.did} title={title} />
+  <FloatingProfileBack client:load title={title} avatar={actor.avatar ?? null} />
+</BaseLayout>

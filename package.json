@@ -1,12 +1,14 @@
 {
-  "name": "statusphere",
+  "name": "pronouns-blue",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build:lex": "ts-lex build --importExt=\"\" --out=./lib/lexicons --override",
-    "build": "pnpm build:lex && next build",
-    "start": "next start --port ${PORT-3000}",
+    "dev": "astro dev",
+    "build:lex": "ts-lex build --importExt=\"\" --out=./src/lib/lexicons --override",
+    "build": "pnpm build:lex && astro build",
+    "start": "node dist/server/entry.mjs",
+    "preview": "astro preview",
     "gen-key": "tsx scripts/gen-key.ts",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
@@ -14,29 +16,34 @@
     "format:check": "prettier . --check"
   },
   "dependencies": {
+    "@astrojs/node": "^10.1.0",
+    "@astrojs/react": "^5.0.4",
     "@atproto/common-web": "^0.4.11",
     "@atproto/lex": "^0.0.10",
     "@atproto/oauth-client-node": "^0.3.15",
     "@atproto/syntax": "^0.4.2",
-    "next": "16.2.6",
-    "next-view-transitions": "^0.3.5",
-    "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "@fontsource-variable/geist": "^5.2.1",
+    "@fontsource-variable/geist-mono": "^5.2.1",
+    "@resvg/resvg-js": "^2.6.2",
+    "astro": "^6.3.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "satori": "^0.12.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "^24.12.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.6",
     "prettier": "^3.8.3",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.3.0",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "typescript-eslint": "^8"
   },
   "engines": {
-    "node": ">=24 <25"
+    "node": ">=18.17.0"
   },
   "packageManager": "pnpm@8.15.9+sha512.499434c9d8fdd1a2794ebf4552b3b25c0a633abcee5bb15e7b5de90f32f47b513aca98cd5cfd001c31f0db454bc3804edccd578501e4ca293a6816166bbd9f81"
 }
