@@ -72,7 +72,8 @@ function getClientMetadata(): OAuthClientMetadataInput {
     };
   }
 
-  let callbackBase = "http://127.0.0.1:4321";
+  const devPort = process.env.PORT || "4321";
+  let callbackBase = `http://localhost:${devPort}`;
   if (PUBLIC_URL) {
     try {
       const { protocol, hostname, port } = new URL(PUBLIC_URL);

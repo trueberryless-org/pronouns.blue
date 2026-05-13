@@ -7,7 +7,9 @@ interface Props {
 }
 
 const { did, title } = Astro.props;
-const { follows: initialFollows, cursor: initialCursor } = await getFollows(did, 48);
+const { follows: initialFollows, cursor: initialCursorRaw } = await getFollows(did, 48);
+// Ensure null (not undefined) so define:vars serialises it correctly
+const initialCursor = initialCursorRaw ?? null;
 ---
 
 {initialFollows.length > 0 && (
@@ -75,7 +77,7 @@ const { follows: initialFollows, cursor: initialCursor } = await getFollows(did,
         const res = await fetch(`/api/follows?${params}`);
         if (!res.ok) { retryAfter = Date.now() + 3000; return; }
         const data = await res.json();
-        data.follows.forEach(actor => grid.insertBefore(makeCard(actor), sentinel));
+        data.follows.forEach(actor => grid.appendChild(makeCard(actor)));
         cursor = data.cursor ?? null;
         if (!cursor && allDone) { sentinel.remove(); allDone.classList.remove("hidden"); }
       } catch { retryAfter = Date.now() + 3000; }
