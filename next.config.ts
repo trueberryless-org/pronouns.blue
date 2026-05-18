@@ -20,7 +20,8 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Netlify-CDN-Cache-Control",
-            value: "public, s-maxage=86400, stale-while-revalidate=604800, durable",
+            value:
+              "public, s-maxage=86400, stale-while-revalidate=604800, durable",
           },
         ],
       },
