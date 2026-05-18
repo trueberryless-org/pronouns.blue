@@ -28,12 +28,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return client.authorize(handle as string, { scope: SCOPE });
     });
 
-    return new Response(
-      JSON.stringify({ redirectUrl: authUrl.toString() }),
-      { headers: { "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ redirectUrl: authUrl.toString() }), {
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error("OAuth login error:", error);
+    console.error(
+      "OAuth login error:",
+      error instanceof Error ? error.stack || error.message : String(error),
+    );
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : "Login failed",

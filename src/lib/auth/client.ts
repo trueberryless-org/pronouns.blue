@@ -37,7 +37,8 @@ export function runWithCookies<T>(
 
 function getJar(): AstroCookies {
   const jar = cookieStorage.getStore();
-  if (!jar) throw new Error("No cookie store in context. Use runWithCookies().");
+  if (!jar)
+    throw new Error("No cookie store in context. Use runWithCookies().");
   return jar;
 }
 
@@ -73,7 +74,7 @@ function getClientMetadata(): OAuthClientMetadataInput {
   }
 
   const devPort = process.env.PORT || "4321";
-  let callbackBase = `http://localhost:${devPort}`;
+  let callbackBase = `http://127.0.0.1:${devPort}`;
   if (PUBLIC_URL) {
     try {
       const { protocol, hostname, port } = new URL(PUBLIC_URL);

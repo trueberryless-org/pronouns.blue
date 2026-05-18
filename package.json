@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --host 127.0.0.1",
     "build:lex": "ts-lex build --importExt=\"\" --out=./src/lib/lexicons --override",
     "build": "pnpm build:lex && astro build",
     "start": "node dist/server/entry.mjs",
