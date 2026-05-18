@@ -53,13 +53,13 @@ export default function RootLayout({
           <main className="flex flex-1 flex-col">{children}</main>
           <footer className="border-t border-[var(--border)] py-4 text-center text-xs text-[var(--muted)]">
             <nav className="flex flex-wrap justify-center gap-x-5 gap-y-1">
-              <Link href="/privacy" className="hover:text-[var(--text)]">
+              <Link href="/privacy" prefetch={false} className="hover:text-[var(--text)]">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-[var(--text)]">
+              <Link href="/terms" prefetch={false} className="hover:text-[var(--text)]">
                 Terms of Service
               </Link>
-              <Link href="/credits" className="hover:text-[var(--text)]">
+              <Link href="/credits" prefetch={false} className="hover:text-[var(--text)]">
                 Credits
               </Link>
               <a
