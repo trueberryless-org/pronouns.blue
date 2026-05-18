@@ -34,19 +34,40 @@ const { title, avatar } = Astro.props;
 </div>
 
 <script>
-  const el = document.getElementById("floating-back")!;
-  function onScroll() {
-    const visible = window.scrollY > window.innerHeight * 0.65;
-    if (visible) {
-      el.classList.remove("opacity-0", "translate-y-6", "pointer-events-none");
-      el.classList.add("opacity-100", "translate-y-0");
-    } else {
-      el.classList.add("opacity-0", "translate-y-6", "pointer-events-none");
-      el.classList.remove("opacity-100", "translate-y-0");
+  let currentOnScroll: (() => void) | null = null;
+
+  function setup() {
+    if (currentOnScroll) {
+      window.removeEventListener("scroll", currentOnScroll);
+      currentOnScroll = null;
     }
+
+    const el = document.getElementById("floating-back");
+    if (!el) return;
+
+    function onScroll() {
+      const visible = window.scrollY > window.innerHeight * 0.65;
+      if (visible) {
+        el!.classList.remove("opacity-0", "translate-y-6", "pointer-events-none");
+        el!.classList.add("opacity-100", "translate-y-0");
+      } else {
+        el!.classList.add("opacity-0", "translate-y-6", "pointer-events-none");
+        el!.classList.remove("opacity-100", "translate-y-0");
+      }
+    }
+
+    currentOnScroll = onScroll;
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    document.getElementById("scroll-top-btn")?.addEventListener("click", () =>
+      window.scrollTo({ top: 0, behavior: "smooth" }),
+    );
+    document.getElementById("go-back-btn")?.addEventListener("click", () =>
+      window.history.back(),
+    );
   }
-  onScroll();
-  window.addEventListener("scroll", onScroll, { passive: true });
-  document.getElementById("scroll-top-btn")?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
-  document.getElementById("go-back-btn")?.addEventListener("click", () => window.history.back());
+
+  setup();
+  document.addEventListener("astro:page-load", setup);
 </script>

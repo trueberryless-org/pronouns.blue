@@ -416,5 +416,6 @@ const isHome = pathname === "/";
     initMobileMenu();
     void initUserSection();
   }
+  setup(); // also call directly in case astro:page-load already fired
   document.addEventListener("astro:page-load", setup);
 </script>
