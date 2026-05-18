@@ -29,6 +29,7 @@ function FollowCard({
   return (
     <Link
       href={`/profile/${encodeURIComponent(handle)}`}
+      prefetch={false}
       className="group flex flex-col items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-center transition-colors hover:border-[var(--accent)]"
     >
       {avatar ? (
