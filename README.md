@@ -6,7 +6,7 @@ Users sign in with their ATProto account (Bluesky, etc.), then set their names a
 
 ## Tech stack
 
-- [Next.js](https://nextjs.org/) App Router
+- [Astro](https://astro.build/) (server-side rendering, Netlify adapter)
 - `@atproto/oauth-client-node` — sign in with any ATProto account
 - `@atproto/lex` + generated bindings from local lexicons
 - No database — OAuth state and sessions are stored in `httpOnly` cookies
@@ -39,9 +39,10 @@ pnpm dev
 ## Scripts
 
 ```bash
-pnpm dev           # Next.js dev server
-pnpm build         # regenerate lexicon bindings + Next.js build
-pnpm start         # Next.js production server
+pnpm dev           # Astro dev server
+pnpm build         # regenerate lexicon bindings + Astro build
+pnpm start         # production server (node dist/server/entry.mjs)
+pnpm preview       # Astro preview server
 pnpm build:lex     # regenerate TypeScript bindings from lexicons/
 pnpm lint          # ESLint
 pnpm lint:fix      # ESLint with autofix
@@ -55,12 +56,12 @@ pnpm gen-key       # generate a PRIVATE_KEY JWK
 - `ci.yaml` — lint, format check, build on every PR/push
 - `format.yaml` — autofix lint + Prettier and commits via `autofix-ci`
 
-## Deploying to Vercel
+## Deploying to Netlify
 
-1. In Vercel project settings add:
+1. In Netlify project settings add:
    - `PUBLIC_URL` — your domain, e.g. `https://pronouns.blue`
    - `PRIVATE_KEY` — from `pnpm gen-key`
-2. Deploy from GitHub as a Next.js project. No database or migrations needed.
+2. Deploy from GitHub. Netlify auto-detects Astro. No database or migrations needed.
 
 ## Lexicon development
 

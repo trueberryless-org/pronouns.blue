@@ -1,9 +1,0 @@
-import{n as r}from"./router.BRjOBFNg.js";const a=document.getElementById("home-search-input"),n=document.getElementById("home-search-results"),i=document.getElementById("home-search-container");let l=null,s=null;function o(t){if(t.length===0){n.classList.add("hidden");return}n.classList.remove("hidden"),n.innerHTML=`<ul>${t.map(e=>`
-      <li><button type="button" data-handle="${e.handle}"
-        class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-[var(--surface-strong)]">
-        ${e.avatar?`<img src="${e.avatar}" alt="" loading="lazy" width="36" height="36" class="size-9 shrink-0 rounded-full object-cover">`:`<span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-strong)] text-sm font-semibold text-[var(--text)]">${(e.displayName??e.handle).charAt(0).toUpperCase()}</span>`}
-        <span class="flex min-w-0 flex-col">
-          <span class="truncate text-sm font-medium text-[var(--text)]">${e.displayName??e.handle}</span>
-          <span class="truncate text-xs text-[var(--muted)]">@${e.handle}</span>
-        </span>
-      </button></li>`).join("")}</ul>`,n.querySelectorAll("button[data-handle]").forEach(e=>{e.addEventListener("click",()=>{r(`/profile/${encodeURIComponent(e.dataset.handle)}`)})})}a.addEventListener("input",()=>{const t=a.value.trim().replace(/^@/,"");if(l&&clearTimeout(l),s&&s.abort(),!t){n.classList.add("hidden");return}s=new AbortController;const e=s;l=setTimeout(async()=>{try{const d=await(await fetch(`/api/search?q=${encodeURIComponent(t)}`,{signal:e.signal})).json();o(d.results??[])}catch{}},120)});a.addEventListener("keydown",t=>{t.key==="Enter"&&a.value.trim()&&r(`/profile/${encodeURIComponent(a.value.trim().replace(/^@/,""))}`),t.key==="Escape"&&n.classList.add("hidden")});document.addEventListener("mousedown",t=>{i.contains(t.target)||n.classList.add("hidden")});

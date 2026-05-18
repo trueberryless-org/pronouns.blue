@@ -146,49 +146,52 @@ const isHome = pathname === "/";
     document.documentElement.setAttribute("data-theme", theme);
     try { localStorage.setItem(STORAGE_KEY, theme); } catch {}
   }
-
-  const themeDesktop = document.getElementById("theme-select") as HTMLSelectElement | null;
-  const themeMobile = document.getElementById("theme-select-mobile") as HTMLSelectElement | null;
-
   function initTheme() {
     const t = getTheme();
-    if (themeDesktop) themeDesktop.value = t;
-    if (themeMobile) themeMobile.value = t;
+    const themeDesktop = document.getElementById("theme-select") as HTMLSelectElement | null;
+    const themeMobile = document.getElementById("theme-select-mobile") as HTMLSelectElement | null;
+    if (themeDesktop) {
+      themeDesktop.value = t;
+      themeDesktop.addEventListener("change", () => applyTheme(themeDesktop.value));
+    }
+    if (themeMobile) {
+      themeMobile.value = t;
+      themeMobile.addEventListener("change", () => applyTheme(themeMobile.value));
+    }
   }
-  initTheme();
-  themeDesktop?.addEventListener("change", () => applyTheme(themeDesktop.value));
-  themeMobile?.addEventListener("change", () => applyTheme(themeMobile.value));
 
   // ── Search ─────────────────────────────────────────────────────────────────
-  const searchModal = document.getElementById("search-modal")!;
-  const searchInput = document.getElementById("search-input") as HTMLInputElement;
-  const searchResults = document.getElementById("search-results")!;
-  const searchOpenBtn = document.getElementById("search-open-btn")!;
-
   interface Suggestion { did: string; handle: string; displayName: string | null; avatar: string | null; }
 
   let searchTimer: ReturnType<typeof setTimeout> | null = null;
   let searchController: AbortController | null = null;
 
   function openSearch() {
-    searchModal.classList.remove("hidden");
-    requestAnimationFrame(() => searchInput.focus());
+    const modal = document.getElementById("search-modal");
+    const input = document.getElementById("search-input") as HTMLInputElement | null;
+    modal?.classList.remove("hidden");
+    if (input) requestAnimationFrame(() => input.focus());
   }
   function closeSearch() {
-    searchModal.classList.add("hidden");
-    searchInput.value = "";
-    searchResults.innerHTML = "";
+    const modal = document.getElementById("search-modal");
+    const input = document.getElementById("search-input") as HTMLInputElement | null;
+    const results = document.getElementById("search-results");
+    modal?.classList.add("hidden");
+    if (input) input.value = "";
+    if (results) results.innerHTML = "";
   }
   function navigateToProfile(handle: string) {
     closeSearch();
     void navigate(`/profile/${encodeURIComponent(handle)}`);
   }
   function renderSearchResults(items: Suggestion[]) {
+    const results = document.getElementById("search-results");
+    if (!results) return;
     if (items.length === 0) {
-      searchResults.innerHTML = `<p class="px-3 py-2 text-sm text-[var(--muted)]">No results</p>`;
+      results.innerHTML = `<p class="px-3 py-2 text-sm text-[var(--muted)]">No results</p>`;
       return;
     }
-    searchResults.innerHTML = `<ul>${items.map(s => `
+    results.innerHTML = `<ul>${items.map(s => `
       <li>
         <button type="button" data-handle="${s.handle}" class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-[var(--surface-strong)]">
           ${s.avatar
@@ -200,37 +203,56 @@ const isHome = pathname === "/";
           </span>
         </button>
       </li>`).join("")}</ul>`;
-    searchResults.querySelectorAll<HTMLButtonElement>("button[data-handle]").forEach(btn => {
+    results.querySelectorAll<HTMLButtonElement>("button[data-handle]").forEach(btn => {
       btn.addEventListener("click", () => navigateToProfile(btn.dataset.handle!));
     });
   }
+  function initSearch() {
+    const modal = document.getElementById("search-modal");
+    const input = document.getElementById("search-input") as HTMLInputElement | null;
+    const openBtn = document.getElementById("search-open-btn");
+    if (!modal || !input || !openBtn) return;
+    openBtn.addEventListener("click", openSearch);
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeSearch(); });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeSearch();
+      if (e.key === "Enter" && input.value.trim()) navigateToProfile(input.value.trim().replace(/^@/, ""));
+    });
+    input.addEventListener("input", () => {
+      const q = input.value.trim().replace(/^@/, "");
+      if (searchTimer) clearTimeout(searchTimer);
+      if (searchController) searchController.abort();
+      const results = document.getElementById("search-results");
+      if (!q) { if (results) results.innerHTML = ""; return; }
+      if (results) results.innerHTML = `<p class="px-3 py-2 text-sm text-[var(--muted)]">Searching&hellip;</p>`;
+      searchController = new AbortController();
+      const ctrl = searchController;
+      searchTimer = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });
+          if (!res.ok) return;
+          const data = await res.json() as { results?: Suggestion[] };
+          renderSearchResults(data.results ?? []);
+        } catch { /* aborted or error */ }
+      }, 120);
+    });
+  }
 
-  searchOpenBtn.addEventListener("click", openSearch);
-  searchModal.addEventListener("click", (e) => { if (e.target === searchModal) closeSearch(); });
-  searchInput.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeSearch();
-    if (e.key === "Enter" && searchInput.value.trim()) navigateToProfile(searchInput.value.trim().replace(/^@/, ""));
-  });
-  searchInput.addEventListener("input", () => {
-    const q = searchInput.value.trim().replace(/^@/, "");
-    if (searchTimer) clearTimeout(searchTimer);
-    if (searchController) searchController.abort();
-    if (!q) { searchResults.innerHTML = ""; return; }
-    searchResults.innerHTML = `<p class="px-3 py-2 text-sm text-[var(--muted)]">Searching&hellip;</p>`;
-    searchController = new AbortController();
-    const ctrl = searchController;
-    searchTimer = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });
-        if (!res.ok) return;
-        const data = await res.json() as { results?: Suggestion[] };
-        renderSearchResults(data.results ?? []);
-      } catch { /* aborted or error */ }
-    }, 120);
-  });
-  document.addEventListener("keydown", (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); openSearch(); }
-  });
+  // ── Mobile menu ────────────────────────────────────────────────────────────
+  function initMobileMenu() {
+    const btn = document.getElementById("mobile-menu-btn");
+    const menu = document.getElementById("mobile-menu");
+    const burger = document.getElementById("mobile-burger-icon");
+    const x = document.getElementById("mobile-x-icon");
+    if (!btn || !menu || !burger || !x) return;
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = menu.classList.toggle("hidden");
+      burger.classList.toggle("hidden", !open);
+      x.classList.toggle("hidden", open);
+      btn.setAttribute("aria-expanded", String(!open));
+    });
+  }
 
   // ── User section ───────────────────────────────────────────────────────────
   function readDidPublic(): string | null {
@@ -246,69 +268,75 @@ const isHome = pathname === "/";
     const profileHref = normalizedHandle ? `/profile/${encodeURIComponent(normalizedHandle)}` : "/settings";
 
     // Desktop
-    const skeleton = document.getElementById("user-skeleton");
-    skeleton?.classList.add("hidden");
+    document.getElementById("user-skeleton")?.classList.add("hidden");
     const avatarWrap = document.getElementById("user-avatar-wrap");
     avatarWrap?.classList.remove("hidden");
 
-    const avatarBtn = document.getElementById("user-avatar-btn")!;
-    const avatarImg = document.getElementById("user-avatar-img") as HTMLElement;
-    const avatarInitial = document.getElementById("user-avatar-initial")!;
-    if (user.avatar) {
-      avatarImg.style.backgroundImage = `url(${user.avatar})`;
-      avatarImg.setAttribute("aria-label", label);
-      avatarImg.classList.remove("hidden");
-      avatarInitial.classList.add("hidden");
-    } else {
-      avatarInitial.textContent = label.slice(0, 1).toUpperCase();
+    const avatarBtn = document.getElementById("user-avatar-btn");
+    const avatarImg = document.getElementById("user-avatar-img") as HTMLElement | null;
+    const avatarInitial = document.getElementById("user-avatar-initial");
+    if (avatarImg && avatarInitial) {
+      if (user.avatar) {
+        avatarImg.style.backgroundImage = `url(${user.avatar})`;
+        avatarImg.setAttribute("aria-label", label);
+        avatarImg.classList.remove("hidden");
+        avatarInitial.classList.add("hidden");
+      } else {
+        avatarInitial.textContent = label.slice(0, 1).toUpperCase();
+      }
     }
-    const profileLink = document.getElementById("user-profile-link") as HTMLAnchorElement;
+    const profileLink = document.getElementById("user-profile-link") as HTMLAnchorElement | null;
     if (profileLink) profileLink.href = profileHref;
 
     // Dropdown toggle
-    const dropdown = document.getElementById("user-dropdown")!;
-    avatarBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const open = dropdown.classList.toggle("hidden");
-      avatarBtn.setAttribute("aria-expanded", String(!open));
-    });
-    document.addEventListener("mousedown", (e) => {
-      if (!avatarWrap?.contains(e.target as Node)) {
-        dropdown.classList.add("hidden");
-        avatarBtn.setAttribute("aria-expanded", "false");
-      }
-    });
+    const dropdown = document.getElementById("user-dropdown");
+    if (avatarBtn && dropdown) {
+      avatarBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = dropdown.classList.toggle("hidden");
+        avatarBtn.setAttribute("aria-expanded", String(!open));
+      });
+    }
+
+    // Logout
+    document.getElementById("logout-btn-desktop")?.addEventListener("click", handleLogout);
 
     // Mobile
-    const mobileArea = document.getElementById("mobile-user-area")!;
-    mobileArea.innerHTML = `
-      ${user.avatar ? `<div class="flex items-center gap-2 px-1 py-1 mb-1">
-        <span class="h-7 w-7 flex-shrink-0 rounded-full border border-[var(--border)] bg-cover bg-center" style="background-image:url(${user.avatar})" role="img" aria-label="${label}"></span>
-        <span class="truncate text-sm font-medium text-[var(--text)]">${label}</span>
-      </div>` : ""}
-      <a href="${profileHref}" class="flex items-center rounded-md px-2 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Profile</a>
-      <a href="/settings" class="flex items-center rounded-md px-2 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Settings</a>
-      <button type="button" id="logout-btn-mobile" class="flex w-full items-center rounded-md px-2 py-2 text-left text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Log out</button>`;
-    document.getElementById("logout-btn-mobile")?.addEventListener("click", handleLogout);
+    const mobileArea = document.getElementById("mobile-user-area");
+    if (mobileArea) {
+      mobileArea.innerHTML = `
+        ${user.avatar ? `<div class="flex items-center gap-2 px-1 py-1 mb-1">
+          <span class="h-7 w-7 flex-shrink-0 rounded-full border border-[var(--border)] bg-cover bg-center" style="background-image:url(${user.avatar})" role="img" aria-label="${label}"></span>
+          <span class="truncate text-sm font-medium text-[var(--text)]">${label}</span>
+        </div>` : ""}
+        <a href="${profileHref}" class="flex items-center rounded-md px-2 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Profile</a>
+        <a href="/settings" class="flex items-center rounded-md px-2 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Settings</a>
+        <button type="button" id="logout-btn-mobile" class="flex w-full items-center rounded-md px-2 py-2 text-left text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Log out</button>`;
+      document.getElementById("logout-btn-mobile")?.addEventListener("click", handleLogout);
+    }
   }
 
   function renderUserLoggedOut() {
     document.getElementById("user-skeleton")?.classList.add("hidden");
-    document.getElementById("user-login-area")?.classList.remove("hidden");
-    document.getElementById("user-login-area")?.classList.add("flex");
+    const loginArea = document.getElementById("user-login-area");
+    loginArea?.classList.remove("hidden");
+    loginArea?.classList.add("flex");
+    setupLoginButton("login-btn-desktop", "login-handle-desktop", "login-error-desktop");
 
-    const mobileArea = document.getElementById("mobile-user-area")!;
-    mobileArea.innerHTML = `
-      <div class="flex flex-col gap-2">
-        <input id="login-handle-mobile" type="text" placeholder="handle.bsky.social"
-          class="min-h-10 rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-2 text-sm text-[var(--text)]" />
-        <button type="button" id="login-btn-mobile"
-          class="min-h-10 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">
-          Log in / Sign up
-        </button>
-        <p class="hidden text-xs text-[var(--danger)]" id="login-error-mobile"></p>
-      </div>`;
-    setupLoginButton("login-btn-mobile", "login-handle-mobile", "login-error-mobile");
+    const mobileArea = document.getElementById("mobile-user-area");
+    if (mobileArea) {
+      mobileArea.innerHTML = `
+        <div class="flex flex-col gap-2">
+          <input id="login-handle-mobile" type="text" placeholder="handle.bsky.social"
+            class="min-h-10 rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-2 text-sm text-[var(--text)]" />
+          <button type="button" id="login-btn-mobile"
+            class="min-h-10 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">
+            Log in / Sign up
+          </button>
+          <p class="hidden text-xs text-[var(--danger)]" id="login-error-mobile"></p>
+        </div>`;
+      setupLoginButton("login-btn-mobile", "login-handle-mobile", "login-error-mobile");
+    }
   }
 
   function setupLoginButton(btnId: string, inputId: string, errorId: string) {
@@ -357,36 +385,36 @@ const isHome = pathname === "/";
     } catch { renderUserLoggedOut(); }
   }
 
-  // Desktop login button
-  setupLoginButton("login-btn-desktop", "login-handle-desktop", "login-error-desktop");
-  document.getElementById("logout-btn-desktop")?.addEventListener("click", handleLogout);
-
-  // Mobile menu toggle
-  const mobileMenuBtn = document.getElementById("mobile-menu-btn")!;
-  const mobileMenu = document.getElementById("mobile-menu")!;
-  const burgerIcon = document.getElementById("mobile-burger-icon")!;
-  const xIcon = document.getElementById("mobile-x-icon")!;
-  mobileMenuBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const open = mobileMenu.classList.toggle("hidden");
-    burgerIcon.classList.toggle("hidden", !open);
-    xIcon.classList.toggle("hidden", open);
-    mobileMenuBtn.setAttribute("aria-expanded", String(!open));
+  // ── One-time document listeners (survive page transitions) ─────────────────
+  document.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); openSearch(); }
   });
   document.addEventListener("mousedown", (e) => {
-    if (!mobileMenuBtn.contains(e.target as Node) && !mobileMenu.contains(e.target as Node)) {
-      mobileMenu.classList.add("hidden");
-      burgerIcon.classList.remove("hidden");
-      xIcon.classList.add("hidden");
-      mobileMenuBtn.setAttribute("aria-expanded", "false");
+    // Close user dropdown when clicking outside
+    const avatarWrap = document.getElementById("user-avatar-wrap");
+    const dropdown = document.getElementById("user-dropdown");
+    const avatarBtn = document.getElementById("user-avatar-btn");
+    if (avatarWrap && dropdown && !avatarWrap.contains(e.target as Node)) {
+      dropdown.classList.add("hidden");
+      avatarBtn?.setAttribute("aria-expanded", "false");
+    }
+    // Close mobile menu when clicking outside
+    const menuBtn = document.getElementById("mobile-menu-btn");
+    const menu = document.getElementById("mobile-menu");
+    if (menuBtn && menu && !menuBtn.contains(e.target as Node) && !menu.contains(e.target as Node)) {
+      menu.classList.add("hidden");
+      document.getElementById("mobile-burger-icon")?.classList.remove("hidden");
+      document.getElementById("mobile-x-icon")?.classList.add("hidden");
+      menuBtn.setAttribute("aria-expanded", "false");
     }
   });
 
-  initUserSection();
-
-  // Re-run on Astro page transitions
-  document.addEventListener("astro:page-load", () => {
+  // ── Per-page setup — runs on every navigation including the first ──────────
+  function setup() {
     initTheme();
-    initUserSection();
-  });
+    initSearch();
+    initMobileMenu();
+    void initUserSection();
+  }
+  document.addEventListener("astro:page-load", setup);
 </script>
