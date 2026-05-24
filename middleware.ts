@@ -9,7 +9,7 @@ import type { NextRequest } from "next/server";
  * intentional and safe. The security-sensitive OAuth session token remains in
  * the httpOnly `session` cookie and is never exposed here.
  */
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const did = request.cookies.get("did")?.value;
   const response = NextResponse.next();
 
@@ -32,3 +32,5 @@ export const config = {
   // auth server-side via the httpOnly cookies directly).
   matcher: ["/((?!_next/static|_next/image|favicon|api/).*)"],
 };
+
+export const runtime = "experimental-edge";
