@@ -55,15 +55,12 @@ pnpm gen-key       # generate a PRIVATE_KEY JWK
 - `ci.yaml` — lint, format check, build on every PR/push
 - `format.yaml` — autofix lint + Prettier and commits via `autofix-ci`
 
-## Deploying to Cloudflare
+## Deploying to Vercel
 
-1. Create a KV namespace for async profile jobs and add its IDs to
-   `wrangler.jsonc` under the `PROFILE_JOBS` binding.
-2. In Cloudflare project settings add:
+1. In Vercel project settings add:
    - `PUBLIC_URL` — your domain, e.g. `https://pronouns.blue`
    - `PRIVATE_KEY` — from `pnpm gen-key`
-3. Deploy from GitHub as an OpenNext Cloudflare project. No database or
-   migrations needed.
+2. Deploy from GitHub as a Next.js project. No database or migrations needed.
 
 ## Lexicon development
 

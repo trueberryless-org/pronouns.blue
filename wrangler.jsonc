@@ -6,15 +6,9 @@
     "enabled": true,
   },
   "compatibility_flags": ["nodejs_compat"],
-  "kv_namespaces": [
-    {
-      "binding": "PROFILE_JOBS",
-      "id": "c79bec0e1a06404d83f9624f045c8428",
-    },
-  ],
+  "main": ".open-next/worker.js",
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS",
   },
-  "main": ".open-next/worker.js",
 }
