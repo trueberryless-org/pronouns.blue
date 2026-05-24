@@ -1,4 +1,8 @@
-export type ProfileSaveJobStatus = "pending" | "processing" | "success" | "error";
+export type ProfileSaveJobStatus =
+  | "pending"
+  | "processing"
+  | "success"
+  | "error";
 
 export interface ProfileSaveJob {
   id: string;

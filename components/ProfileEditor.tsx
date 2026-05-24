@@ -850,9 +850,7 @@ export function ProfileEditor({
       await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
     }
 
-    throw new Error(
-      "Saving is taking longer than expected. Please try again.",
-    );
+    throw new Error("Saving is taking longer than expected. Please try again.");
   }
 
   async function saveProfile() {

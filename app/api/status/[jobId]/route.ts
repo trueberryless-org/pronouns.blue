@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getSession } from "@/lib/auth/session";
-import { loadProfileSaveJob, type ProfileJobStore } from "@/lib/jobs/profile-save";
+import {
+  loadProfileSaveJob,
+  type ProfileJobStore,
+} from "@/lib/jobs/profile-save";
 
 export async function GET(
   _request: NextRequest,
@@ -13,8 +16,9 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let cloudflareContext: Awaited<ReturnType<typeof getCloudflareContext>> | null =
-    null;
+  let cloudflareContext: Awaited<
+    ReturnType<typeof getCloudflareContext>
+  > | null = null;
   try {
     cloudflareContext = await getCloudflareContext({ async: true });
   } catch {

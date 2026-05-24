@@ -84,7 +84,10 @@ function getCounts(groups: CleanGroup[]) {
   };
 }
 
-async function publishProfileRecords(session: OAuthSession, groups: CleanGroup[]) {
+async function publishProfileRecords(
+  session: OAuthSession,
+  groups: CleanGroup[],
+) {
   const lexClient = new Client(session);
   const now = new Date().toISOString();
 
@@ -222,8 +225,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let cloudflareContext: Awaited<ReturnType<typeof getCloudflareContext>> | null =
-    null;
+  let cloudflareContext: Awaited<
+    ReturnType<typeof getCloudflareContext>
+  > | null = null;
   try {
     cloudflareContext = await getCloudflareContext({ async: true });
   } catch {
