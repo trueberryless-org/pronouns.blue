@@ -820,6 +820,41 @@ export function ProfileEditor({
     setSaved(false);
   }
 
+  async function waitForSaveJob(jobId: string) {
+    const startedAt = Date.now();
+    const timeoutMs = 60_000;
+    const pollIntervalMs = 750;
+
+    while (Date.now() - startedAt < timeoutMs) {
+      const response = await fetch(`/api/status/${jobId}`, {
+        cache: "no-store",
+      });
+      const data = response.headers
+        .get("content-type")
+        ?.includes("application/json")
+        ? ((await response.json()) as {
+            status?: string;
+            error?: string;
+          })
+        : ({} as { status?: string; error?: string });
+
+      if (!response.ok) {
+        throw new Error(data.error || `Server error ${response.status}`);
+      }
+
+      if (data.status === "success") return;
+      if (data.status === "error") {
+        throw new Error(data.error || "Failed to save profile");
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+    }
+
+    throw new Error(
+      "Saving is taking longer than expected. Please try again.",
+    );
+  }
+
   async function saveProfile() {
     setIsSaving(true);
     setError(null);
@@ -847,10 +882,19 @@ export function ProfileEditor({
       const data = response.headers
         .get("content-type")
         ?.includes("application/json")
-        ? ((await response.json()) as { error?: string })
-        : ({} as { error?: string });
-      if (!response.ok)
+        ? ((await response.json()) as { error?: string; jobId?: string })
+        : ({} as { error?: string; jobId?: string });
+      if (!response.ok) {
         throw new Error(data.error || `Server error ${response.status}`);
+      }
+
+      if (response.status === 202) {
+        if (!data.jobId) {
+          throw new Error("Missing background job id");
+        }
+        await waitForSaveJob(data.jobId);
+      }
+
       setSaved(true);
       router.refresh();
     } catch (err) {
