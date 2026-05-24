@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build:lex": "ts-lex build --importExt=\"\" --out=./lib/lexicons --override",
+    "build:cloudflare": "pnpm build:lex && opennextjs-cloudflare",
     "build": "pnpm build:lex && next build",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
