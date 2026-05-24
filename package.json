@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build:lex": "ts-lex build --importExt=\"\" --out=./lib/lexicons --override",
     "build": "pnpm build:lex && next build",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "start": "next start --port ${PORT-3000}",
     "gen-key": "tsx scripts/gen-key.ts",
     "lint": "eslint",
@@ -24,6 +26,7 @@
     "react-dom": "19.2.6"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.19.11",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^24.12.2",
     "@types/react": "^19",
@@ -33,7 +36,8 @@
     "prettier": "^3.8.3",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.94.0"
   },
   "engines": {
     "node": ">=24 <25"
