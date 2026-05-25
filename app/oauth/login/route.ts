@@ -13,10 +13,7 @@ export async function POST(request: NextRequest) {
       );
     }
     if (!isActorIdentifier(handle)) {
-      return NextResponse.json(
-        { error: "Handle is invalid" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Handle is invalid" }, { status: 400 });
     }
 
     const client = await getOAuthClient();

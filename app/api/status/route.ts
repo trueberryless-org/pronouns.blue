@@ -188,25 +188,22 @@ export async function POST(request: NextRequest) {
           const preferredPronounSet = new Set(preferredPronouns);
           return [
             ...names.map(async (value, index) => {
-              const response = await rpc.post(
-                "com.atproto.repo.createRecord",
-                {
-                  input: {
-                    repo: session.did,
-                    collection: NAME_COLLECTION,
-                    record: {
-                      $type: NAME_COLLECTION,
-                      value,
-                      preferred: preferredNameSet.has(value),
-                      lang,
-                      sortOrder: index,
-                      createdAt: now,
-                      updatedAt: now,
-                    },
+              const response = await rpc.post("com.atproto.repo.createRecord", {
+                input: {
+                  repo: session.did,
+                  collection: NAME_COLLECTION,
+                  record: {
+                    $type: NAME_COLLECTION,
+                    value,
+                    preferred: preferredNameSet.has(value),
+                    lang,
+                    sortOrder: index,
+                    createdAt: now,
+                    updatedAt: now,
                   },
-                  as: null,
                 },
-              );
+                as: null,
+              });
               if (!response.ok) {
                 throw new Error(
                   response.data.message ?? "Failed to create name record",
@@ -214,25 +211,22 @@ export async function POST(request: NextRequest) {
               }
             }),
             ...pronouns.map(async (value, index) => {
-              const response = await rpc.post(
-                "com.atproto.repo.createRecord",
-                {
-                  input: {
-                    repo: session.did,
-                    collection: PRONOUN_COLLECTION,
-                    record: {
-                      $type: PRONOUN_COLLECTION,
-                      value,
-                      preferred: preferredPronounSet.has(value),
-                      lang,
-                      sortOrder: index,
-                      createdAt: now,
-                      updatedAt: now,
-                    },
+              const response = await rpc.post("com.atproto.repo.createRecord", {
+                input: {
+                  repo: session.did,
+                  collection: PRONOUN_COLLECTION,
+                  record: {
+                    $type: PRONOUN_COLLECTION,
+                    value,
+                    preferred: preferredPronounSet.has(value),
+                    lang,
+                    sortOrder: index,
+                    createdAt: now,
+                    updatedAt: now,
                   },
-                  as: null,
                 },
-              );
+                as: null,
+              });
               if (!response.ok) {
                 throw new Error(
                   response.data.message ?? "Failed to create pronoun record",
