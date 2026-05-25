@@ -32,5 +32,3 @@ export const config = {
   // auth server-side via the httpOnly cookies directly).
   matcher: ["/((?!_next/static|_next/image|favicon|api/).*)"],
 };
-
-export const runtime = "experimental-edge";
