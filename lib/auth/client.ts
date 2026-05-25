@@ -138,9 +138,7 @@ export async function getOAuthClient(): Promise<NodeOAuthClient> {
     // Explicit handleResolver so it inherits the same originalFetch for consistency
     handleResolver: {
       async resolve(handle: string) {
-        const normalized = handle.startsWith("@")
-          ? handle.slice(1)
-          : handle;
+        const normalized = handle.startsWith("@") ? handle.slice(1) : handle;
         const response = await originalFetch(
           `${HANDLE_RESOLVE_URL}?handle=${encodeURIComponent(normalized)}`,
         );
