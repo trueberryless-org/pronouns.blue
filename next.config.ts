@@ -37,6 +37,7 @@ const nextConfig: NextConfig = {
     "@atproto-labs/fetch-node",
     "@atproto/common-web",
     "@atproto/syntax",
+    "jose",
   ],
 };
 
