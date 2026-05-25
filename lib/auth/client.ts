@@ -134,7 +134,7 @@ function getOriginalFetch(): typeof globalThis.fetch {
   // POST bodies. Use the original pre-patch fetch stored by Next at startup.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fetchAsAny = globalThis.fetch as any;
-  return fetchAsAny._nextOriginalFetch ?? globalThis.fetch;
+  return fetchAsAny._nextOriginalFetch || globalThis.fetch;
 }
 
 function createStateStore(): StateStore {
