@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOAuthClient, SCOPE } from "@/lib/auth/client";
+import { isActorIdentifier } from "@atcute/lexicons/syntax";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,15 +12,22 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+    if (!isActorIdentifier(handle)) {
+      return NextResponse.json(
+        { error: "Handle is invalid" },
+        { status: 400 },
+      );
+    }
 
     const client = await getOAuthClient();
 
     // Resolves handle, finds their auth server, returns authorization URL
-    const authUrl = await client.authorize(handle, {
+    const { url } = await client.authorize({
+      target: { type: "account", identifier: handle },
       scope: SCOPE,
     });
 
-    return NextResponse.json({ redirectUrl: authUrl.toString() });
+    return NextResponse.json({ redirectUrl: url.toString() });
   } catch (error) {
     console.error("OAuth login error:", error);
     return NextResponse.json(

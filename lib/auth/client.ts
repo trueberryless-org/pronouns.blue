@@ -1,24 +1,31 @@
 import {
-  JoseKey,
-  Keyset,
-  NodeOAuthClient,
-  asResolvedHandle,
-  buildAtprotoLoopbackClientMetadata,
-} from "@atproto/oauth-client-node";
-import type {
-  NodeSavedSession,
-  NodeSavedState,
-  OAuthClientMetadataInput,
-} from "@atproto/oauth-client-node";
+  OAuthClient,
+  type ClientAssertionPrivateJwk,
+  type ConfidentialClientMetadata,
+  type PublicClientMetadata,
+  type SessionStore,
+  type StateStore,
+  type StoredSession,
+  type StoredState,
+} from "@atcute/oauth-node-client";
+import {
+  CompositeDidDocumentResolver,
+  LocalActorResolver,
+  PlcDidDocumentResolver,
+  WebDidDocumentResolver,
+  XrpcHandleResolver,
+} from "@atcute/identity-resolver";
 import { cookies } from "next/headers";
 
 export const SCOPE =
   "atproto repo:blue.pronouns.name repo:blue.pronouns.pronoun";
 
-let client: NodeOAuthClient | null = null;
+let client: OAuthClient | null = null;
 
 const PUBLIC_URL = process.env.PUBLIC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const PUBLIC_APPVIEW_URL =
+  process.env.PUBLIC_APPVIEW_URL || "https://public.api.bsky.app";
 const IS_PROD = process.env.NODE_ENV === "production";
 const PUBLIC_APPVIEW_URL =
   process.env.PUBLIC_APPVIEW_URL ?? "https://public.api.bsky.app";
@@ -94,138 +101,184 @@ function writeChunkedCookie(
   });
 }
 
-function getClientMetadata(): OAuthClientMetadataInput {
-  if (PUBLIC_URL) {
-    return {
-      client_id: `${PUBLIC_URL}/oauth-client-metadata.json`,
-      client_name: "pronouns.blue",
-      client_uri: PUBLIC_URL,
-      redirect_uris: [`${PUBLIC_URL}/oauth/callback`],
-      grant_types: ["authorization_code", "refresh_token"],
-      response_types: ["code"],
-      scope: SCOPE,
-      token_endpoint_auth_method: "private_key_jwt" as const,
-      token_endpoint_auth_signing_alg: "ES256" as const, // must match the alg in scripts/gen-key.ts
-      jwks_uri: `${PUBLIC_URL}/.well-known/jwks.json`,
-      dpop_bound_access_tokens: true,
-    };
-  } else {
-    return buildAtprotoLoopbackClientMetadata({
-      scope: SCOPE,
-      redirect_uris: ["http://127.0.0.1:3000/oauth/callback"],
-    });
+function getConfidentialMetadata(): ConfidentialClientMetadata {
+  if (!PUBLIC_URL || !PRIVATE_KEY) {
+    throw new Error("PUBLIC_URL and PRIVATE_KEY are required for OAuth.");
   }
+  return {
+    client_id: `${PUBLIC_URL}/oauth-client-metadata.json`,
+    client_name: "pronouns.blue",
+    client_uri: PUBLIC_URL,
+    redirect_uris: [`${PUBLIC_URL}/oauth/callback`],
+    scope: SCOPE,
+    jwks_uri: `${PUBLIC_URL}/.well-known/jwks.json`,
+  };
 }
 
-async function getKeyset(): Promise<Keyset | undefined> {
+function getPublicMetadata(): PublicClientMetadata {
+  return {
+    redirect_uris: ["http://127.0.0.1:3000/oauth/callback"],
+    scope: SCOPE,
+  };
+}
+
+function getKeyset(): ClientAssertionPrivateJwk[] | undefined {
+  if (PUBLIC_URL && !PRIVATE_KEY) {
+    throw new Error("PRIVATE_KEY is required when PUBLIC_URL is set.");
+  }
   if (PUBLIC_URL && PRIVATE_KEY) {
-    return new Keyset([await JoseKey.fromJWK(JSON.parse(PRIVATE_KEY))]);
-  } else {
-    return undefined;
+    return [JSON.parse(PRIVATE_KEY) as ClientAssertionPrivateJwk];
   }
+  return undefined;
 }
 
-export async function getOAuthClient(): Promise<NodeOAuthClient> {
-  if (client) return client;
-
+function getOriginalFetch(): typeof globalThis.fetch {
   // Next.js patches globalThis.fetch for ISR caching, which can corrupt DPoP
   // POST bodies. Use the original pre-patch fetch stored by Next at startup.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fetchAsAny = globalThis.fetch as any;
-  const originalFetch = fetchAsAny._nextOriginalFetch ?? globalThis.fetch;
+  return fetchAsAny._nextOriginalFetch ?? globalThis.fetch;
+}
 
-  client = new NodeOAuthClient({
-    fetch: originalFetch,
-    // Explicit handleResolver so it inherits the same originalFetch for consistency
-    handleResolver: {
-      async resolve(handle: string, options?: { signal?: AbortSignal }) {
-        const normalized = handle.startsWith("@") ? handle.slice(1) : handle;
-        const response = await originalFetch(
-          `${HANDLE_RESOLVE_URL}?handle=${encodeURIComponent(normalized)}`,
-          { signal: options?.signal },
-        );
-        if (!response.ok) return null;
-        const data = (await response.json()) as { did?: string };
-        return asResolvedHandle(data.did);
-      },
+function createStateStore(): StateStore {
+  return {
+    async get(key: string) {
+      const jar = await cookies();
+      const raw = jar.get(STATE_COOKIE)?.value;
+      if (!raw) return undefined;
+      try {
+        const parsed = JSON.parse(raw) as {
+          key: string;
+          value: StoredState;
+        };
+        return parsed.key === key ? parsed.value : undefined;
+      } catch {
+        return undefined;
+      }
     },
-    clientMetadata: getClientMetadata(),
-    keyset: await getKeyset(),
-
-    stateStore: {
-      async get(key: string) {
+    async set(key: string, value: StoredState) {
+      try {
+        const jar = await cookies();
+        jar.set(STATE_COOKIE, JSON.stringify({ key, value }), {
+          httpOnly: true,
+          secure: IS_PROD,
+          sameSite: "lax",
+          maxAge: 600, // 10 minutes — enough for the OAuth redirect round-trip
+          path: "/",
+        });
+      } catch {
+        // cookies() is read-only in Server Components; ignore if called there
+      }
+    },
+    async delete(key: string) {
+      try {
         const jar = await cookies();
         const raw = jar.get(STATE_COOKIE)?.value;
-        if (!raw) return undefined;
-        try {
-          const parsed = JSON.parse(raw) as {
-            key: string;
-            value: NodeSavedState;
-          };
-          return parsed.key === key ? parsed.value : undefined;
-        } catch {
-          return undefined;
-        }
-      },
-      async set(key: string, value: NodeSavedState) {
-        try {
-          const jar = await cookies();
-          jar.set(STATE_COOKIE, JSON.stringify({ key, value }), {
-            httpOnly: true,
-            secure: IS_PROD,
-            sameSite: "lax",
-            maxAge: 600, // 10 minutes — enough for the OAuth redirect round-trip
-            path: "/",
-          });
-        } catch {
-          // cookies() is read-only in Server Components; ignore if called there
-        }
-      },
-      async del(_key: string) {
-        try {
-          const jar = await cookies();
+        if (!raw) return;
+        const parsed = JSON.parse(raw) as { key: string };
+        if (parsed.key === key) {
           jar.delete(STATE_COOKIE);
-        } catch {
-          // ignore
         }
-      },
+      } catch {
+        // ignore
+      }
     },
-
-    sessionStore: {
-      async get(_key: string) {
+    async clear() {
+      try {
         const jar = await cookies();
-        const raw = readChunkedCookie(jar, SESSION_COOKIE);
-        if (!raw) return undefined;
-        try {
-          return JSON.parse(raw) as NodeSavedSession;
-        } catch {
-          return undefined;
-        }
-      },
-      async set(_key: string, value: NodeSavedSession) {
-        try {
-          const jar = await cookies();
-          writeChunkedCookie(jar, SESSION_COOKIE, JSON.stringify(value), {
-            httpOnly: true,
-            secure: IS_PROD,
-            sameSite: "lax",
-            maxAge: 60 * 60 * 24 * 30, // 30 days
-            path: "/",
-          });
-        } catch {
-          // ignore — token refresh in a Server Component won't persist,
-          // but the session will be refreshed again on the next Route Handler call
-        }
-      },
-      async del(_key: string) {
-        try {
-          const jar = await cookies();
-          clearChunkedCookie(jar, SESSION_COOKIE);
-        } catch {
-          // ignore
-        }
-      },
+        jar.delete(STATE_COOKIE);
+      } catch {
+        // ignore
+      }
     },
+  };
+}
+
+function createSessionStore(): SessionStore {
+  return {
+    async get(key: string) {
+      const jar = await cookies();
+      const raw = jar.get(SESSION_COOKIE)?.value;
+      if (!raw) return undefined;
+      try {
+        const parsed = JSON.parse(raw) as {
+          key: string;
+          value: StoredSession;
+        };
+        return parsed.key === key ? parsed.value : undefined;
+      } catch {
+        return undefined;
+      }
+    },
+    async set(key: string, value: StoredSession) {
+      try {
+        const jar = await cookies();
+        jar.set(SESSION_COOKIE, JSON.stringify({ key, value }), {
+          httpOnly: true,
+          secure: IS_PROD,
+          sameSite: "lax",
+          maxAge: 60 * 60 * 24 * 30, // 30 days
+          path: "/",
+        });
+      } catch {
+        // ignore — token refresh in a Server Component won't persist,
+        // but the session will be refreshed again on the next Route Handler call
+      }
+    },
+    async delete(key: string) {
+      try {
+        const jar = await cookies();
+        const raw = jar.get(SESSION_COOKIE)?.value;
+        if (!raw) return;
+        const parsed = JSON.parse(raw) as { key: string };
+        if (parsed.key === key) {
+          jar.delete(SESSION_COOKIE);
+        }
+      } catch {
+        // ignore
+      }
+    },
+    async clear() {
+      try {
+        const jar = await cookies();
+        jar.delete(SESSION_COOKIE);
+      } catch {
+        // ignore
+      }
+    },
+  };
+}
+
+function createActorResolver(fetchImpl: typeof globalThis.fetch) {
+  return new LocalActorResolver({
+    handleResolver: new XrpcHandleResolver({
+      serviceUrl: PUBLIC_APPVIEW_URL,
+      fetch: fetchImpl,
+    }),
+    didDocumentResolver: new CompositeDidDocumentResolver({
+      methods: {
+        plc: new PlcDidDocumentResolver({ fetch: fetchImpl }),
+        web: new WebDidDocumentResolver({ fetch: fetchImpl }),
+      },
+    }),
+  });
+}
+
+export async function getOAuthClient(): Promise<OAuthClient> {
+  if (client) return client;
+  const originalFetch = getOriginalFetch();
+  const keyset = getKeyset();
+  const metadata = keyset ? getConfidentialMetadata() : getPublicMetadata();
+
+  client = new OAuthClient({
+    ...(keyset ? { keyset } : {}),
+    metadata,
+    actorResolver: createActorResolver(originalFetch),
+    stores: {
+      states: createStateStore(),
+      sessions: createSessionStore(),
+    },
+    fetch: originalFetch,
   });
 
   return client;

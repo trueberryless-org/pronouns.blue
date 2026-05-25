@@ -7,8 +7,8 @@ Users sign in with their ATProto account (Bluesky, etc.), then set their names a
 ## Tech stack
 
 - [Next.js](https://nextjs.org/) App Router
-- `@atproto/oauth-client-node` — sign in with any ATProto account
-- `@atproto/lex` + generated bindings from local lexicons
+- `@atcute/oauth-node-client` — sign in with any ATProto account
+- `@atcute/client` — XRPC client for ATProto
 - No database — OAuth state and sessions are stored in `httpOnly` cookies
 
 ## Local setup

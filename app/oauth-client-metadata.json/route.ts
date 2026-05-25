@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const client = await getOAuthClient();
-  return NextResponse.json(client.clientMetadata, {
+  return NextResponse.json(client.metadata, {
     headers: {
       "Cache-Control": "public, max-age=3600, s-maxage=3600",
     },

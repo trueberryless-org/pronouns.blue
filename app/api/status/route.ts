@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
-import { Client } from "@atproto/lex";
-import { AtUri } from "@atproto/syntax";
+import { Client } from "@atcute/client";
+import type {} from "@atcute/atproto";
+import type { ActorIdentifier, Nsid } from "@atcute/lexicons/syntax";
 import { getSession } from "@/lib/auth/session";
 import { getProfileRecordsTag } from "@/lib/atproto/cache";
 import { DEFAULT_LANG } from "@/lib/atproto/records";
-import * as blue from "@/lib/lexicons/blue";
 
 interface IncomingGroup {
   lang: string;
@@ -48,16 +48,39 @@ function cleanLang(value: unknown): string {
   return DEFAULT_LANG;
 }
 
+const NAME_COLLECTION: Nsid = "blue.pronouns.name";
+const PRONOUN_COLLECTION: Nsid = "blue.pronouns.pronoun";
+
+function extractRecordKey(uri: string): string {
+  if (!uri.startsWith("at://")) {
+    throw new Error(`Invalid record URI: ${uri}`);
+  }
+  const parts = uri.split("/");
+  const rkey = parts.at(-1);
+  if (!rkey) {
+    throw new Error(`Missing record key in URI: ${uri}`);
+  }
+  return rkey;
+}
+
 async function listAllRecordUris(
-  lexClient: Client,
-  schema: typeof blue.pronouns.name.main | typeof blue.pronouns.pronoun.main,
+  rpc: Client,
+  repo: ActorIdentifier,
+  collection: Nsid,
 ) {
   const uris: string[] = [];
   let cursor: string | undefined;
   do {
-    const response = await lexClient.list(schema, { limit: 100, cursor });
-    uris.push(...response.records.map((record) => record.uri));
-    cursor = response.cursor;
+    const response = await rpc.get("com.atproto.repo.listRecords", {
+      params: { repo, collection, limit: 100, cursor },
+    });
+    if (!response.ok) {
+      throw new Error(
+        response.data.message ?? "Failed to list profile records",
+      );
+    }
+    uris.push(...response.data.records.map((record) => record.uri));
+    cursor = response.data.cursor;
   } while (cursor);
   return uris;
 }
@@ -117,25 +140,45 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const lexClient = new Client(session);
+    const rpc = new Client({ handler: session });
     const now = new Date().toISOString();
 
     const [existingNameUris, existingPronounUris] = await Promise.all([
-      listAllRecordUris(lexClient, blue.pronouns.name.main),
-      listAllRecordUris(lexClient, blue.pronouns.pronoun.main),
+      listAllRecordUris(rpc, session.did, NAME_COLLECTION),
+      listAllRecordUris(rpc, session.did, PRONOUN_COLLECTION),
     ]);
 
     await Promise.all([
-      ...existingNameUris.map((uri) =>
-        lexClient.delete(blue.pronouns.name.main, {
-          rkey: new AtUri(uri).rkey,
-        }),
-      ),
-      ...existingPronounUris.map((uri) =>
-        lexClient.delete(blue.pronouns.pronoun.main, {
-          rkey: new AtUri(uri).rkey,
-        }),
-      ),
+      ...existingNameUris.map(async (uri) => {
+        const response = await rpc.post("com.atproto.repo.deleteRecord", {
+          input: {
+            repo: session.did,
+            collection: NAME_COLLECTION,
+            rkey: extractRecordKey(uri),
+          },
+          as: null,
+        });
+        if (!response.ok) {
+          throw new Error(
+            response.data.message ?? "Failed to delete name record",
+          );
+        }
+      }),
+      ...existingPronounUris.map(async (uri) => {
+        const response = await rpc.post("com.atproto.repo.deleteRecord", {
+          input: {
+            repo: session.did,
+            collection: PRONOUN_COLLECTION,
+            rkey: extractRecordKey(uri),
+          },
+          as: null,
+        });
+        if (!response.ok) {
+          throw new Error(
+            response.data.message ?? "Failed to delete pronoun record",
+          );
+        }
+      }),
     ]);
 
     await Promise.all(
@@ -144,26 +187,58 @@ export async function POST(request: NextRequest) {
           const preferredNameSet = new Set(preferredNames);
           const preferredPronounSet = new Set(preferredPronouns);
           return [
-            ...names.map((value, index) =>
-              lexClient.create(blue.pronouns.name.main, {
-                value,
-                preferred: preferredNameSet.has(value),
-                lang,
-                sortOrder: index,
-                createdAt: now,
-                updatedAt: now,
-              }),
-            ),
-            ...pronouns.map((value, index) =>
-              lexClient.create(blue.pronouns.pronoun.main, {
-                value,
-                preferred: preferredPronounSet.has(value),
-                lang,
-                sortOrder: index,
-                createdAt: now,
-                updatedAt: now,
-              }),
-            ),
+            ...names.map(async (value, index) => {
+              const response = await rpc.post(
+                "com.atproto.repo.createRecord",
+                {
+                  input: {
+                    repo: session.did,
+                    collection: NAME_COLLECTION,
+                    record: {
+                      $type: NAME_COLLECTION,
+                      value,
+                      preferred: preferredNameSet.has(value),
+                      lang,
+                      sortOrder: index,
+                      createdAt: now,
+                      updatedAt: now,
+                    },
+                  },
+                  as: null,
+                },
+              );
+              if (!response.ok) {
+                throw new Error(
+                  response.data.message ?? "Failed to create name record",
+                );
+              }
+            }),
+            ...pronouns.map(async (value, index) => {
+              const response = await rpc.post(
+                "com.atproto.repo.createRecord",
+                {
+                  input: {
+                    repo: session.did,
+                    collection: PRONOUN_COLLECTION,
+                    record: {
+                      $type: PRONOUN_COLLECTION,
+                      value,
+                      preferred: preferredPronounSet.has(value),
+                      lang,
+                      sortOrder: index,
+                      createdAt: now,
+                      updatedAt: now,
+                    },
+                  },
+                  as: null,
+                },
+              );
+              if (!response.ok) {
+                throw new Error(
+                  response.data.message ?? "Failed to create pronoun record",
+                );
+              }
+            }),
           ];
         },
       ),

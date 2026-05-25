@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build:lex": "ts-lex build --importExt=\"\" --out=./lib/lexicons --override",
+    "build:lex": "lex-cli generate",
     "build:cloudflare": "pnpm build:lex && opennextjs-cloudflare build",
     "build": "pnpm build:lex && next build",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
@@ -17,16 +17,18 @@
     "format:check": "prettier . --check"
   },
   "dependencies": {
-    "@atproto/common-web": "^0.4.11",
-    "@atproto/lex": "^0.0.10",
-    "@atproto/oauth-client-node": "^0.3.15",
-    "@atproto/syntax": "^0.4.2",
+    "@atcute/atproto": "^4.0.0",
+    "@atcute/client": "^5.0.0",
+    "@atcute/identity-resolver": "^2.0.0",
+    "@atcute/lexicons": "^2.0.0",
+    "@atcute/oauth-node-client": "^2.0.0",
     "next": "16.2.6",
     "next-view-transitions": "^0.3.5",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
   "devDependencies": {
+    "@atcute/lex-cli": "^3.1.0",
     "@opennextjs/cloudflare": "^1.19.11",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^24.12.2",

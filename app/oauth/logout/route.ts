@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getOAuthClient } from "@/lib/auth/client";
+import { isDid } from "@atcute/lexicons/syntax";
 
 export async function POST() {
   try {
     const cookieStore = await cookies();
     const did = cookieStore.get("did")?.value;
 
-    if (did) {
+    if (did && isDid(did)) {
       const client = await getOAuthClient();
       await client.revoke(did);
     }

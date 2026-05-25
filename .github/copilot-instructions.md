@@ -28,7 +28,7 @@ This is a Next.js App Router app for sharing names and pronouns on AT Protocol. 
    `/oauth/login`, `/oauth/callback`, `/oauth/logout` orchestrate auth via `lib/auth/client.ts`. OAuth state and session (tokens + DPoP private key) are stored entirely in `httpOnly` browser cookies (`oauth_state`, `session`, `did`). No server-side storage is used.
 
 2. **Record publishing**  
-   `POST /api/status` uses `@atproto/lex` to delete and recreate all `blue.pronouns.name` and `blue.pronouns.pronoun` records in the user's ATProto repo. Records live exclusively on the user's PDS.
+   `POST /api/status` uses `@atcute/client` to delete and recreate all `blue.pronouns.name` and `blue.pronouns.pronoun` records in the user's ATProto repo. Records live exclusively on the user's PDS.
 
 3. **Profile reading**  
    `app/profile/[handle]/page.tsx` resolves the handle via the Bluesky appview (`app.bsky.actor.getProfile`), then fetches name/pronoun records directly from the user's PDS via `com.atproto.repo.listRecords` (`lib/atproto/records.ts`).
@@ -46,4 +46,4 @@ This is a Next.js App Router app for sharing names and pronouns on AT Protocol. 
 - **Records live on the PDS, not locally.** There is no local database or caching layer.
 - **Use `getDid()` in Server Components** (reads `did` cookie, fast, no token I/O). Only call `getSession()` (which calls `client.restore()`) in Route Handlers where cookies are writable, so a token refresh can be persisted.
 - **`getOAuthClient()` is a singleton** but its cookie stores call `cookies()` lazily on each invocation, so they always operate on the current request's cookie jar.
-- **undici's native fetch** is passed to `NodeOAuthClient` to bypass Next.js's patched `globalThis.fetch`, which would otherwise corrupt POST bodies in the DPoP flow.
+- **Next.js's original fetch** is passed to the OAuth client and identity resolvers to bypass the patched `globalThis.fetch`, which would otherwise corrupt POST bodies in the DPoP flow.

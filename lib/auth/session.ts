@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { getOAuthClient } from "./client";
-import type { OAuthSession } from "@atproto/oauth-client-node";
+import type { OAuthSession } from "@atcute/oauth-node-client";
+import { isDid, type Did } from "@atcute/lexicons/syntax";
 
 export async function getSession(): Promise<OAuthSession | null> {
   const did = await getDid();
@@ -14,7 +15,9 @@ export async function getSession(): Promise<OAuthSession | null> {
   }
 }
 
-export async function getDid(): Promise<string | null> {
+export async function getDid(): Promise<Did | null> {
   const cookieStore = await cookies();
-  return cookieStore.get("did")?.value ?? null;
+  const did = cookieStore.get("did")?.value;
+  if (!did || !isDid(did)) return null;
+  return did;
 }
