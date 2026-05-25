@@ -4,8 +4,8 @@ const config = defineCloudflareConfig();
 
 config.cloudflare = {
   ...config.cloudflare,
-  // Avoid workerd export conditions that break jose bundling in OpenNext.
-  useWorkerdCondition: false,
+  // Prefer workerd export conditions to avoid Node-only polyfills in Workers.
+  useWorkerdCondition: true,
 };
 
 export default config;

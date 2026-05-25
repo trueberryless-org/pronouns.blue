@@ -1,8 +1,8 @@
 import {
-  AtprotoHandleResolverNode,
   JoseKey,
   Keyset,
   NodeOAuthClient,
+  asResolvedHandle,
   buildAtprotoLoopbackClientMetadata,
 } from "@atproto/oauth-client-node";
 import type {
@@ -20,9 +20,79 @@ let client: NodeOAuthClient | null = null;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const IS_PROD = process.env.NODE_ENV === "production";
+const PUBLIC_APPVIEW_URL =
+  process.env.PUBLIC_APPVIEW_URL ?? "https://public.api.bsky.app";
+const HANDLE_RESOLVE_URL = `${PUBLIC_APPVIEW_URL}/xrpc/com.atproto.identity.resolveHandle`;
 
 const STATE_COOKIE = "oauth_state";
 const SESSION_COOKIE = "session";
+const SESSION_CHUNK_SIZE = 3000;
+
+function splitCookieValue(value: string, size: number): string[] {
+  if (value.length <= size) return [value];
+  const chunks: string[] = [];
+  for (let i = 0; i < value.length; i += size) {
+    chunks.push(value.slice(i, i + size));
+  }
+  return chunks;
+}
+
+function readChunkedCookie(
+  jar: Awaited<ReturnType<typeof cookies>>,
+  name: string,
+) {
+  const direct = jar.get(name)?.value;
+  if (direct) return direct;
+
+  const prefix = `${name}.`;
+  const all = "getAll" in jar ? jar.getAll() : [];
+  const chunks = all
+    .map((cookie) => {
+      if (!cookie.name.startsWith(prefix)) return null;
+      const indexRaw = cookie.name.slice(prefix.length);
+      if (!/^\d+$/.test(indexRaw)) return null;
+      return { index: Number(indexRaw), value: cookie.value };
+    })
+    .filter((chunk): chunk is { index: number; value: string } => !!chunk)
+    .sort((a, b) => a.index - b.index);
+
+  if (chunks.length === 0 || chunks[0].index !== 0) return undefined;
+  for (let i = 1; i < chunks.length; i++) {
+    if (chunks[i].index !== chunks[i - 1].index + 1) return undefined;
+  }
+  return chunks.map((chunk) => chunk.value).join("");
+}
+
+function clearChunkedCookie(
+  jar: Awaited<ReturnType<typeof cookies>>,
+  name: string,
+) {
+  const prefix = `${name}.`;
+  const all = "getAll" in jar ? jar.getAll() : [];
+  for (const cookie of all) {
+    if (cookie.name === name || cookie.name.startsWith(prefix)) {
+      jar.delete(cookie.name);
+    }
+  }
+}
+
+function writeChunkedCookie(
+  jar: Awaited<ReturnType<typeof cookies>>,
+  name: string,
+  value: string,
+  options: Parameters<typeof jar.set>[2],
+) {
+  const chunks = splitCookieValue(value, SESSION_CHUNK_SIZE);
+  const prefix = `${name}.`;
+  clearChunkedCookie(jar, name);
+  if (chunks.length === 1) {
+    jar.set(name, chunks[0], options);
+    return;
+  }
+  chunks.forEach((chunk, index) => {
+    jar.set(`${prefix}${index}`, chunk, options);
+  });
+}
 
 function getClientMetadata(): OAuthClientMetadataInput {
   if (PUBLIC_URL) {
@@ -67,7 +137,18 @@ export async function getOAuthClient(): Promise<NodeOAuthClient> {
   client = new NodeOAuthClient({
     fetch: originalFetch,
     // Explicit handleResolver so it inherits the same originalFetch for consistency
-    handleResolver: new AtprotoHandleResolverNode({ fetch: originalFetch }),
+    handleResolver: {
+      async resolve(handle: string, options?: { signal?: AbortSignal }) {
+        const normalized = handle.startsWith("@") ? handle.slice(1) : handle;
+        const response = await originalFetch(
+          `${HANDLE_RESOLVE_URL}?handle=${encodeURIComponent(normalized)}`,
+          { signal: options?.signal },
+        );
+        if (!response.ok) return null;
+        const data = (await response.json()) as { did?: string };
+        return asResolvedHandle(data.did);
+      },
+    },
     clientMetadata: getClientMetadata(),
     keyset: await getKeyset(),
 
@@ -113,7 +194,7 @@ export async function getOAuthClient(): Promise<NodeOAuthClient> {
     sessionStore: {
       async get(_key: string) {
         const jar = await cookies();
-        const raw = jar.get(SESSION_COOKIE)?.value;
+        const raw = readChunkedCookie(jar, SESSION_COOKIE);
         if (!raw) return undefined;
         try {
           return JSON.parse(raw) as NodeSavedSession;
@@ -124,7 +205,7 @@ export async function getOAuthClient(): Promise<NodeOAuthClient> {
       async set(_key: string, value: NodeSavedSession) {
         try {
           const jar = await cookies();
-          jar.set(SESSION_COOKIE, JSON.stringify(value), {
+          writeChunkedCookie(jar, SESSION_COOKIE, JSON.stringify(value), {
             httpOnly: true,
             secure: IS_PROD,
             sameSite: "lax",
@@ -139,7 +220,7 @@ export async function getOAuthClient(): Promise<NodeOAuthClient> {
       async del(_key: string) {
         try {
           const jar = await cookies();
-          jar.delete(SESSION_COOKIE);
+          clearChunkedCookie(jar, SESSION_COOKIE);
         } catch {
           // ignore
         }
