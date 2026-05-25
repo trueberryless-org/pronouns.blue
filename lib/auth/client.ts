@@ -27,9 +27,6 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const PUBLIC_APPVIEW_URL =
   process.env.PUBLIC_APPVIEW_URL || "https://public.api.bsky.app";
 const IS_PROD = process.env.NODE_ENV === "production";
-const PUBLIC_APPVIEW_URL =
-  process.env.PUBLIC_APPVIEW_URL ?? "https://public.api.bsky.app";
-const HANDLE_RESOLVE_URL = `${PUBLIC_APPVIEW_URL}/xrpc/com.atproto.identity.resolveHandle`;
 
 const STATE_COOKIE = "oauth_state";
 const SESSION_COOKIE = "session";
