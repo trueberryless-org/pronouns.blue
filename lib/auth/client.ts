@@ -2,6 +2,7 @@ import {
   JoseKey,
   Keyset,
   NodeOAuthClient,
+  asResolvedHandle,
   buildAtprotoLoopbackClientMetadata,
 } from "@atproto/oauth-client-node";
 import type {
@@ -137,14 +138,15 @@ export async function getOAuthClient(): Promise<NodeOAuthClient> {
     fetch: originalFetch,
     // Explicit handleResolver so it inherits the same originalFetch for consistency
     handleResolver: {
-      async resolve(handle: string) {
+      async resolve(handle: string, options?: { signal?: AbortSignal }) {
         const normalized = handle.startsWith("@") ? handle.slice(1) : handle;
         const response = await originalFetch(
           `${HANDLE_RESOLVE_URL}?handle=${encodeURIComponent(normalized)}`,
+          { signal: options?.signal },
         );
         if (!response.ok) return null;
         const data = (await response.json()) as { did?: string };
-        return typeof data.did === "string" ? data.did : null;
+        return asResolvedHandle(data.did);
       },
     },
     clientMetadata: getClientMetadata(),
