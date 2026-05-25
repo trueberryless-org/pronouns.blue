@@ -1,5 +1,4 @@
 import {
-  AtprotoDohHandleResolver,
   AtprotoHandleResolverNode,
   JoseKey,
   Keyset,
@@ -21,16 +20,10 @@ let client: NodeOAuthClient | null = null;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const IS_PROD = process.env.NODE_ENV === "production";
-const DOH_ENDPOINT =
-  process.env.DOH_ENDPOINT ?? "https://cloudflare-dns.com/dns-query";
 
 const STATE_COOKIE = "oauth_state";
 const SESSION_COOKIE = "session";
 const SESSION_CHUNK_SIZE = 3000;
-const IS_CLOUDFLARE_WORKER =
-  typeof navigator !== "undefined" &&
-  typeof navigator.userAgent === "string" &&
-  navigator.userAgent.includes("Cloudflare-Workers");
 
 function splitCookieValue(value: string, size: number): string[] {
   if (value.length <= size) return [value];
@@ -138,17 +131,10 @@ export async function getOAuthClient(): Promise<NodeOAuthClient> {
   const fetchAsAny = globalThis.fetch as any;
   const originalFetch = fetchAsAny._nextOriginalFetch ?? globalThis.fetch;
 
-  const handleResolver = IS_CLOUDFLARE_WORKER
-    ? new AtprotoDohHandleResolver({
-        fetch: originalFetch,
-        dohEndpoint: DOH_ENDPOINT,
-      })
-    : new AtprotoHandleResolverNode({ fetch: originalFetch });
-
   client = new NodeOAuthClient({
     fetch: originalFetch,
     // Explicit handleResolver so it inherits the same originalFetch for consistency
-    handleResolver,
+    handleResolver: new AtprotoHandleResolverNode({ fetch: originalFetch }),
     clientMetadata: getClientMetadata(),
     keyset: await getKeyset(),
 
