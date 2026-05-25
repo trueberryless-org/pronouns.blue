@@ -1,5 +1,4 @@
 import {
-  AtprotoHandleResolverNode,
   JoseKey,
   Keyset,
   NodeOAuthClient,
@@ -20,6 +19,9 @@ let client: NodeOAuthClient | null = null;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const IS_PROD = process.env.NODE_ENV === "production";
+const PUBLIC_APPVIEW_URL =
+  process.env.PUBLIC_APPVIEW_URL ?? "https://public.api.bsky.app";
+const HANDLE_RESOLVE_URL = `${PUBLIC_APPVIEW_URL}/xrpc/com.atproto.identity.resolveHandle`;
 
 const STATE_COOKIE = "oauth_state";
 const SESSION_COOKIE = "session";
@@ -134,7 +136,19 @@ export async function getOAuthClient(): Promise<NodeOAuthClient> {
   client = new NodeOAuthClient({
     fetch: originalFetch,
     // Explicit handleResolver so it inherits the same originalFetch for consistency
-    handleResolver: new AtprotoHandleResolverNode({ fetch: originalFetch }),
+    handleResolver: {
+      async resolve(handle: string) {
+        const normalized = handle.startsWith("@")
+          ? handle.slice(1)
+          : handle;
+        const response = await originalFetch(
+          `${HANDLE_RESOLVE_URL}?handle=${encodeURIComponent(normalized)}`,
+        );
+        if (!response.ok) return null;
+        const data = (await response.json()) as { did?: string };
+        return typeof data.did === "string" ? data.did : null;
+      },
+    },
     clientMetadata: getClientMetadata(),
     keyset: await getKeyset(),
 
