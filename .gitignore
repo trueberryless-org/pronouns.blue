@@ -13,10 +13,11 @@
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
-.open-next/
+# astro
+/dist/
+/.astro/
+
+# next.js (removed)
 
 # production
 /build
@@ -39,7 +40,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
 # sqlite
 *.db
