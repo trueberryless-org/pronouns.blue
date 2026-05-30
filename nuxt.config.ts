@@ -9,6 +9,11 @@ export default defineNuxtConfig({
     },
   },
 
+  experimental: {
+    // Enable the browser View Transition API on client-side navigation
+    viewTransition: true,
+  },
+
   css: ['~/assets/globals.css'],
 
   // Tailwind v4 via PostCSS — picks up postcss.config.mjs automatically.
@@ -43,7 +48,13 @@ export default defineNuxtConfig({
     },
   },
 
-  // Needed for Cloudflare Workers: suppress Node-specific polyfill warnings
+  // Bind dev server to 127.0.0.1 so the OAuth redirect_uri
+  // (http://127.0.0.1:3000/oauth/callback from getPublicMetadata) resolves correctly.
+  // On macOS, "localhost" resolves to ::1 (IPv6) but the OAuth redirect uses 127.0.0.1.
+  devServer: {
+    host: '127.0.0.1',
+  },
+
   vite: {
     build: {
       minify: false,

@@ -1,10 +1,16 @@
 <script setup lang="ts">
 const themeScript = `(()=>{try{const k="pronounsblue-theme";const s=localStorage.getItem(k);document.documentElement.setAttribute("data-theme",s||"dark")}catch{document.documentElement.setAttribute("data-theme","dark")}})();`;
-useHead({
-  htmlAttrs: { lang: 'en', 'data-theme': 'dark' },
-  script: [{ innerHTML: themeScript, tagPosition: 'head' }],
-});
-const { initTheme } = useTheme();
+
+const { theme, initTheme } = useTheme();
+
+// Reactive head: data-theme tracks theme.value so navigation never resets it to a
+// stale 'dark' default. The inline script ensures the correct theme is applied on
+// first paint (before Vue hydrates) to avoid FOUC.
+useHead(computed(() => ({
+  htmlAttrs: { lang: 'en', 'data-theme': theme.value },
+  script: [{ innerHTML: themeScript, tagPosition: 'head' as const }],
+})));
+
 onMounted(initTheme);
 </script>
 

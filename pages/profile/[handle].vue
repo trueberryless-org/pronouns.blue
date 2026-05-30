@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { setResponseHeader } from 'h3';
 import { getActorProfile } from '~/lib/atproto/profiles';
 import { getProfileRecordsFromPds } from '~/lib/atproto/records';
 
