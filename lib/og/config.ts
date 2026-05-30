@@ -13,11 +13,3 @@ export const C = {
   accentFill: "rgba(136,57,239,0.22)",
   accentRing: "rgba(136,57,239,0.55)",
 } as const;
-
-export function getBaseUrl(): string {
-  return (
-    process.env.PUBLIC_URL ??
-    process.env.CF_PAGES_URL ??
-    "http://localhost:3000"
-  );
-}

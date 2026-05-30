@@ -24,11 +24,6 @@ interface AppViewProfileResponse {
   pronouns?: string;
 }
 
-interface GetFollowsResponse {
-  follows: AppViewProfileResponse[];
-  cursor?: string;
-}
-
 export async function fetchActorProfile(
   actor: string,
 ): Promise<ClientActorProfile | null> {
@@ -47,31 +42,6 @@ export async function fetchActorProfile(
     };
   } catch {
     return null;
-  }
-}
-
-export async function fetchActorFollows(
-  actor: string,
-  limit = 48,
-): Promise<{ follows: ClientActorProfile[]; cursor?: string }> {
-  try {
-    const res = await fetch(
-      `${APPVIEW_URL}/xrpc/app.bsky.graph.getFollows?actor=${encodeURIComponent(actor)}&limit=${limit}`,
-    );
-    if (!res.ok) return { follows: [] };
-    const data = (await res.json()) as GetFollowsResponse;
-    return {
-      follows: data.follows.map((p) => ({
-        did: p.did,
-        handle: p.handle,
-        displayName: p.displayName ?? null,
-        avatar: p.avatar ?? null,
-        pronouns: p.pronouns ?? null,
-      })),
-      cursor: data.cursor,
-    };
-  } catch {
-    return { follows: [] };
   }
 }
 

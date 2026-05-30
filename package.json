@@ -10,13 +10,13 @@
     "deploy": "pnpm build && wrangler deploy",
     "start": "wrangler dev",
     "gen-key": "tsx scripts/gen-key.ts",
+    "knip": "knip",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
   "dependencies": {
-    "@atcute/atproto": "^4.0.0",
     "@atcute/client": "^5.0.0",
     "@atcute/identity-resolver": "^2.0.0",
     "@atcute/lexicons": "^2.0.0",
@@ -31,6 +31,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/node": "^24.12.2",
     "eslint": "^9",
+    "knip": "^6.14.2",
     "prettier": "^3.8.3",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
