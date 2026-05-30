@@ -107,8 +107,9 @@ function getConfidentialMetadata(): ConfidentialClientMetadata {
 }
 
 function getPublicMetadata(): PublicClientMetadata {
+  const base = PUBLIC_URL ?? "http://127.0.0.1:3000";
   return {
-    redirect_uris: ["http://127.0.0.1:3000/oauth/callback"],
+    redirect_uris: [`${base}/oauth/callback`],
     scope: SCOPE,
   };
 }

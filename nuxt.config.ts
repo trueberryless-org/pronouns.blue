@@ -58,9 +58,8 @@ export default defineNuxtConfig({
     },
   },
 
-  // Bind dev server to 127.0.0.1 so the OAuth redirect_uri
-  // (http://127.0.0.1:3000/oauth/callback from getPublicMetadata) resolves correctly.
-  // On macOS, "localhost" resolves to ::1 (IPv6) but the OAuth redirect uses 127.0.0.1.
+  // Bind dev server to 127.0.0.1 so the OAuth redirect_uri resolves correctly.
+  // On macOS, "localhost" resolves to ::1 (IPv6) but ATProto expects 127.0.0.1.
   devServer: {
     host: "127.0.0.1",
   },
