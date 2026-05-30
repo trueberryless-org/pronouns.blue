@@ -6,6 +6,7 @@
     "dev": "nuxt dev",
     "build:lex": "lex-cli generate",
     "build": "pnpm build:lex && nuxt build",
+    "postinstall": "nuxt prepare",
     "preview": "nuxt preview",
     "deploy": "pnpm build && wrangler deploy",
     "start": "wrangler dev",
