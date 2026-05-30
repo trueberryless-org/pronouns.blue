@@ -6,9 +6,9 @@
     "enabled": true,
   },
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  "main": ".output/server/index.mjs",
   "assets": {
-    "directory": "dist/",
+    "directory": ".output/public",
     "binding": "ASSETS",
   },
 }

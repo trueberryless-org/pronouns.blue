@@ -13,11 +13,9 @@
 # testing
 /coverage
 
-# astro
-/dist/
-/.astro/
-
-# next.js (removed)
+# nuxt
+/.nuxt/
+/.output/
 
 # production
 /build

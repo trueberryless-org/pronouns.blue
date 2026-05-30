@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
+    "dev": "nuxt dev",
     "build:lex": "lex-cli generate",
-    "build": "pnpm build:lex && astro build",
-    "preview": "astro preview",
+    "build": "pnpm build:lex && nuxt build",
+    "preview": "nuxt preview",
     "deploy": "pnpm build && wrangler deploy",
     "start": "wrangler dev",
     "gen-key": "tsx scripts/gen-key.ts",
@@ -16,8 +16,6 @@
     "format:check": "prettier . --check"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^13",
-    "@astrojs/react": "^4",
     "@atcute/atproto": "^4.0.0",
     "@atcute/client": "^5.0.0",
     "@atcute/identity-resolver": "^2.0.0",
@@ -25,25 +23,18 @@
     "@atcute/oauth-node-client": "^2.0.0",
     "@fontsource-variable/geist": "^5.2.9",
     "@vercel/og": "^0.6",
-    "astro": "^6.3",
-    "hono": "^4",
-    "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "nuxt": "^3"
   },
   "devDependencies": {
     "@atcute/lex-cli": "^3.1.0",
+    "@nuxt/eslint": "^1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^24.12.2",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@typescript-eslint/eslint-plugin": "^8",
-    "@typescript-eslint/parser": "^8",
     "eslint": "^9",
     "prettier": "^3.8.3",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5",
-    "typescript-eslint": "^8.60.0",
     "wrangler": "^4.95.0"
   },
   "engines": {
