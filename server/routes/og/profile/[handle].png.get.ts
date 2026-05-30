@@ -1,54 +1,62 @@
-import { ImageResponse } from '@vercel/og';
-import { C, OG_SIZE } from '~/lib/og/config';
-import { getOgFontList } from '~/lib/og/fonts';
-import { getActorProfile } from '~/lib/atproto/profiles';
+import { ImageResponse } from "@vercel/og";
+import { C, OG_SIZE } from "~/lib/og/config";
+import { getOgFontList } from "~/lib/og/fonts";
+import { getActorProfile } from "~/lib/atproto/profiles";
 
 export default defineEventHandler(async (event) => {
-  const handle = decodeURIComponent(getRouterParam(event, 'handle') ?? '').replace(/^@/, '');
+  const handle = decodeURIComponent(
+    getRouterParam(event, "handle") ?? "",
+  ).replace(/^@/, "");
 
-  const [fonts, actor] = await Promise.all([getOgFontList(), getActorProfile(handle)]);
+  const [fonts, actor] = await Promise.all([
+    getOgFontList(),
+    getActorProfile(handle),
+  ]);
 
   const displayName = actor?.displayName ?? handle;
   const avatarSrc = actor?.avatar ?? null;
 
   return new ImageResponse(
     {
-      type: 'div',
+      type: "div",
       props: {
         style: {
-          display: 'flex',
-          width: '1200px',
-          height: '630px',
+          display: "flex",
+          width: "1200px",
+          height: "630px",
           background: C.bg,
-          fontFamily: 'Inter',
-          alignItems: 'center',
-          justifyContent: 'center',
+          fontFamily: "Inter",
+          alignItems: "center",
+          justifyContent: "center",
           gap: 48,
-          padding: '0 80px',
+          padding: "0 80px",
         },
         children: [
           avatarSrc
             ? {
-                type: 'img',
+                type: "img",
                 props: {
                   src: avatarSrc,
                   width: 160,
                   height: 160,
-                  style: { borderRadius: '50%', border: `2px solid ${C.border}` },
+                  style: {
+                    borderRadius: "50%",
+                    border: `2px solid ${C.border}`,
+                  },
                 },
               }
             : {
-                type: 'div',
+                type: "div",
                 props: {
                   style: {
-                    display: 'flex',
+                    display: "flex",
                     width: 160,
                     height: 160,
-                    borderRadius: '50%',
+                    borderRadius: "50%",
                     background: C.surface,
                     border: `2px solid ${C.border}`,
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    alignItems: "center",
+                    justifyContent: "center",
                     fontSize: 64,
                     fontWeight: 600,
                     color: C.text,
@@ -57,12 +65,12 @@ export default defineEventHandler(async (event) => {
                 },
               },
           {
-            type: 'div',
+            type: "div",
             props: {
-              style: { display: 'flex', flexDirection: 'column', gap: 12 },
+              style: { display: "flex", flexDirection: "column", gap: 12 },
               children: [
                 {
-                  type: 'div',
+                  type: "div",
                   props: {
                     style: {
                       fontSize: 56,
@@ -74,11 +82,14 @@ export default defineEventHandler(async (event) => {
                   },
                 },
                 {
-                  type: 'div',
-                  props: { style: { fontSize: 28, color: C.muted }, children: `@${handle}` },
+                  type: "div",
+                  props: {
+                    style: { fontSize: 28, color: C.muted },
+                    children: `@${handle}`,
+                  },
                 },
                 {
-                  type: 'div',
+                  type: "div",
                   props: {
                     style: {
                       marginTop: 8,
@@ -87,10 +98,10 @@ export default defineEventHandler(async (event) => {
                       background: C.accentFill,
                       border: `1px solid ${C.accentRing}`,
                       borderRadius: 999,
-                      padding: '6px 18px',
-                      display: 'flex',
+                      padding: "6px 18px",
+                      display: "flex",
                     },
-                    children: 'pronouns.blue',
+                    children: "pronouns.blue",
                   },
                 },
               ],

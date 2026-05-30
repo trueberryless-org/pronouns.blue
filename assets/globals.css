@@ -1,4 +1,4 @@
-@import '@fontsource-variable/geist';
+@import "@fontsource-variable/geist";
 @import "tailwindcss";
 
 :root {
@@ -56,8 +56,8 @@
   --animate-fade-in-up: fade-in-up 0.2s ease-out both;
   --color-background: var(--bg);
   --color-foreground: var(--text);
-  --font-sans: 'Geist Variable', Arial, Helvetica, sans-serif;
-  --font-mono: 'Geist Mono Variable', monospace;
+  --font-sans: "Geist Variable", Arial, Helvetica, sans-serif;
+  --font-mono: "Geist Mono Variable", monospace;
 }
 
 @keyframes fade-in-up {
@@ -75,7 +75,7 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Geist Variable', Arial, Helvetica, sans-serif;
+  font-family: "Geist Variable", Arial, Helvetica, sans-serif;
 }
 
 * {

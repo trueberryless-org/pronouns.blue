@@ -1,5 +1,8 @@
 <script setup lang="ts">
-useHead({ title: 'pronouns.blue', meta: [{ property: 'og:image', content: '/og/index.png' }] });
+useHead({
+  title: "pronouns.blue",
+  meta: [{ property: "og:image", content: "/og/index.png" }],
+});
 </script>
 
 <template>
@@ -17,8 +20,12 @@ useHead({ title: 'pronouns.blue', meta: [{ property: 'og:image', content: '/og/i
         />
       </div>
       <HomeUserSection />
-      <section class="space-y-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center">
-        <p class="text-lg text-[var(--muted)]">Find any user by handle and view their names and pronouns.</p>
+      <section
+        class="space-y-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center"
+      >
+        <p class="text-lg text-[var(--muted)]">
+          Find any user by handle and view their names and pronouns.
+        </p>
         <HandleSearch />
       </section>
     </main>

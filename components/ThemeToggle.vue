@@ -5,7 +5,7 @@ const { theme, setTheme, THEMES } = useTheme();
 // shared useState ref via setTheme (which also updates localStorage + DOM).
 const themeModel = computed({
   get: () => theme.value,
-  set: (val: string) => setTheme(val as 'light' | 'dark' | 'black'),
+  set: (val: string) => setTheme(val as "light" | "dark" | "black"),
 });
 </script>
 

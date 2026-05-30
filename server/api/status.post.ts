@@ -1,8 +1,8 @@
-import { Client } from '@atcute/client';
-import type { ActorIdentifier, Nsid } from '@atcute/lexicons/syntax';
-import { getSession } from '~/lib/auth/session';
-import { createH3CookieAdapter } from '~/lib/auth/h3-cookie-adapter';
-import { DEFAULT_LANG } from '~/lib/atproto/records';
+import { Client } from "@atcute/client";
+import type { ActorIdentifier, Nsid } from "@atcute/lexicons/syntax";
+import { getSession } from "~/lib/auth/session";
+import { createH3CookieAdapter } from "~/lib/auth/h3-cookie-adapter";
+import { DEFAULT_LANG } from "~/lib/atproto/records";
 
 interface IncomingGroup {
   lang: string;
@@ -17,7 +17,7 @@ function cleanEntries(value: unknown): string[] {
   return Array.from(
     new Map(
       value
-        .map((item) => (typeof item === 'string' ? item.trim() : ''))
+        .map((item) => (typeof item === "string" ? item.trim() : ""))
         .filter(Boolean)
         .slice(0, 128)
         .map((item) => [item.toLocaleLowerCase(), item]),
@@ -25,10 +25,10 @@ function cleanEntries(value: unknown): string[] {
   );
 }
 
-const serverDisplayNames = new Intl.DisplayNames(['en'], { type: 'language' });
+const serverDisplayNames = new Intl.DisplayNames(["en"], { type: "language" });
 
 function cleanLang(value: unknown): string {
-  if (typeof value !== 'string') return DEFAULT_LANG;
+  if (typeof value !== "string") return DEFAULT_LANG;
   const v = value.trim();
   if (v.length < 2 || v.length > 35) return DEFAULT_LANG;
   try {
@@ -45,12 +45,12 @@ function cleanLang(value: unknown): string {
   return DEFAULT_LANG;
 }
 
-const NAME_COLLECTION: Nsid = 'blue.pronouns.name';
-const PRONOUN_COLLECTION: Nsid = 'blue.pronouns.pronoun';
+const NAME_COLLECTION: Nsid = "blue.pronouns.name";
+const PRONOUN_COLLECTION: Nsid = "blue.pronouns.pronoun";
 
 function extractRecordKey(uri: string): string {
-  if (!uri.startsWith('at://')) throw new Error(`Invalid record URI: ${uri}`);
-  const parts = uri.split('/');
+  if (!uri.startsWith("at://")) throw new Error(`Invalid record URI: ${uri}`);
+  const parts = uri.split("/");
   const rkey = parts.at(-1);
   if (!rkey) throw new Error(`Missing record key in URI: ${uri}`);
   return rkey;
@@ -64,11 +64,13 @@ async function listAllRecordUris(
   const uris: string[] = [];
   let cursor: string | undefined;
   do {
-    const response = await rpc.get('com.atproto.repo.listRecords', {
+    const response = await rpc.get("com.atproto.repo.listRecords", {
       params: { repo, collection, limit: 100, cursor },
     });
     if (!response.ok) {
-      throw new Error(response.data.message ?? 'Failed to list profile records');
+      throw new Error(
+        response.data.message ?? "Failed to list profile records",
+      );
     }
     uris.push(...response.data.records.map((record) => record.uri));
     cursor = response.data.cursor;
@@ -80,14 +82,17 @@ export default defineEventHandler(async (event) => {
   const cookieAdapter = createH3CookieAdapter(event);
   const session = await getSession(cookieAdapter);
   if (!session) {
-    throw createError({ statusCode: 401, message: 'Unauthorized' });
+    throw createError({ statusCode: 401, message: "Unauthorized" });
   }
 
   const body = await readBody<{ groups?: unknown }>(event);
 
   const rawGroups = body?.groups;
   if (!Array.isArray(rawGroups) || rawGroups.length === 0) {
-    throw createError({ statusCode: 400, message: 'At least one language group is required' });
+    throw createError({
+      statusCode: 400,
+      message: "At least one language group is required",
+    });
   }
 
   const groups: {
@@ -102,7 +107,9 @@ export default defineEventHandler(async (event) => {
     const lang = cleanLang(raw.lang);
     const names = cleanEntries(raw.names);
     const pronouns = cleanEntries(raw.pronouns);
-    const preferredNames = cleanEntries(raw.preferredNames).filter((e) => names.includes(e));
+    const preferredNames = cleanEntries(raw.preferredNames).filter((e) =>
+      names.includes(e),
+    );
     const preferredPronouns = cleanEntries(raw.preferredPronouns).filter((e) =>
       pronouns.includes(e),
     );
@@ -112,7 +119,10 @@ export default defineEventHandler(async (event) => {
   }
 
   if (groups.length === 0) {
-    throw createError({ statusCode: 400, message: 'At least one name or pronoun is required' });
+    throw createError({
+      statusCode: 400,
+      message: "At least one name or pronoun is required",
+    });
   }
 
   try {
@@ -126,14 +136,21 @@ export default defineEventHandler(async (event) => {
 
     await Promise.all([
       ...existingNameUris.map(async (uri) => {
-        const response = await rpc.post('com.atproto.repo.deleteRecord', {
-          input: { repo: session.did, collection: NAME_COLLECTION, rkey: extractRecordKey(uri) },
+        const response = await rpc.post("com.atproto.repo.deleteRecord", {
+          input: {
+            repo: session.did,
+            collection: NAME_COLLECTION,
+            rkey: extractRecordKey(uri),
+          },
           as: null,
         });
-        if (!response.ok) throw new Error(response.data.message ?? 'Failed to delete name record');
+        if (!response.ok)
+          throw new Error(
+            response.data.message ?? "Failed to delete name record",
+          );
       }),
       ...existingPronounUris.map(async (uri) => {
-        const response = await rpc.post('com.atproto.repo.deleteRecord', {
+        const response = await rpc.post("com.atproto.repo.deleteRecord", {
           input: {
             repo: session.did,
             collection: PRONOUN_COLLECTION,
@@ -142,57 +159,65 @@ export default defineEventHandler(async (event) => {
           as: null,
         });
         if (!response.ok)
-          throw new Error(response.data.message ?? 'Failed to delete pronoun record');
+          throw new Error(
+            response.data.message ?? "Failed to delete pronoun record",
+          );
       }),
     ]);
 
     await Promise.all(
-      groups.flatMap(({ lang, names, pronouns, preferredNames, preferredPronouns }) => {
-        const preferredNameSet = new Set(preferredNames);
-        const preferredPronounSet = new Set(preferredPronouns);
-        return [
-          ...names.map(async (value, index) => {
-            const response = await rpc.post('com.atproto.repo.createRecord', {
-              input: {
-                repo: session.did,
-                collection: NAME_COLLECTION,
-                record: {
-                  $type: NAME_COLLECTION,
-                  value,
-                  preferred: preferredNameSet.has(value),
-                  lang,
-                  sortOrder: index,
-                  createdAt: now,
-                  updatedAt: now,
+      groups.flatMap(
+        ({ lang, names, pronouns, preferredNames, preferredPronouns }) => {
+          const preferredNameSet = new Set(preferredNames);
+          const preferredPronounSet = new Set(preferredPronouns);
+          return [
+            ...names.map(async (value, index) => {
+              const response = await rpc.post("com.atproto.repo.createRecord", {
+                input: {
+                  repo: session.did,
+                  collection: NAME_COLLECTION,
+                  record: {
+                    $type: NAME_COLLECTION,
+                    value,
+                    preferred: preferredNameSet.has(value),
+                    lang,
+                    sortOrder: index,
+                    createdAt: now,
+                    updatedAt: now,
+                  },
                 },
-              },
-              as: null,
-            });
-            if (!response.ok)
-              throw new Error(response.data.message ?? 'Failed to create name record');
-          }),
-          ...pronouns.map(async (value, index) => {
-            const response = await rpc.post('com.atproto.repo.createRecord', {
-              input: {
-                repo: session.did,
-                collection: PRONOUN_COLLECTION,
-                record: {
-                  $type: PRONOUN_COLLECTION,
-                  value,
-                  preferred: preferredPronounSet.has(value),
-                  lang,
-                  sortOrder: index,
-                  createdAt: now,
-                  updatedAt: now,
+                as: null,
+              });
+              if (!response.ok)
+                throw new Error(
+                  response.data.message ?? "Failed to create name record",
+                );
+            }),
+            ...pronouns.map(async (value, index) => {
+              const response = await rpc.post("com.atproto.repo.createRecord", {
+                input: {
+                  repo: session.did,
+                  collection: PRONOUN_COLLECTION,
+                  record: {
+                    $type: PRONOUN_COLLECTION,
+                    value,
+                    preferred: preferredPronounSet.has(value),
+                    lang,
+                    sortOrder: index,
+                    createdAt: now,
+                    updatedAt: now,
+                  },
                 },
-              },
-              as: null,
-            });
-            if (!response.ok)
-              throw new Error(response.data.message ?? 'Failed to create pronoun record');
-          }),
-        ];
-      }),
+                as: null,
+              });
+              if (!response.ok)
+                throw new Error(
+                  response.data.message ?? "Failed to create pronoun record",
+                );
+            }),
+          ];
+        },
+      ),
     );
 
     // Purge CDN-cached profile page via Cloudflare Cache API
@@ -214,10 +239,10 @@ export default defineEventHandler(async (event) => {
       },
     };
   } catch (err) {
-    console.error('[api/status] Failed to publish records:', err);
+    console.error("[api/status] Failed to publish records:", err);
     throw createError({
       statusCode: 500,
-      message: err instanceof Error ? err.message : 'Failed to save profile',
+      message: err instanceof Error ? err.message : "Failed to save profile",
     });
   }
 });

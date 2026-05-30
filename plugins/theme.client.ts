@@ -8,7 +8,7 @@
  * app:mounted fires after hydration, avoiding a SSR/client mismatch.
  */
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.hook('app:mounted', () => {
+  nuxtApp.hook("app:mounted", () => {
     useTheme().initTheme();
   });
 });

@@ -1,4 +1,4 @@
-import { getCookie, setCookie, deleteCookie } from 'h3';
+import { getCookie, setCookie, deleteCookie } from "h3";
 
 /**
  * Mirror the httpOnly `did` cookie into a non-httpOnly `did-public` cookie so
@@ -6,17 +6,17 @@ import { getCookie, setCookie, deleteCookie } from 'h3';
  * an API call. Runs on every request via Nitro middleware.
  */
 export default defineEventHandler((event) => {
-  const did = getCookie(event, 'did');
-  const isProd = process.env.NODE_ENV === 'production';
+  const did = getCookie(event, "did");
+  const isProd = process.env.NODE_ENV === "production";
 
   if (did) {
-    setCookie(event, 'did-public', did, {
+    setCookie(event, "did-public", did, {
       httpOnly: false,
       secure: isProd,
-      sameSite: 'lax',
-      path: '/',
+      sameSite: "lax",
+      path: "/",
     });
   } else {
-    deleteCookie(event, 'did-public', { path: '/' });
+    deleteCookie(event, "did-public", { path: "/" });
   }
 });

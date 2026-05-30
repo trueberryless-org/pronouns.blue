@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Terms of Service – pronouns.blue' });
+useHead({ title: "Terms of Service – pronouns.blue" });
 </script>
 
 <template>
@@ -23,38 +23,62 @@ useHead({ title: 'Terms of Service – pronouns.blue' });
     </p>
 
     <div class="space-y-6">
-      <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
-        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">1. Acceptance of Terms</h2>
+      <section
+        class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+      >
+        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">
+          1. Acceptance of Terms
+        </h2>
         <p class="text-[var(--muted)]">
           By accessing or using pronouns.blue (&ldquo;the Service&rdquo;), you
           agree to be bound by these Terms of Service. If you do not agree,
           please do not use the Service. Use of the Service is also subject to
-          our <NuxtLink to="/privacy" class="text-[var(--accent)] underline underline-offset-4">Privacy Policy</NuxtLink>,
-          which is incorporated herein by reference.
+          our
+          <NuxtLink
+            to="/privacy"
+            class="text-[var(--accent)] underline underline-offset-4"
+            >Privacy Policy</NuxtLink
+          >, which is incorporated herein by reference.
         </p>
       </section>
 
-      <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
-        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">2. Description of the Service</h2>
+      <section
+        class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+      >
+        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">
+          2. Description of the Service
+        </h2>
         <p class="text-[var(--muted)]">
           pronouns.blue is a web application built on the
-          <a href="https://atproto.com" target="_blank" rel="noopener noreferrer" class="text-[var(--accent)] underline underline-offset-4">AT Protocol</a>
-          that allows you to publish, manage, and share your preferred names
-          and pronouns. Records are written directly to your own AT Protocol
-          Personal Data Server (PDS) — the Service acts as a thin interface
-          and does not store your personal data on its own servers.
+          <a
+            href="https://atproto.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[var(--accent)] underline underline-offset-4"
+            >AT Protocol</a
+          >
+          that allows you to publish, manage, and share your preferred names and
+          pronouns. Records are written directly to your own AT Protocol
+          Personal Data Server (PDS) — the Service acts as a thin interface and
+          does not store your personal data on its own servers.
         </p>
       </section>
 
-      <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
-        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">3. Your AT Protocol Data</h2>
+      <section
+        class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+      >
+        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">
+          3. Your AT Protocol Data
+        </h2>
         <p class="mb-3 text-[var(--muted)]">
           Because records live in your own PDS repo, you retain full ownership
           and control of your data. The following implications apply:
         </p>
         <ul class="space-y-3 text-[var(--muted)]">
           <li>
-            <span class="font-medium text-[var(--text)]">Public by default</span>
+            <span class="font-medium text-[var(--text)]"
+              >Public by default</span
+            >
             — AT Protocol repositories are publicly readable. Any names or
             pronouns you publish via the Service will be visible to anyone who
             queries your PDS or the Bluesky network.
@@ -63,19 +87,32 @@ useHead({ title: 'Terms of Service – pronouns.blue' });
             <span class="font-medium text-[var(--text)]">Portability</span>
             — you can inspect, export, or delete your records at any time
             through your PDS, any compatible AT Protocol client, or a tool like
-            <a href="https://pdsls.dev" target="_blank" rel="noopener noreferrer" class="text-[var(--accent)] underline underline-offset-4">PDSLS</a>.
+            <a
+              href="https://pdsls.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-[var(--accent)] underline underline-offset-4"
+              >PDSLS</a
+            >.
           </li>
           <li>
-            <span class="font-medium text-[var(--text)]">No server-side storage</span>
+            <span class="font-medium text-[var(--text)]"
+              >No server-side storage</span
+            >
             — the Service holds no copy of your names or pronouns. Your OAuth
-            session is stored only as <code class="text-xs">httpOnly</code> browser cookies, deleted
-            when you sign out.
+            session is stored only as
+            <code class="text-xs">httpOnly</code> browser cookies, deleted when
+            you sign out.
           </li>
         </ul>
       </section>
 
-      <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
-        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">4. Account Requirements</h2>
+      <section
+        class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+      >
+        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">
+          4. Account Requirements
+        </h2>
         <p class="text-[var(--muted)]">
           To publish or manage records you must authenticate with a valid AT
           Protocol account (e.g., a Bluesky account or a self-hosted PDS). By
@@ -84,69 +121,119 @@ useHead({ title: 'Terms of Service – pronouns.blue' });
         </p>
       </section>
 
-      <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
-        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">5. Acceptable Use</h2>
-        <p class="mb-3 text-[var(--muted)]">You agree not to use the Service to:</p>
+      <section
+        class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+      >
+        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">
+          5. Acceptable Use
+        </h2>
+        <p class="mb-3 text-[var(--muted)]">
+          You agree not to use the Service to:
+        </p>
         <ul class="space-y-2 text-[var(--muted)]">
-          <li>publish content that is unlawful, abusive, threatening, or harassing;</li>
-          <li>impersonate any individual, organisation, or AT Protocol identity you do not own;</li>
-          <li>attempt to interfere with, disrupt, or overload the Service or any connected AT Protocol infrastructure;</li>
-          <li>use automated means (bots, scrapers, etc.) to access the Service in a manner that exceeds reasonable personal use.</li>
+          <li>
+            publish content that is unlawful, abusive, threatening, or
+            harassing;
+          </li>
+          <li>
+            impersonate any individual, organisation, or AT Protocol identity
+            you do not own;
+          </li>
+          <li>
+            attempt to interfere with, disrupt, or overload the Service or any
+            connected AT Protocol infrastructure;
+          </li>
+          <li>
+            use automated means (bots, scrapers, etc.) to access the Service in
+            a manner that exceeds reasonable personal use.
+          </li>
         </ul>
       </section>
 
-      <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
-        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">6. Intellectual Property</h2>
+      <section
+        class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+      >
+        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">
+          6. Intellectual Property
+        </h2>
         <p class="text-[var(--muted)]">
           The pronouns.blue source code is open-source and available on
-          <a href="https://github.com/trueberryless-org/pronouns.blue" target="_blank" rel="noopener noreferrer" class="text-[var(--accent)] underline underline-offset-4">GitHub</a>
-          under the MIT license. The pronouns.blue name and logo assets are
-          the property of the project maintainers. You may not use them to
-          imply endorsement without permission.
+          <a
+            href="https://github.com/trueberryless-org/pronouns.blue"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[var(--accent)] underline underline-offset-4"
+            >GitHub</a
+          >
+          under the MIT license. The pronouns.blue name and logo assets are the
+          property of the project maintainers. You may not use them to imply
+          endorsement without permission.
         </p>
       </section>
 
-      <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
-        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">7. Disclaimer of Warranties</h2>
+      <section
+        class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+      >
+        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">
+          7. Disclaimer of Warranties
+        </h2>
         <p class="text-[var(--muted)]">
           The Service is provided &ldquo;as is&rdquo; and &ldquo;as
           available&rdquo; without warranties of any kind, either express or
           implied, including but not limited to warranties of merchantability,
           fitness for a particular purpose, or non-infringement. We do not
-          warrant that the Service will be uninterrupted, error-free, or free
-          of harmful components.
+          warrant that the Service will be uninterrupted, error-free, or free of
+          harmful components.
         </p>
       </section>
 
-      <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
-        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">8. Limitation of Liability</h2>
+      <section
+        class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+      >
+        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">
+          8. Limitation of Liability
+        </h2>
         <p class="text-[var(--muted)]">
           To the fullest extent permitted by law, the maintainers of
           pronouns.blue shall not be liable for any indirect, incidental,
           special, consequential, or punitive damages arising from your use of
-          or inability to use the Service, even if advised of the possibility
-          of such damages. Because your data lives on your own PDS, we are not
+          or inability to use the Service, even if advised of the possibility of
+          such damages. Because your data lives on your own PDS, we are not
           responsible for data loss or availability issues caused by your PDS
           provider.
         </p>
       </section>
 
-      <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
-        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">9. Changes to These Terms</h2>
+      <section
+        class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+      >
+        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">
+          9. Changes to These Terms
+        </h2>
         <p class="text-[var(--muted)]">
           We may update these Terms of Service from time to time. When we do,
           the &ldquo;Last updated&rdquo; date at the top of this page will
-          change. Continued use of the Service after any update constitutes
-          your acceptance of the revised terms. We encourage you to review
-          this page periodically.
+          change. Continued use of the Service after any update constitutes your
+          acceptance of the revised terms. We encourage you to review this page
+          periodically.
         </p>
       </section>
 
-      <section class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
-        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">10. Contact</h2>
+      <section
+        class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+      >
+        <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">
+          10. Contact
+        </h2>
         <p class="text-[var(--muted)]">
           Questions about these terms? Open an issue on
-          <a href="https://github.com/trueberryless-org/pronouns.blue/issues/new/choose" target="_blank" rel="noopener noreferrer" class="text-[var(--accent)] underline underline-offset-4">GitHub</a>.
+          <a
+            href="https://github.com/trueberryless-org/pronouns.blue/issues/new/choose"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[var(--accent)] underline underline-offset-4"
+            >GitHub</a
+          >.
         </p>
       </section>
     </div>

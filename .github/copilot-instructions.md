@@ -55,7 +55,6 @@ Nuxt 3 Development Guidelines
 The following guidelines are intended to ensure consistency, maintainability, and scalability in projects developed with Nuxt 3. Adhering to these standards will improve code quality and collaboration across the development team.
 
 1. Project Structure
-
    1. Follow the default Nuxt 3 project structure for better readability and framework alignment:
       - pages/: For defining routes.
       - components/: For reusable UI components.
@@ -67,7 +66,6 @@ The following guidelines are intended to ensure consistency, maintainability, an
    2. Maintain clear folder hierarchies and avoid deeply nested structures unless absolutely necessary.
 
 2. Coding Standards
-
    1. Use ESLint for enforcing JavaScript/TypeScript code standards and Prettier for consistent formatting.
    2. Prefer TypeScript for type safety and maintainability. Define types in a types/ directory.
    3. Follow a consistent naming convention:
@@ -77,7 +75,6 @@ The following guidelines are intended to ensure consistency, maintainability, an
       - Constants: UPPER_SNAKE_CASE
    4. Use async/await over promises for asynchronous operations.
    5. Structure of Single-File Components (SFCs): When writing Single-File Components (SFCs) in Nuxt, always follow this structure for consistency and readability:
-
       1. Script Section: Place the <script setup> block at the top of the file, with lang="ts" if using TypeScript.
       2. Template Section: The <template> block should follow the script section and contain the component’s HTML structure.
       3. Style Section: Add the <style> block at the bottom of the file, using lang="scss" for SCSS and scoped for styles scoped to the component.
@@ -95,7 +92,6 @@ The following guidelines are intended to ensure consistency, maintainability, an
       ```
 
 3. Nuxt-Specific Best Practices
-
    1. Use the defineNuxtConfig function to configure the project in nuxt.config.ts.
    2. Leverage auto-imported features:
       - Use defineComponent for defining components.
@@ -107,7 +103,6 @@ The following guidelines are intended to ensure consistency, maintainability, an
    5. Optimize for SEO using useHead for meta tags and definePageMeta for page-level metadata.
 
 4. Component Development
-
    1. Break down the UI into reusable, modular components.
    2. Use props and emits sparingly, ensuring that data flow is predictable and documented.
    3. Define props with types and default values to ensure reliability:
@@ -121,13 +116,12 @@ The following guidelines are intended to ensure consistency, maintainability, an
    5. To declare emitted events using pure type annotations:
       ```typescript
       const emit = defineEmits<{
-        (e: 'change', id: number): void;
-        (e: 'update', value: string): void;
+        (e: "change", id: number): void;
+        (e: "update", value: string): void;
       }>();
       ```
 
 5. State Management
-
    1. Use Nuxt’s built-in composables like useState and useCookie for simple state management.
    2. For complex applications, use Pinia as the preferred state management library:
       - Organize stores in the stores/ directory.
@@ -135,19 +129,17 @@ The following guidelines are intended to ensure consistency, maintainability, an
       - Use TypeScript for defining state, actions, and getters.
 
 6. API Integration
-
    1. Use useFetch for fetching data from APIs, preferring useLazyFetch for on-demand loading.
    2. Handle errors gracefully:
       ```typescript
-      const { data, error } = await useFetch('/api/example');
+      const { data, error } = await useFetch("/api/example");
       if (error.value) {
-        console.error('Error fetching data:', error.value);
+        console.error("Error fetching data:", error.value);
       }
       ```
    3. Structure API endpoints semantically within the server/api directory.
 
 7. Styling
-
    1. Use SCSS or Tailwind CSS for styling. Maintain styles in the assets/ or components/ directory.
    2. Adhere to the BEM naming convention for class names:
       - `.block__element--modifier`
@@ -162,7 +154,6 @@ The following guidelines are intended to ensure consistency, maintainability, an
       ```
 
 8. Prettier Formatter
-
    1. Semicolons: Always end statements with a semicolon (;) to improve clarity and prevent potential issues caused by automatic semicolon insertion.
    2. Indentation: Use 2 spaces per indentation level to ensure clean and concise code formatting.
    3. Quotations: Use single quotes (') for strings instead of double quotes, except in cases where escaping single quotes would make the string less readable.
@@ -170,7 +161,6 @@ The following guidelines are intended to ensure consistency, maintainability, an
    5. Trailing Commas: Avoid trailing commas in object and array literals, function arguments, and other contexts where they might appear.
 
 9. Performance Optimization
-
    1. Optimize page load time:
       - Use defineNuxtComponent to lazy-load components where applicable.
       - Utilize useLazyFetch and asyncData for efficient data fetching.
@@ -179,14 +169,12 @@ The following guidelines are intended to ensure consistency, maintainability, an
    3. Cache frequently used data in state or cookies.
 
 10. Testing and Debugging
-
     1. Write unit tests using Jest or Vitest for components and composables.
     2. Use Cypress for end-to-end testing.
     3. Test edge cases for data fetching, state management, and API integration.
     4. Leverage Nuxt DevTools for debugging and performance monitoring.
 
 11. Documentation
-
     1. Document critical components, composables, and APIs using JSDoc.
     2. Maintain a README.md file with:
        - Project setup instructions.

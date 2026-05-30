@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const route = useRoute();
-const showLogo = computed(() => route.path !== '/');
+const showLogo = computed(() => route.path !== "/");
 </script>
 
 <template>

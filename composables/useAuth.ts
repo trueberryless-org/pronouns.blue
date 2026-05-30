@@ -6,7 +6,7 @@
  * No cookie-polling or useSyncExternalStore hacks needed.
  */
 export const useAuth = () => {
-  const did = useCookie<string | null>('did-public', {
+  const did = useCookie<string | null>("did-public", {
     default: () => null,
   });
 

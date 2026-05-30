@@ -1,12 +1,16 @@
 <script setup lang="ts">
-useHead({ title: 'Credits – pronouns.blue' });
+useHead({ title: "Credits – pronouns.blue" });
 </script>
 
 <template>
   <main class="mx-auto w-full max-w-3xl flex-1 px-4 py-12 sm:px-6">
-    <h1 class="mb-8 text-3xl font-bold text-[var(--text)]">Credits &amp; Inspiration</h1>
+    <h1 class="mb-8 text-3xl font-bold text-[var(--text)]">
+      Credits &amp; Inspiration
+    </h1>
 
-    <section class="relative mb-10 space-y-4 overflow-visible rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
+    <section
+      class="relative mb-10 space-y-4 overflow-visible rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+    >
       <img
         src="/pronouns.blue-round.svg"
         alt="pronouns.blue round logo"
@@ -17,31 +21,65 @@ useHead({ title: 'Credits – pronouns.blue' });
       <h2 class="text-xl font-semibold text-[var(--text)]">Project Credits</h2>
       <p class="text-[var(--muted)]">
         Huge thanks to
-        <a href="https://bsky.app/profile/alfon.dev" target="_blank" rel="noopener noreferrer" class="text-[var(--accent)] underline underline-offset-4">@alfon.dev</a>
+        <a
+          href="https://bsky.app/profile/alfon.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[var(--accent)] underline underline-offset-4"
+          >@alfon.dev</a
+        >
         and
-        <a href="https://bsky.app/profile/alexdln.com" target="_blank" rel="noopener noreferrer" class="text-[var(--accent)] underline underline-offset-4">@alexdln.com</a>
-        for their amazing assistance and help creating all logo assets for this project.
+        <a
+          href="https://bsky.app/profile/alexdln.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[var(--accent)] underline underline-offset-4"
+          >@alexdln.com</a
+        >
+        for their amazing assistance and help creating all logo assets for this
+        project.
       </p>
       <p class="text-[var(--muted)]">
         This website was created by
-        <a href="https://bsky.app/profile/trueberryless.org" target="_blank" rel="noopener noreferrer" class="text-[var(--accent)] underline underline-offset-4">@trueberryless.org</a>
+        <a
+          href="https://bsky.app/profile/trueberryless.org"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[var(--accent)] underline underline-offset-4"
+          >@trueberryless.org</a
+        >
         and used
-        <a href="https://github.com/bluesky-social/statusphere-example-app" target="_blank" rel="noopener noreferrer" class="text-[var(--accent)] underline underline-offset-4">bluesky-social/statusphere-example-app</a>
+        <a
+          href="https://github.com/bluesky-social/statusphere-example-app"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[var(--accent)] underline underline-offset-4"
+          >bluesky-social/statusphere-example-app</a
+        >
         as a very convenient starting point.
       </p>
     </section>
 
-    <section class="mb-10 space-y-6 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
+    <section
+      class="mb-10 space-y-6 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+    >
       <h2 class="text-xl font-semibold text-[var(--text)]">Deployment</h2>
       <p class="text-[var(--muted)]">
         This site is proudly hosted and deployed by
-        <a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer" class="text-[var(--accent)] underline underline-offset-4">Netlify</a>,
-        providing the fast and reliable infrastructure that keeps this
+        <a
+          href="https://www.netlify.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[var(--accent)] underline underline-offset-4"
+          >Netlify</a
+        >, providing the fast and reliable infrastructure that keeps this
         project accessible to everyone.
       </p>
     </section>
 
-    <section class="mb-10 space-y-6 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
+    <section
+      class="mb-10 space-y-6 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+    >
       <h2 class="text-xl font-semibold text-[var(--text)]">Inspiration</h2>
       <p class="text-[var(--muted)]">
         pronouns.blue draws inspiration from these wonderful projects in the
@@ -50,32 +88,60 @@ useHead({ title: 'Credits – pronouns.blue' });
 
       <ul class="space-y-5">
         <li class="border-b border-[var(--line)] pb-5">
-          <a href="https://pronouns.cc" target="_blank" rel="noopener noreferrer" class="text-lg font-semibold text-[var(--accent)] underline underline-offset-4">pronouns.cc</a>
+          <a
+            href="https://pronouns.cc"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-lg font-semibold text-[var(--accent)] underline underline-offset-4"
+            >pronouns.cc</a
+          >
           <p class="mt-1 text-sm text-[var(--muted)]">
-            A platform for sharing your pronouns, names, and more — with a beautiful and inclusive design.
+            A platform for sharing your pronouns, names, and more — with a
+            beautiful and inclusive design.
           </p>
         </li>
         <li class="border-b border-[var(--line)] pb-5">
-          <a href="https://pronouns.page" target="_blank" rel="noopener noreferrer" class="text-lg font-semibold text-[var(--accent)] underline underline-offset-4">pronouns.page</a>
+          <a
+            href="https://pronouns.page"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-lg font-semibold text-[var(--accent)] underline underline-offset-4"
+            >pronouns.page</a
+          >
           <p class="mt-1 text-sm text-[var(--muted)]">
-            A comprehensive pronoun reference and profile tool available in many languages.
+            A comprehensive pronoun reference and profile tool available in many
+            languages.
           </p>
         </li>
         <li>
-          <a href="https://pronouny.xyz" target="_blank" rel="noopener noreferrer" class="text-lg font-semibold text-[var(--accent)] underline underline-offset-4">pronouny.xyz</a>
+          <a
+            href="https://pronouny.xyz"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-lg font-semibold text-[var(--accent)] underline underline-offset-4"
+            >pronouny.xyz</a
+          >
           <p class="mt-1 text-sm text-[var(--muted)]">
-            A simple and accessible pronoun sharing site built for the community.
+            A simple and accessible pronoun sharing site built for the
+            community.
           </p>
         </li>
       </ul>
     </section>
 
-    <section class="space-y-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8">
+    <section
+      class="space-y-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8"
+    >
       <h2 class="text-xl font-semibold text-[var(--text)]">Built with AI</h2>
       <p class="text-[var(--muted)]">
         This website was fully generated with AI assistance using
-        <a href="https://github.com/features/copilot" target="_blank" rel="noopener noreferrer" class="text-[var(--accent)] underline underline-offset-4">GitHub Copilot</a>.
-        All code, design decisions, and content were produced through an
+        <a
+          href="https://github.com/features/copilot"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[var(--accent)] underline underline-offset-4"
+          >GitHub Copilot</a
+        >. All code, design decisions, and content were produced through an
         AI-assisted workflow with human direction.
       </p>
     </section>

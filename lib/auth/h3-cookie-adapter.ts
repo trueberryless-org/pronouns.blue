@@ -1,6 +1,6 @@
-import type { H3Event } from 'h3';
-import { getCookie, setCookie, deleteCookie, parseCookies } from 'h3';
-import type { CookieAdapter, CookieOptions } from './cookie-adapter';
+import type { H3Event } from "h3";
+import { getCookie, setCookie, deleteCookie, parseCookies } from "h3";
+import type { CookieAdapter, CookieOptions } from "./cookie-adapter";
 
 export function createH3CookieAdapter(event: H3Event): CookieAdapter {
   return {
@@ -12,14 +12,18 @@ export function createH3CookieAdapter(event: H3Event): CookieAdapter {
       setCookie(event, name, value, {
         httpOnly: options?.httpOnly,
         secure: options?.secure,
-        sameSite: options?.sameSite?.toLowerCase() as 'strict' | 'lax' | 'none' | undefined,
+        sameSite: options?.sameSite?.toLowerCase() as
+          | "strict"
+          | "lax"
+          | "none"
+          | undefined,
         maxAge: options?.maxAge,
-        path: options?.path ?? '/',
+        path: options?.path ?? "/",
       });
     },
 
     delete(name: string): void {
-      deleteCookie(event, name, { path: '/' });
+      deleteCookie(event, name, { path: "/" });
     },
 
     getAll(): { name: string; value: string }[] {
