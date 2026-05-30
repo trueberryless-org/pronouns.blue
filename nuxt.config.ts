@@ -2,6 +2,14 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-30',
 
+  // Prerender static pages — served directly from Cloudflare's asset CDN,
+  // zero CPU cost on Workers free plan.
+  routeRules: {
+    '/privacy': { prerender: true },
+    '/terms': { prerender: true },
+    '/credits': { prerender: true },
+  },
+
   nitro: {
     preset: 'cloudflare-module',
     experimental: {

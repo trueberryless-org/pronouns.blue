@@ -22,9 +22,9 @@ onMounted(initTheme);
     </main>
     <footer class="border-t border-[var(--border)] py-4 text-center text-xs text-[var(--muted)]">
       <nav class="flex flex-wrap justify-center gap-x-5 gap-y-1">
-        <a href="/privacy" class="hover:text-[var(--text)]">Privacy Policy</a>
-        <a href="/terms" class="hover:text-[var(--text)]">Terms of Service</a>
-        <a href="/credits" class="hover:text-[var(--text)]">Credits</a>
+        <NuxtLink to="/privacy" class="hover:text-[var(--text)]">Privacy Policy</NuxtLink>
+        <NuxtLink to="/terms" class="hover:text-[var(--text)]">Terms of Service</NuxtLink>
+        <NuxtLink to="/credits" class="hover:text-[var(--text)]">Credits</NuxtLink>
         <a href="https://github.com/trueberryless-org/pronouns.blue" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--text)]">GitHub</a>
       </nav>
     </footer>
