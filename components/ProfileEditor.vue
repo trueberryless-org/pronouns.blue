@@ -574,9 +574,7 @@ async function saveProfile() {
               v-if="group.langCheck.status === 'invalid'"
               class="text-xs text-[var(--danger)]"
             >
-              {{
-                (group.langCheck as { status: "invalid"; msg: string }).msg
-              }}
+              {{ (group.langCheck as { status: "invalid"; msg: string }).msg }}
               ·
               <a
                 href="https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry"
