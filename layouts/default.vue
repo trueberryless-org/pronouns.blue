@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const themeScript = `(()=>{try{const k="pronounsblue-theme";const s=localStorage.getItem(k);document.documentElement.setAttribute("data-theme",s||"dark")}catch{document.documentElement.setAttribute("data-theme","dark")}})();`;
 
-const { theme, initTheme } = useTheme();
+const { theme } = useTheme();
 
 // Reactive head: data-theme tracks theme.value so navigation never resets it to a
 // stale 'dark' default. The inline script ensures the correct theme is applied on
@@ -10,8 +10,6 @@ useHead(computed(() => ({
   htmlAttrs: { lang: 'en', 'data-theme': theme.value },
   script: [{ innerHTML: themeScript, tagPosition: 'head' as const }],
 })));
-
-onMounted(initTheme);
 </script>
 
 <template>

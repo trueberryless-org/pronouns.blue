@@ -1,0 +1,9 @@
+# Wrangler local secrets — used by `wrangler dev` and `wrangler preview`.
+# Copy this file to `.dev.vars`, fill in the values, and do NOT commit it.
+#
+# Generate PRIVATE_KEY with: pnpm gen-key
+# PUBLIC_URL for production: https://pronouns.blue
+# PUBLIC_URL for workers.dev: https://pronouns-blue.<your-account>.workers.dev
+
+PUBLIC_URL=
+PRIVATE_KEY=
