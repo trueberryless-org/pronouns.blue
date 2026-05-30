@@ -10,12 +10,11 @@ Thanks for contributing.
 ## Local development
 
 ```bash
-cp env.template .env.local
 pnpm install
 pnpm dev
 ```
 
-No database or other services needed.
+No database, no environment variables needed for local development. The dev server runs at `http://127.0.0.1:3000`.
 
 ## Main commands
 
@@ -41,8 +40,9 @@ pnpm build
 - Each record carries an optional **`lang`** field — a [BCP-47](https://www.rfc-editor.org/rfc/rfc5646) language tag (e.g. `en`, `de`, `zh-CN`). Records without `lang` default to English. New saves always write the field.
 - `lib/atproto/records.ts` groups records by `lang` and returns `LanguageGroup[]` — the data shape used by both `ProfileDisplay` and `ProfileEditor`.
 - Profile pages and the settings page read records directly from the user's PDS via `com.atproto.repo.listRecords` (`lib/atproto/records.ts`).
-- OAuth state and session (tokens + DPoP key) are stored in `httpOnly` browser cookies (`oauth_state`, `session`, `did`). `lib/auth/client.ts` implements the `stateStore`/`sessionStore` interfaces using `cookies()` from `next/headers`.
-- In Server Components use `getDid()` (reads the `did` cookie). Only call `getSession()` in Route Handlers, where cookie writes (token refresh) are allowed.
+- OAuth state and session (tokens + DPoP key) are stored in `httpOnly` browser cookies (`oauth_state`, `session`, `did`). `lib/auth/client.ts` implements the `stateStore`/`sessionStore` interfaces using a custom H3 cookie adapter (`lib/auth/h3-cookie-adapter.ts`).
+- In server routes / middleware use `getDid()` (reads the `did` cookie) for auth checks. Call `getSession()` only when you need a live ATProto client (it may refresh tokens and write back updated cookies).
+- Server-side code lives in `server/` and is handled by Nitro (H3). Vue components and pages live in `components/` and `pages/`. Shared composables are in `composables/`.
 
 ## Pull request guidelines
 

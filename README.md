@@ -6,7 +6,8 @@ Users sign in with their ATProto account (Bluesky, etc.), then set their names a
 
 ## Tech stack
 
-- [Next.js](https://nextjs.org/) App Router
+- [Nuxt 3](https://nuxt.com/) (Vue) with [Nitro](https://nitro.unjs.io/) server engine
+- Deployed to [Cloudflare Workers](https://workers.cloudflare.com/) (`cloudflare-module` preset)
 - `@atcute/oauth-node-client` — sign in with any ATProto account
 - `@atcute/client` — XRPC client for ATProto
 - No database — OAuth state and sessions are stored in `httpOnly` cookies
@@ -16,12 +17,15 @@ Users sign in with their ATProto account (Bluesky, etc.), then set their names a
 Node.js 24.x and pnpm required.
 
 ```bash
-cp env.template .env.local
 pnpm install
 pnpm dev
 ```
 
+The dev server binds to `http://127.0.0.1:3000`. No environment variables are needed for local development — the OAuth client automatically falls back to a public (non-confidential) flow with `127.0.0.1:3000` as the redirect URI.
+
 ## Environment variables
+
+Set these as [Workers Secrets](https://developers.cloudflare.com/workers/configuration/secrets/) in Cloudflare (via dashboard or `wrangler secret put`). They are **not** needed for local development.
 
 **Required for production:**
 
@@ -39,29 +43,41 @@ pnpm dev
 ## Scripts
 
 ```bash
-pnpm dev           # Next.js dev server
-pnpm build         # regenerate lexicon bindings + Next.js build
-pnpm start         # Next.js production server
+pnpm dev           # Nuxt dev server (127.0.0.1:3000)
+pnpm build         # regenerate lexicon bindings + Nuxt build → .output/
+pnpm preview       # preview the production build locally with Nitro
+pnpm deploy        # build + deploy to Cloudflare Workers via wrangler
 pnpm build:lex     # regenerate TypeScript bindings from lexicons/
 pnpm lint          # ESLint
 pnpm lint:fix      # ESLint with autofix
 pnpm format        # Prettier write
 pnpm format:check  # Prettier check
-pnpm gen-key       # generate a PRIVATE_KEY JWK
+pnpm gen-key       # generate a PRIVATE_KEY JWK for production OAuth
 ```
+
+## Deploying to Cloudflare Workers
+
+1. **Generate a private key** (once):
+   ```bash
+   pnpm gen-key
+   # prints a JSON object — copy the entire output
+   ```
+2. **Set secrets** in Cloudflare (dashboard → Workers & Pages → your worker → Settings → Variables and Secrets, or via CLI):
+   ```bash
+   npx wrangler secret put PUBLIC_URL    # e.g. https://pronouns.blue
+   npx wrangler secret put PRIVATE_KEY  # paste the full JSON from gen-key
+   ```
+3. **Build and deploy:**
+   ```bash
+   pnpm deploy
+   ```
+
+The build produces `.output/server/index.mjs` (Worker entry) and `.output/public/` (static assets), both configured in `wrangler.jsonc`.
 
 ## CI
 
 - `ci.yaml` — lint, format check, build on every PR/push
 - `format.yaml` — autofix lint + Prettier and commits via `autofix-ci`
-
-## Deploying to Cloudflare
-
-1. In Cloudflare (Workers or Pages), add environment variables:
-   - `PUBLIC_URL` — your domain, e.g. `https://pronouns.blue`
-   - `PRIVATE_KEY` — from `pnpm gen-key`
-2. Deploy with OpenNext:
-   - `pnpm deploy` (builds and deploys via `@opennextjs/cloudflare`)
 
 ## Lexicon development
 
