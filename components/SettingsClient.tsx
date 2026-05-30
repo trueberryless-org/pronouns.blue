@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { useRouter } from "next/navigation";
-import { Link } from "next-view-transitions";
 import {
   subscribeToCookies,
   getDidPublicCookie,
@@ -52,7 +50,6 @@ export function SettingsClient() {
     getDidPublicCookie,
     getDidPublicCookieServer,
   );
-  const router = useRouter();
   const [actor, setActor] = useState<ClientActorProfile | null | undefined>(
     undefined,
   );
@@ -60,7 +57,7 @@ export function SettingsClient() {
 
   useEffect(() => {
     if (did === null) {
-      router.replace("/");
+      window.location.replace("/");
       return;
     }
 
@@ -73,7 +70,7 @@ export function SettingsClient() {
         setActor(null);
         setGroups([]);
       });
-  }, [did, router]);
+  }, [did]);
 
   if (did === null || actor === undefined || groups === null) {
     return <SettingsSkeleton />;
@@ -103,13 +100,13 @@ export function SettingsClient() {
             </p>
           </div>
           {profileHref && (
-            <Link
+            <a
               href={profileHref}
               className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-2 text-sm font-medium text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
               <ArrowIcon />
               Show profile
-            </Link>
+            </a>
           )}
         </div>
         <ProfileEditor

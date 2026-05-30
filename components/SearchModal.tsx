@@ -1,8 +1,6 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useTransitionRouter } from "next-view-transitions";
 
 interface Suggestion {
   did: string;
@@ -30,7 +28,6 @@ function SearchIcon({ className = "h-5 w-5" }: { className?: string }) {
 }
 
 export function SearchModal() {
-  const router = useTransitionRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -113,7 +110,7 @@ export function SearchModal() {
 
   function openHandle(handle: string) {
     closeModal();
-    router.push(`/profile/${handle}`);
+    window.location.href = `/profile/${handle}`;
   }
 
   return (
@@ -182,7 +179,7 @@ export function SearchModal() {
                           className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-[var(--surface-strong)]"
                         >
                           {suggestion.avatar ? (
-                            <Image
+                            <img
                               src={suggestion.avatar}
                               alt=""
                               loading="lazy"

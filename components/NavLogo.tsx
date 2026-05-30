@@ -1,16 +1,24 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { Link } from "next-view-transitions";
-import Image from "next/image";
+import { useSyncExternalStore } from "react";
+
+function getPathname() {
+  return typeof window !== "undefined" ? window.location.pathname : "/";
+}
+
+function subscribe(cb: () => void) {
+  window.addEventListener("popstate", cb);
+  return () => window.removeEventListener("popstate", cb);
+}
 
 export function NavLogo() {
-  const pathname = usePathname();
+  const pathname = useSyncExternalStore(subscribe, getPathname, () => "/");
+
   if (pathname === "/") return null;
 
   return (
-    <Link href="/" className="flex items-center">
-      <Image
+    <a href="/" className="flex items-center">
+      <img
         src="/pronouns.blue.png"
         alt="pronouns.blue"
         width={966}
@@ -19,6 +27,6 @@ export function NavLogo() {
         style={{ viewTransitionName: "site-logo" }}
         loading="eager"
       />
-    </Link>
+    </a>
   );
 }

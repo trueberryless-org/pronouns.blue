@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { Link } from "next-view-transitions";
+
 import {
   subscribeToCookies,
   getDidPublicCookie,
@@ -42,14 +42,14 @@ export function ProfileEditButton({ profileDid }: { profileDid: string }) {
 
   return (
     <div className="mb-4 flex justify-end">
-      <Link
+      <a
         href="/settings"
         className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
         aria-label="Edit your names and pronouns"
         title="Edit profile"
       >
         <EditIcon />
-      </Link>
+      </a>
     </div>
   );
 }

@@ -15,12 +15,10 @@ import {
   WebDidDocumentResolver,
   XrpcHandleResolver,
 } from "@atcute/identity-resolver";
-import { cookies } from "next/headers";
+import type { CookieAdapter, CookieOptions } from "@/lib/auth/cookie-adapter";
 
 export const SCOPE =
   "atproto repo:blue.pronouns.name repo:blue.pronouns.pronoun";
-
-let client: OAuthClient | null = null;
 
 const PUBLIC_URL = process.env.PUBLIC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
@@ -42,15 +40,15 @@ function splitCookieValue(value: string, size: number): string[] {
 }
 
 function readChunkedCookie(
-  jar: Awaited<ReturnType<typeof cookies>>,
+  cookieAdapter: CookieAdapter,
   name: string,
-) {
-  const direct = jar.get(name)?.value;
+): string | undefined {
+  const direct = cookieAdapter.get(name);
   if (direct) return direct;
 
   const prefix = `${name}.`;
-  const all = "getAll" in jar ? jar.getAll() : [];
-  const chunks = all
+  const chunks = cookieAdapter
+    .getAll()
     .map((cookie) => {
       if (!cookie.name.startsWith(prefix)) return null;
       const indexRaw = cookie.name.slice(prefix.length);
@@ -67,34 +65,30 @@ function readChunkedCookie(
   return chunks.map((chunk) => chunk.value).join("");
 }
 
-function clearChunkedCookie(
-  jar: Awaited<ReturnType<typeof cookies>>,
-  name: string,
-) {
+function clearChunkedCookie(cookieAdapter: CookieAdapter, name: string) {
   const prefix = `${name}.`;
-  const all = "getAll" in jar ? jar.getAll() : [];
-  for (const cookie of all) {
+  for (const cookie of cookieAdapter.getAll()) {
     if (cookie.name === name || cookie.name.startsWith(prefix)) {
-      jar.delete(cookie.name);
+      cookieAdapter.delete(cookie.name);
     }
   }
 }
 
 function writeChunkedCookie(
-  jar: Awaited<ReturnType<typeof cookies>>,
+  cookieAdapter: CookieAdapter,
   name: string,
   value: string,
-  options: Parameters<typeof jar.set>[2],
+  options: CookieOptions,
 ) {
   const chunks = splitCookieValue(value, SESSION_CHUNK_SIZE);
   const prefix = `${name}.`;
-  clearChunkedCookie(jar, name);
+  clearChunkedCookie(cookieAdapter, name);
   if (chunks.length === 1) {
-    jar.set(name, chunks[0], options);
+    cookieAdapter.set(name, chunks[0], options);
     return;
   }
   chunks.forEach((chunk, index) => {
-    jar.set(`${prefix}${index}`, chunk, options);
+    cookieAdapter.set(`${prefix}${index}`, chunk, options);
   });
 }
 
@@ -129,73 +123,49 @@ function getKeyset(): ClientAssertionPrivateJwk[] | undefined {
   return undefined;
 }
 
-function getOriginalFetch(): typeof globalThis.fetch {
-  // Next.js patches globalThis.fetch for ISR caching, which can corrupt DPoP
-  // POST bodies. Use the original pre-patch fetch stored by Next at startup.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const fetchAsAny = globalThis.fetch as any;
-  return fetchAsAny._nextOriginalFetch || globalThis.fetch;
-}
-
-function createStateStore(): StateStore {
+function createStateStore(cookieAdapter: CookieAdapter): StateStore {
   return {
     async get(key: string) {
-      const jar = await cookies();
-      const raw = jar.get(STATE_COOKIE)?.value;
+      const raw = cookieAdapter.get(STATE_COOKIE);
       if (!raw) return undefined;
       try {
-        const parsed = JSON.parse(raw) as {
-          key: string;
-          value: StoredState;
-        };
+        const parsed = JSON.parse(raw) as { key: string; value: StoredState };
         return parsed.key === key ? parsed.value : undefined;
       } catch {
         return undefined;
       }
     },
     async set(key: string, value: StoredState) {
-      try {
-        const jar = await cookies();
-        jar.set(STATE_COOKIE, JSON.stringify({ key, value }), {
-          httpOnly: true,
-          secure: IS_PROD,
-          sameSite: "lax",
-          maxAge: 600, // 10 minutes — enough for the OAuth redirect round-trip
-          path: "/",
-        });
-      } catch {
-        // cookies() is read-only in Server Components; ignore if called there
-      }
+      cookieAdapter.set(STATE_COOKIE, JSON.stringify({ key, value }), {
+        httpOnly: true,
+        secure: IS_PROD,
+        sameSite: "lax",
+        maxAge: 600, // 10 minutes — enough for the OAuth redirect round-trip
+        path: "/",
+      });
     },
     async delete(key: string) {
+      const raw = cookieAdapter.get(STATE_COOKIE);
+      if (!raw) return;
       try {
-        const jar = await cookies();
-        const raw = jar.get(STATE_COOKIE)?.value;
-        if (!raw) return;
         const parsed = JSON.parse(raw) as { key: string };
         if (parsed.key === key) {
-          jar.delete(STATE_COOKIE);
+          cookieAdapter.delete(STATE_COOKIE);
         }
       } catch {
-        // ignore
+        // ignore malformed cookie
       }
     },
     async clear() {
-      try {
-        const jar = await cookies();
-        jar.delete(STATE_COOKIE);
-      } catch {
-        // ignore
-      }
+      cookieAdapter.delete(STATE_COOKIE);
     },
   };
 }
 
-function createSessionStore(): SessionStore {
+function createSessionStore(cookieAdapter: CookieAdapter): SessionStore {
   return {
     async get(key: string) {
-      const jar = await cookies();
-      const raw = jar.get(SESSION_COOKIE)?.value;
+      const raw = readChunkedCookie(cookieAdapter, SESSION_COOKIE);
       if (!raw) return undefined;
       try {
         const parsed = JSON.parse(raw) as {
@@ -208,75 +178,66 @@ function createSessionStore(): SessionStore {
       }
     },
     async set(key: string, value: StoredSession) {
-      try {
-        const jar = await cookies();
-        jar.set(SESSION_COOKIE, JSON.stringify({ key, value }), {
+      writeChunkedCookie(
+        cookieAdapter,
+        SESSION_COOKIE,
+        JSON.stringify({ key, value }),
+        {
           httpOnly: true,
           secure: IS_PROD,
           sameSite: "lax",
           maxAge: 60 * 60 * 24 * 30, // 30 days
           path: "/",
-        });
-      } catch {
-        // ignore — token refresh in a Server Component won't persist,
-        // but the session will be refreshed again on the next Route Handler call
-      }
+        },
+      );
     },
     async delete(key: string) {
+      const raw = readChunkedCookie(cookieAdapter, SESSION_COOKIE);
+      if (!raw) return;
       try {
-        const jar = await cookies();
-        const raw = jar.get(SESSION_COOKIE)?.value;
-        if (!raw) return;
         const parsed = JSON.parse(raw) as { key: string };
         if (parsed.key === key) {
-          jar.delete(SESSION_COOKIE);
+          clearChunkedCookie(cookieAdapter, SESSION_COOKIE);
         }
       } catch {
-        // ignore
+        // ignore malformed cookie
       }
     },
     async clear() {
-      try {
-        const jar = await cookies();
-        jar.delete(SESSION_COOKIE);
-      } catch {
-        // ignore
-      }
+      clearChunkedCookie(cookieAdapter, SESSION_COOKIE);
     },
   };
 }
 
-function createActorResolver(fetchImpl: typeof globalThis.fetch) {
+function createActorResolver() {
   return new LocalActorResolver({
     handleResolver: new XrpcHandleResolver({
       serviceUrl: PUBLIC_APPVIEW_URL,
-      fetch: fetchImpl,
+      fetch: globalThis.fetch,
     }),
     didDocumentResolver: new CompositeDidDocumentResolver({
       methods: {
-        plc: new PlcDidDocumentResolver({ fetch: fetchImpl }),
-        web: new WebDidDocumentResolver({ fetch: fetchImpl }),
+        plc: new PlcDidDocumentResolver({ fetch: globalThis.fetch }),
+        web: new WebDidDocumentResolver({ fetch: globalThis.fetch }),
       },
     }),
   });
 }
 
-export async function getOAuthClient(): Promise<OAuthClient> {
-  if (client) return client;
-  const originalFetch = getOriginalFetch();
+export async function getOAuthClient(
+  cookieAdapter: CookieAdapter,
+): Promise<OAuthClient> {
   const keyset = getKeyset();
   const metadata = keyset ? getConfidentialMetadata() : getPublicMetadata();
 
-  client = new OAuthClient({
+  return new OAuthClient({
     ...(keyset ? { keyset } : {}),
     metadata,
-    actorResolver: createActorResolver(originalFetch),
+    actorResolver: createActorResolver(),
     stores: {
-      states: createStateStore(),
-      sessions: createSessionStore(),
+      states: createStateStore(cookieAdapter),
+      sessions: createSessionStore(cookieAdapter),
     },
-    fetch: originalFetch,
+    fetch: globalThis.fetch,
   });
-
-  return client;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "next-view-transitions";
+
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface MobileNavProps {
@@ -145,22 +145,22 @@ export function MobileNav({
                   </span>
                 </div>
               )}
-              <Link
+              <a
                 href={profileHref}
                 role="menuitem"
                 onClick={() => setOpen(false)}
                 className="flex items-center rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]"
               >
                 Profile
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/settings"
                 role="menuitem"
                 onClick={() => setOpen(false)}
                 className="flex items-center rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]"
               >
                 Settings
-              </Link>
+              </a>
               <button
                 type="button"
                 role="menuitem"

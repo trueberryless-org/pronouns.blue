@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { HeartIcon } from "@/components/HeartIcon";
 import { DEFAULT_LANG, type LanguageGroup } from "@/lib/atproto/records";
 
@@ -757,7 +756,6 @@ export function ProfileEditor({
   isFirstTime = false,
   profileHref,
 }: ProfileEditorProps) {
-  const router = useRouter();
   const [groups, setGroups] = useState<GroupState[]>(() =>
     groupsToState(initialGroups),
   );
@@ -852,7 +850,8 @@ export function ProfileEditor({
       if (!response.ok)
         throw new Error(data.error || `Server error ${response.status}`);
       setSaved(true);
-      router.refresh();
+      // Reload to reflect saved changes without a full server router
+      window.location.reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save profile");
     } finally {

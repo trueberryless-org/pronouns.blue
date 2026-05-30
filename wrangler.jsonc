@@ -6,9 +6,9 @@
     "enabled": true,
   },
   "compatibility_flags": ["nodejs_compat"],
-  "main": ".open-next/worker.js",
+  "main": "@astrojs/cloudflare/entrypoints/server",
   "assets": {
-    "directory": ".open-next/assets",
+    "directory": "dist/",
     "binding": "ASSETS",
   },
 }

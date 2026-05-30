@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 interface FloatingProfileBackProps {
   title: string;
@@ -47,7 +46,6 @@ export function FloatingProfileBack({
   title,
   avatar,
 }: FloatingProfileBackProps) {
-  const router = useRouter();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -103,7 +101,7 @@ export function FloatingProfileBack({
       {/* Right side: navigate back in history */}
       <button
         type="button"
-        onClick={() => router.back()}
+        onClick={() => window.history.back()}
         title="Go back"
         aria-label="Go back to previous page"
         className="flex items-center px-3 text-[var(--muted)] transition-colors hover:bg-[var(--surface-strong)] hover:text-[var(--text)]"

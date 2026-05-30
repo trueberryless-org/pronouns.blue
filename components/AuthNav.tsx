@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "next-view-transitions";
+
 
 interface AuthNavProps {
   signedIn: boolean;
@@ -150,7 +150,7 @@ export function AuthNav({
             role="menu"
             className="absolute right-0 z-20 mt-2 min-w-44 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1 shadow-md"
           >
-            <Link
+            <a
               href={profileHref}
               role="menuitem"
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]"
@@ -158,8 +158,8 @@ export function AuthNav({
             >
               <UserIcon />
               Profile
-            </Link>
-            <Link
+            </a>
+            <a
               href="/settings"
               role="menuitem"
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]"
@@ -167,7 +167,7 @@ export function AuthNav({
             >
               <CogsIcon />
               Settings
-            </Link>
+            </a>
             <button
               type="button"
               role="menuitem"

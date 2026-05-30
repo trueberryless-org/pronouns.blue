@@ -24,7 +24,6 @@ export async function getActorProfile(
   try {
     const response = await fetch(
       `${APPVIEW_URL}/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(actor)}`,
-      { next: { revalidate: 300 } },
     );
     if (!response.ok) return null;
     const profile = (await response.json()) as AppViewProfileResponse;
@@ -52,7 +51,6 @@ export async function searchActors(
   try {
     const response = await fetch(
       `${APPVIEW_URL}/xrpc/app.bsky.actor.searchActors?q=${encodeURIComponent(query)}&limit=${limit}`,
-      { next: { revalidate: 60 } },
     );
     if (!response.ok) return [];
     const data = (await response.json()) as SearchActorsResponse;
@@ -80,7 +78,6 @@ export async function getActorFollows(
   try {
     const response = await fetch(
       `${APPVIEW_URL}/xrpc/app.bsky.graph.getFollows?actor=${encodeURIComponent(actor)}&limit=${limit}`,
-      { next: { revalidate: 300 } },
     );
     if (!response.ok) return { follows: [] };
     const data = (await response.json()) as GetFollowsResponse;

@@ -1,8 +1,6 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useTransitionRouter } from "next-view-transitions";
 
 interface Suggestion {
   did: string;
@@ -12,7 +10,6 @@ interface Suggestion {
 }
 
 export function HandleSearch() {
-  const router = useTransitionRouter();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(false);
@@ -88,7 +85,7 @@ export function HandleSearch() {
   }, [normalizedQuery]);
 
   function openHandle(handle: string) {
-    router.push(`/profile/${handle}`);
+    window.location.href = `/profile/${handle}`;
   }
 
   return (
@@ -118,7 +115,7 @@ export function HandleSearch() {
                     className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-[var(--surface-strong)]"
                   >
                     {suggestion.avatar ? (
-                      <Image
+                      <img
                         src={suggestion.avatar}
                         alt=""
                         loading="lazy"

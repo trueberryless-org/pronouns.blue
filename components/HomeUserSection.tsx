@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Link } from "next-view-transitions";
+
 
 interface UserInfo {
   did: string;
@@ -44,7 +44,7 @@ export function HomeUserSection() {
 
   return (
     <section className="grid gap-4 md:grid-cols-2">
-      <Link
+      <a
         href="/settings"
         className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 transition hover:border-[var(--accent)]"
       >
@@ -54,9 +54,9 @@ export function HomeUserSection() {
         <p className="mt-1 text-sm text-[var(--muted)]">
           Update your profile entries and preferred options.
         </p>
-      </Link>
+      </a>
 
-      <Link
+      <a
         href={profileHref}
         className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 transition hover:border-[var(--accent)]"
       >
@@ -85,7 +85,7 @@ export function HomeUserSection() {
           </span>
         </div>
         <p className="mt-2 text-sm text-[var(--muted)]">View your profile</p>
-      </Link>
+      </a>
     </section>
   );
 }
