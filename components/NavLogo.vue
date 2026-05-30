@@ -4,7 +4,7 @@ const showLogo = computed(() => route.path !== '/');
 </script>
 
 <template>
-  <a v-if="showLogo" href="/" class="flex items-center">
+  <NuxtLink v-if="showLogo" to="/" class="flex items-center">
     <img
       src="/pronouns.blue.png"
       alt="pronouns.blue"
@@ -14,5 +14,5 @@ const showLogo = computed(() => route.path !== '/');
       loading="eager"
       style="view-transition-name: site-logo"
     />
-  </a>
+  </NuxtLink>
 </template>

@@ -9,7 +9,7 @@ const groups = ref<LanguageGroup[] | null>(null);
 onMounted(() => {
   watchEffect(async () => {
     const d = did.value;
-    if (d === null) { window.location.replace('/'); return; }
+    if (d === null) { navigateTo('/', { replace: true }); return; }
     if (!d) return; // still loading
 
     try {
@@ -45,10 +45,10 @@ const isFirstTime = computed(() => !groups.value || groups.value.length === 0 ||
           <h1 class="text-2xl font-semibold text-[var(--text)]">{{ isFirstTime ? 'Set up your profile' : 'Settings' }}</h1>
           <p class="text-sm text-[var(--muted)]">{{ isFirstTime ? 'Add your names and pronouns to get started.' : 'Update your names and pronouns.' }}</p>
         </div>
-        <a v-if="profileHref" :href="profileHref" class="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-2 text-sm font-medium text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]">
+        <NuxtLink v-if="profileHref" :to="profileHref" class="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-2 text-sm font-medium text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]">
           <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
           Show profile
-        </a>
+        </NuxtLink>
       </div>
       <ProfileEditor :initial-groups="groups!" :is-first-time="isFirstTime" :profile-href="profileHref ?? undefined" />
     </section>

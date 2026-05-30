@@ -123,14 +123,14 @@ async function handleLogout() {
             </button>
 
             <div v-if="desktopMenuOpen" role="menu" class="absolute right-0 z-20 mt-2 min-w-44 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1 shadow-md">
-              <a :href="profileHref" role="menuitem" @click="desktopMenuOpen = false" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">
+              <NuxtLink :to="profileHref" role="menuitem" @click="desktopMenuOpen = false" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">
                 <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0" /><circle cx="12" cy="8" r="4" /></svg>
                 Profile
-              </a>
-              <a href="/settings" role="menuitem" @click="desktopMenuOpen = false" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">
+              </NuxtLink>
+              <NuxtLink to="/settings" role="menuitem" @click="desktopMenuOpen = false" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">
                 <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" /><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.2a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 0 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.2a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 0 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 .9-1.4V3a2 2 0 1 1 4 0v.2a1.6 1.6 0 0 0 1 1.5h.1a1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.4.9h.2a2 2 0 1 1 0 4h-.2a1.6 1.6 0 0 0-1.5 1Z" /></svg>
                 Settings
-              </a>
+              </NuxtLink>
               <button type="button" role="menuitem" @click="handleLogout" class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">
                 <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /></svg>
                 Log out
@@ -185,8 +185,8 @@ async function handleLogout() {
                 <span class="h-7 w-7 flex-shrink-0 rounded-full bg-cover bg-center border border-[var(--border)]" :style="{ backgroundImage: `url(${user.avatar})` }" role="img" :aria-label="label" />
                 <span class="truncate text-sm font-medium text-[var(--text)]">{{ label }}</span>
               </div>
-              <a :href="profileHref" role="menuitem" @click="mobileMenuOpen = false" class="flex items-center rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Profile</a>
-              <a href="/settings" role="menuitem" @click="mobileMenuOpen = false" class="flex items-center rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Settings</a>
+              <NuxtLink :to="profileHref" role="menuitem" @click="mobileMenuOpen = false" class="flex items-center rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Profile</NuxtLink>
+              <NuxtLink to="/settings" role="menuitem" @click="mobileMenuOpen = false" class="flex items-center rounded-md px-3 py-2 text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Settings</NuxtLink>
               <button type="button" role="menuitem" @click="handleLogout" class="flex w-full items-center rounded-md px-3 py-2 text-left text-sm text-[var(--text)] hover:bg-[var(--surface-strong)]">Log out</button>
             </template>
 

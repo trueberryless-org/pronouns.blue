@@ -29,7 +29,7 @@ useHead({ title: 'Terms of Service – pronouns.blue' });
           By accessing or using pronouns.blue (&ldquo;the Service&rdquo;), you
           agree to be bound by these Terms of Service. If you do not agree,
           please do not use the Service. Use of the Service is also subject to
-          our <a href="/privacy" class="text-[var(--accent)] underline underline-offset-4">Privacy Policy</a>,
+          our <NuxtLink to="/privacy" class="text-[var(--accent)] underline underline-offset-4">Privacy Policy</NuxtLink>,
           which is incorporated herein by reference.
         </p>
       </section>

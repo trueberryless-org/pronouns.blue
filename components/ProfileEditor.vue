@@ -284,7 +284,6 @@ async function saveProfile() {
       : {} as { error?: string };
     if (!response.ok) throw new Error(data.error ?? `Server error ${response.status}`);
     saved.value = true;
-    window.location.reload();
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to save profile';
   } finally {
@@ -321,10 +320,10 @@ async function saveProfile() {
             <p class="text-xs text-[var(--muted)]">Your profile is live and ready to share.</p>
           </div>
         </div>
-        <a :href="profileHref" class="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90">
+        <NuxtLink :to="profileHref" class="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90">
           View your profile
           <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
-        </a>
+        </NuxtLink>
       </div>
     </div>
 

@@ -54,7 +54,7 @@ function closeModal() {
 
 function openHandle(handle: string) {
   closeModal();
-  window.location.href = `/profile/${handle}`;
+  navigateTo(`/profile/${handle}`);
 }
 </script>
 

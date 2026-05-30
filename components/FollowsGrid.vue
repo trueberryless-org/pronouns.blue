@@ -51,14 +51,14 @@ onMounted(() => {
 <template>
   <div>
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-      <a v-for="actor in follows" :key="actor.did" :href="`/profile/${encodeURIComponent(actor.handle)}`" class="group flex flex-col items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-center transition-colors hover:border-[var(--accent)]">
+      <NuxtLink v-for="actor in follows" :key="actor.did" :to="`/profile/${encodeURIComponent(actor.handle)}`" class="group flex flex-col items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-center transition-colors hover:border-[var(--accent)]">
         <div v-if="actor.avatar" class="h-12 w-12 flex-shrink-0 rounded-full border border-[var(--border)] bg-cover bg-center" :style="{ backgroundImage: `url(${actor.avatar})` }" role="img" :aria-label="actor.displayName ?? actor.handle" />
         <div v-else class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--tag-bg)] text-lg font-semibold text-[var(--text)]">{{ (actor.displayName ?? actor.handle).slice(0,1).toUpperCase() }}</div>
         <div class="min-w-0 w-full">
           <p class="truncate text-sm font-medium text-[var(--text)] transition-colors group-hover:text-[var(--accent)]">{{ actor.displayName ?? actor.handle }}</p>
           <p class="truncate text-xs text-[var(--muted)]">@{{ actor.handle }}</p>
         </div>
-      </a>
+      </NuxtLink>
       <template v-if="loading">
         <div v-for="i in SKELETON_COUNT" :key="i" class="flex flex-col items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
           <div class="h-12 w-12 animate-pulse rounded-full bg-[var(--surface-strong)]" />

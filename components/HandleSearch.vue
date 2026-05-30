@@ -48,7 +48,7 @@ watch(normalizedQuery, (q) => {
 });
 
 function openHandle(handle: string) {
-  window.location.href = `/profile/${handle}`;
+  navigateTo(`/profile/${handle}`);
 }
 </script>
 
