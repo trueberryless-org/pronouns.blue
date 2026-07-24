@@ -8,6 +8,7 @@ export default withNuxt({
       { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
     ],
     "@typescript-eslint/no-explicit-any": "warn",
+    "vue/html-self-closing": ["error", { html: { void: "always" } }],
   },
   ignores: ["lib/lexicons/**"],
 });
