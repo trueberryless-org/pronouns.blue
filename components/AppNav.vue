@@ -236,7 +236,7 @@ async function handleLogout() {
                 @keydown.enter="
                   loginHandle.trim() && !loginLoading && startLogin()
                 "
-              />
+              >
               <button
                 type="button"
                 :disabled="loginLoading || !loginHandle.trim()"
@@ -351,7 +351,7 @@ async function handleLogout() {
                   @keydown.enter="
                     loginHandle.trim() && !loginLoading && startLogin()
                   "
-                />
+                >
                 <button
                   type="button"
                   :disabled="loginLoading || !loginHandle.trim()"

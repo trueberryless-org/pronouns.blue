@@ -17,7 +17,7 @@ useHead({ title: "Credits – pronouns.blue" });
         width="120"
         height="120"
         class="pointer-events-none absolute right-0 top-0 h-20 w-20 -translate-y-1/3 translate-x-1/3 select-none -rotate-6 sm:h-24 sm:w-24"
-      />
+      >
       <h2 class="text-xl font-semibold text-[var(--text)]">Project Credits</h2>
       <p class="text-[var(--muted)]">
         Huge thanks to

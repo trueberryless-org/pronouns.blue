@@ -23,7 +23,7 @@ describe("publishProfileRecords", () => {
       (
         method: string,
         options: unknown,
-      ) => Promise<{ ok: boolean; data: object }>
+      ) => Promise<{ ok: boolean; data: unknown }>
     >(async () => ({ ok: true, data: {} }));
     const rpc = { get, post } as unknown as Client;
 

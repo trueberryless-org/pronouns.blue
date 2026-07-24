@@ -551,7 +551,7 @@ async function saveProfile() {
               "
               @blur="commitCustomLang(gIdx)"
               @keydown.enter.prevent="commitCustomLang(gIdx)"
-            />
+            >
             <span
               v-if="group.langCheck.status === 'recognized'"
               class="text-xs text-[var(--muted)]"
@@ -657,7 +657,7 @@ async function saveProfile() {
                 })
               "
               @keydown.enter.prevent="addNames(gIdx)"
-            />
+            >
             <button
               type="button"
               class="min-h-11 rounded-lg bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--accent-contrast)]"
@@ -904,7 +904,7 @@ async function saveProfile() {
                 })
               "
               @keydown.enter.prevent="addPronouns(gIdx)"
-            />
+            >
             <button
               type="button"
               class="min-h-11 rounded-lg bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--accent-contrast)]"
