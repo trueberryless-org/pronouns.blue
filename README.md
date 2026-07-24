@@ -52,6 +52,19 @@ The build produces `.output/server/index.mjs` (Worker entry) and
 fails if application code or ATCute introduces a Node.js builtin; Workers run
 without `nodejs_compat`.
 
+### OAuth client metadata
+
+OAuth metadata is served from
+`https://pronouns.blue/oauth-client-metadata.json`; authorization servers fetch
+it directly, without a browser or JavaScript. Cloudflare must not challenge
+this exact path: create a **Security → WAF → Custom rule** before any
+challenge rule with the expression
+`http.request.uri.path eq "/oauth-client-metadata.json"` and action **Skip**.
+Skip the feature issuing the challenge (for example, Super Bot Fight Mode and
+managed rules), or disable Bot Fight Mode if the plan cannot exclude paths.
+Worker code and response headers cannot bypass a challenge applied before the
+request reaches the Worker.
+
 ## CI
 
 - `ci.yaml` — lint, format check, build on every PR/push
