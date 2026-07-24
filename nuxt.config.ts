@@ -1,3 +1,5 @@
+import { preventNodeBuiltinDependencyPlugin } from "./tools/prevent-node-builtins";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-05-30",
@@ -15,6 +17,9 @@ export default defineNuxtConfig({
     experimental: {
       wasm: true,
     },
+    rollupConfig: {
+      plugins: [preventNodeBuiltinDependencyPlugin()],
+    },
   },
 
   experimental: {
@@ -29,19 +34,6 @@ export default defineNuxtConfig({
   postcss: {
     plugins: {
       "@tailwindcss/postcss": {},
-    },
-  },
-
-  runtimeConfig: {
-    // Server-only secrets — override with env vars at deploy time
-    publicUrl: process.env.PUBLIC_URL ?? "",
-    privateKey: process.env.PRIVATE_KEY ?? "",
-    publicAppviewUrl:
-      process.env.PUBLIC_APPVIEW_URL ?? "https://public.api.bsky.app",
-    // Exposed to the client
-    public: {
-      appviewUrl:
-        process.env.PUBLIC_APPVIEW_URL ?? "https://public.api.bsky.app",
     },
   },
 

@@ -15,8 +15,7 @@ export interface ActorProfile {
   pronouns: string | null;
 }
 
-const APPVIEW_URL =
-  process.env.PUBLIC_APPVIEW_URL || "https://public.api.bsky.app";
+const APPVIEW_URL = "https://public.api.bsky.app";
 
 export async function getActorProfile(
   actor: string,

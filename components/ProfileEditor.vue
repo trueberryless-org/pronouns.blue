@@ -394,18 +394,13 @@ async function saveProfile() {
           pronouns.includes(e),
         ),
       }));
-    const response = await fetch("/api/status", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ groups: payload }),
-    });
-    const data = response.headers
-      .get("content-type")
-      ?.includes("application/json")
-      ? ((await response.json()) as { error?: string })
-      : ({} as { error?: string });
-    if (!response.ok)
-      throw new Error(data.error ?? `Server error ${response.status}`);
+    const { getAuthenticatedClient } = await import("~/lib/auth/oauth.client");
+    const { publishProfileRecords } = await import("~/lib/atproto/publisher");
+    const did = useState<string | null>("auth-did").value;
+    if (!did)
+      throw new Error("Your session has expired. Please sign in again.");
+    const rpc = await getAuthenticatedClient(did);
+    await publishProfileRecords(rpc, did, payload);
     saved.value = true;
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Failed to save profile";

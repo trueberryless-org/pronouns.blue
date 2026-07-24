@@ -90,15 +90,8 @@ async function startLogin() {
   loginLoading.value = true;
   loginError.value = null;
   try {
-    const res = await fetch("/oauth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ handle: loginHandle.value }),
-    });
-    const data = (await res.json()) as { redirectUrl?: string; error?: string };
-    if (!res.ok || !data.redirectUrl)
-      throw new Error(data.error || "Login failed");
-    window.location.href = data.redirectUrl;
+    const { beginLogin } = await import("~/lib/auth/oauth.client");
+    await beginLogin(loginHandle.value.trim());
   } catch (err) {
     loginError.value = err instanceof Error ? err.message : "Login failed";
     loginLoading.value = false;
@@ -106,8 +99,13 @@ async function startLogin() {
 }
 
 async function handleLogout() {
-  await fetch("/oauth/logout", { method: "POST" });
-  window.location.href = "/";
+  const currentDid = did.value;
+  if (currentDid) {
+    const { signOut } = await import("~/lib/auth/oauth.client");
+    await signOut(currentDid);
+  }
+  did.value = null;
+  await navigateTo("/", { replace: true });
 }
 </script>
 
