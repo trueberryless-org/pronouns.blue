@@ -25,6 +25,7 @@ pnpm format
 pnpm format:check
 pnpm build:lex
 pnpm build
+pnpm test
 ```
 
 ## Lexicon workflow
@@ -40,8 +41,8 @@ pnpm build
 - Each record carries an optional **`lang`** field — a [BCP-47](https://www.rfc-editor.org/rfc/rfc5646) language tag (e.g. `en`, `de`, `zh-CN`). Records without `lang` default to English. New saves always write the field.
 - `lib/atproto/records.ts` groups records by `lang` and returns `LanguageGroup[]` — the data shape used by both `ProfileDisplay` and `ProfileEditor`.
 - Profile pages and the settings page read records directly from the user's PDS via `com.atproto.repo.listRecords` (`lib/atproto/records.ts`).
-- OAuth state and session (tokens + DPoP key) are stored in `httpOnly` browser cookies (`oauth_state`, `session`, `did`). `lib/auth/client.ts` implements the `stateStore`/`sessionStore` interfaces using a custom H3 cookie adapter (`lib/auth/h3-cookie-adapter.ts`).
-- In server routes / middleware use `getDid()` (reads the `did` cookie) for auth checks. Call `getSession()` only when you need a live ATProto client (it may refresh tokens and write back updated cookies).
+- OAuth runs in the browser through `@atcute/oauth-browser-client`. Its state, session, and DPoP key are stored in browser local storage and authenticated PDS writes happen directly from `lib/atproto/publisher.ts`.
+- The Worker intentionally has no Node compatibility layer. `build/prevent-node-builtins.ts` fails production builds if application code or ATCute imports a Node builtin.
 - Server-side code lives in `server/` and is handled by Nitro (H3). Vue components and pages live in `components/` and `pages/`. Shared composables are in `composables/`.
 
 ## Pull request guidelines
@@ -53,4 +54,5 @@ pnpm build
 
 ## Testing
 
-There is currently no repository test script (`pnpm test` is not configured yet).
+`pnpm test` runs unit, Nuxt route integration, and Chromium E2E coverage. Run
+`pnpm exec playwright install chromium` once before running E2E tests locally.

@@ -8,9 +8,9 @@ Users sign in with their ATProto account (Bluesky, etc.), then set their names a
 
 - [Nuxt 3](https://nuxt.com/) (Vue) with [Nitro](https://nitro.unjs.io/) server engine
 - Deployed to [Cloudflare Workers](https://workers.cloudflare.com/) (`cloudflare-module` preset)
-- `@atcute/oauth-node-client` — sign in with any ATProto account
+- `@atcute/oauth-browser-client` — Web Crypto OAuth for any ATProto account
 - `@atcute/client` — XRPC client for ATProto
-- No database — OAuth state and sessions are stored in `httpOnly` cookies
+- No database — OAuth state, sessions, and DPoP keys stay in browser storage
 
 ## Local setup
 
@@ -21,24 +21,9 @@ pnpm install
 pnpm dev
 ```
 
-The dev server binds to `http://127.0.0.1:3000`. No environment variables are needed for local development — the OAuth client automatically falls back to a public (non-confidential) flow with `127.0.0.1:3000` as the redirect URI.
-
-## Environment variables
-
-Set these as [Workers Secrets](https://developers.cloudflare.com/workers/configuration/secrets/) in Cloudflare (via dashboard or `wrangler secret put`). They are **not** needed for local development.
-
-**Required for production:**
-
-| Variable      | Description                                  |
-| ------------- | -------------------------------------------- |
-| `PUBLIC_URL`  | Canonical URL, e.g. `https://pronouns.blue`  |
-| `PRIVATE_KEY` | JWK for OAuth — generate with `pnpm gen-key` |
-
-**Optional:**
-
-| Variable             | Description              | Default                       |
-| -------------------- | ------------------------ | ----------------------------- |
-| `PUBLIC_APPVIEW_URL` | Bluesky appview base URL | `https://public.api.bsky.app` |
+The dev server binds to `http://127.0.0.1:3000`. No environment variables or
+secrets are needed: OAuth uses the ATProto public-client flow and the browser's
+Web Crypto API.
 
 ## Scripts
 
@@ -52,27 +37,20 @@ pnpm lint          # ESLint
 pnpm lint:fix      # ESLint with autofix
 pnpm format        # Prettier write
 pnpm format:check  # Prettier check
-pnpm gen-key       # generate a PRIVATE_KEY JWK for production OAuth
+pnpm test          # unit, integration, and browser E2E tests
 ```
 
 ## Deploying to Cloudflare Workers
 
-1. **Generate a private key** (once):
-   ```bash
-   pnpm gen-key
-   # prints a JSON object — copy the entire output
-   ```
-2. **Set secrets** in Cloudflare (dashboard → Workers & Pages → your worker → Settings → Variables and Secrets, or via CLI):
-   ```bash
-   npx wrangler secret put PUBLIC_URL    # e.g. https://pronouns.blue
-   npx wrangler secret put PRIVATE_KEY  # paste the full JSON from gen-key
-   ```
-3. **Build and deploy:**
+1. **Build and deploy:**
    ```bash
    pnpm deploy
    ```
 
-The build produces `.output/server/index.mjs` (Worker entry) and `.output/public/` (static assets), both configured in `wrangler.jsonc`.
+The build produces `.output/server/index.mjs` (Worker entry) and
+`.output/public/` (static assets), both configured in `wrangler.jsonc`. It
+fails if application code or ATCute introduces a Node.js builtin; Workers run
+without `nodejs_compat`.
 
 ## CI
 

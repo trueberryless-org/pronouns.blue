@@ -5,48 +5,59 @@
 Use `pnpm` (repo is pinned to pnpm in `package.json`).
 
 ```bash
-cp env.template .env.local
 pnpm install
-pnpm dev          # Next.js dev server (no migrations needed)
-pnpm lint         # ESLint (Next core-web-vitals + TypeScript config)
+pnpm dev          # Nuxt development server
+pnpm lint         # ESLint
 pnpm lint:fix     # ESLint with autofix
 pnpm format       # Prettier write mode
 pnpm format:check # Prettier check mode
-pnpm build        # runs `pnpm build:lex` then `next build`
-pnpm start        # Next.js production server
+pnpm build        # runs `pnpm build:lex` then Nuxt's Cloudflare build
+pnpm start        # Wrangler development server
 pnpm build:lex    # regenerate TypeScript lexicon bindings from lexicons/
-pnpm gen-key      # generate a PRIVATE_KEY JWK for OAuth private_key_jwt
+pnpm test         # unit, integration, and E2E tests
 ```
 
-Tests are **not currently configured** in this repository.
+Install Chromium once with `pnpm exec playwright install chromium` before
+running the E2E suite locally.
 
 ## High-level architecture
 
-This is a Next.js App Router app for sharing names and pronouns on AT Protocol. **There is no database** — the entire backend is ATProto.
+This is a Nuxt 3 app for sharing names and pronouns on AT Protocol. **There is no database** — the entire backend is ATProto.
 
-1. **ATProto OAuth — cookie-based sessions**  
-   `/oauth/login`, `/oauth/callback`, `/oauth/logout` orchestrate auth via `lib/auth/client.ts`. OAuth state and session (tokens + DPoP private key) are stored entirely in `httpOnly` browser cookies (`oauth_state`, `session`, `did`). No server-side storage is used.
+1. **ATProto OAuth — browser Web Crypto sessions**
+   `plugins/oauth.client.ts` configures `@atcute/oauth-browser-client`, and
+   `pages/oauth/callback.vue` completes OAuth. State, tokens, and DPoP keys stay
+   in browser local storage; no secret or Node API is used by the Worker.
 
 2. **Record publishing**  
-   `POST /api/status` uses `@atcute/client` to delete and recreate all `blue.pronouns.name` and `blue.pronouns.pronoun` records in the user's ATProto repo. Records live exclusively on the user's PDS.
+   `lib/atproto/publisher.ts` uses the OAuth browser client to delete and
+   recreate all `blue.pronouns.name` and `blue.pronouns.pronoun` records in the
+   user's ATProto repo. Records live exclusively on the user's PDS.
 
 3. **Profile reading**  
-   `app/profile/[handle]/page.tsx` resolves the handle via the Bluesky appview (`app.bsky.actor.getProfile`), then fetches name/pronoun records directly from the user's PDS via `com.atproto.repo.listRecords` (`lib/atproto/records.ts`).
+   `pages/profile/[handle].vue` resolves the handle via the Bluesky appview
+   (`app.bsky.actor.getProfile`), then fetches name/pronoun records directly
+   from the user's PDS via `com.atproto.repo.listRecords`
+   (`lib/atproto/records.ts`).
 
 4. **Settings page**  
-   `app/settings/page.tsx` reads current records directly from the user's PDS to pre-fill the editor form. Authentication check uses `getDid()` (reads the `did` cookie) — not `getSession()` — to avoid triggering an unnecessary token restore in a Server Component context.
+   `pages/settings.vue` and `SettingsClient.vue` read current records directly
+   from the user's PDS to pre-fill the editor form. `useAuth()` exposes only the
+   selected public DID to the UI.
 
 5. **Handle search**  
-   `GET /api/search` proxies to `app.bsky.actor.searchActors` on the Bluesky appview.
+   `HandleSearch.vue` calls `app.bsky.actor.searchActors` directly on the
+   Bluesky appview.
 
 ## Key conventions
 
 - **Do not edit generated lexicon files** in `lib/lexicons/**`; edit source lexicons under `lexicons/**` and regenerate with `pnpm build:lex`.
-- **Use path alias imports** (`@/...`) rather than long relative paths (configured in `tsconfig.json`).
+- **Use path alias imports** (`~/...`) rather than long relative paths (configured in `tsconfig.json`).
 - **Records live on the PDS, not locally.** There is no local database or caching layer.
-- **Use `getDid()` in Server Components** (reads `did` cookie, fast, no token I/O). Only call `getSession()` (which calls `client.restore()`) in Route Handlers where cookies are writable, so a token refresh can be persisted.
-- **`getOAuthClient()` is a singleton** but its cookie stores call `cookies()` lazily on each invocation, so they always operate on the current request's cookie jar.
-- **Next.js's original fetch** is passed to the OAuth client and identity resolvers to bypass the patched `globalThis.fetch`, which would otherwise corrupt POST bodies in the DPoP flow.
+- **OAuth is client-only.** Do not import the browser OAuth module from Worker
+  code. The Worker serves public data and metadata only.
+- **No Node compatibility.** `wrangler.jsonc` must not enable
+  `nodejs_compat`; the bundle assertion protects application and ATCute imports.
 
 ## Nuxt instructions
 

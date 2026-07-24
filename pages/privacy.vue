@@ -40,9 +40,8 @@ useHead({ title: "Privacy Policy – pronouns.blue" });
             <span class="font-medium text-[var(--text)]"
               >Nothing server-side</span
             >
-            — we run no database. Your OAuth session is stored entirely in your
-            browser as encrypted cookies (see below). When you sign out, those
-            cookies are deleted.
+            — we run no database. Your OAuth session and DPoP key stay in your
+            browser's local storage. When you sign out, they are deleted.
           </li>
           <li>
             <span class="font-medium text-[var(--text)]"
@@ -86,29 +85,21 @@ useHead({ title: "Privacy Policy – pronouns.blue" });
       >
         <h2 class="mb-3 text-xl font-semibold text-[var(--text)]">Cookies</h2>
         <p class="mb-3 text-[var(--muted)]">
-          We set the following cookies. The session cookies are
-          <code class="text-xs">httpOnly</code> and never accessible to
-          JavaScript. The <code class="text-xs">did-public</code> cookie is
-          intentionally readable by JavaScript — your DID is a public identifier
-          on ATProto and does not reveal any sensitive information.
+          We do not set authentication cookies. The ATProto OAuth client stores
+          its session, DPoP key, and short-lived authorization state in this
+          browser's local storage so it can make authenticated requests directly
+          to your PDS.
         </p>
         <ul class="space-y-2 text-[var(--muted)]">
           <li>
-            <code class="text-xs font-medium text-[var(--text)]">did</code> —
-            your ATProto DID, used to identify your login session.
-          </li>
-          <li>
             <code class="text-xs font-medium text-[var(--text)]">session</code>
             — your OAuth tokens and DPoP private key, used to make authenticated
-            requests to your PDS on your behalf. Expires after 30 days or when
-            you sign out.
+            requests to your PDS on your behalf.
           </li>
           <li>
-            <code class="text-xs font-medium text-[var(--text)]"
-              >oauth_state</code
-            >
-            — temporary PKCE state during the sign-in redirect. Expires after 10
-            minutes automatically.
+            <code class="text-xs font-medium text-[var(--text)]">state</code> —
+            temporary PKCE state during the sign-in redirect. It expires after
+            10 minutes automatically.
           </li>
         </ul>
       </section>
@@ -122,9 +113,9 @@ useHead({ title: "Privacy Policy – pronouns.blue" });
           Data deletion
         </h2>
         <p class="text-[var(--muted)]">
-          Sign out to delete your session cookies. Your name/pronoun records are
-          stored in your own ATProto repo — delete them there (via your PDS, any
-          ATProto client, or
+          Sign out to delete your browser-stored OAuth session. Your
+          name/pronoun records are stored in your own ATProto repo — delete them
+          there (via your PDS, any ATProto client, or
           <a
             href="https://pdsls.dev"
             target="_blank"
