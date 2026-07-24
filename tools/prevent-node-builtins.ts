@@ -35,7 +35,9 @@ export function preventNodeBuiltinDependencyPlugin() {
             [
               "A Node.js builtin was found in the Cloudflare Worker bundle:",
               ` - Node builtin: '${builtin}'`,
-              ...unsupportedImporters.map((importer) => ` - Importer: ${importer}`),
+              ...unsupportedImporters.map(
+                (importer) => ` - Importer: ${importer}`,
+              ),
             ].join("\n"),
           );
         }

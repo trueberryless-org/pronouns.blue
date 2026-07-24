@@ -20,7 +20,10 @@ describe("publishProfileRecords", () => {
       }),
     );
     const post = vi.fn<
-      (method: string, options: unknown) => Promise<{ ok: boolean; data: {} }>
+      (
+        method: string,
+        options: unknown,
+      ) => Promise<{ ok: boolean; data: object }>
     >(async () => ({ ok: true, data: {} }));
     const rpc = { get, post } as unknown as Client;
 

@@ -5,12 +5,9 @@ const config: KnipConfig = {
   // it's not imported by any TypeScript source, so tell knip it's an entry point.
   entry: ["lex.config.ts", "scripts/*.ts"],
 
-  // These packages are used but not direct dependencies — intentional:
-  // - h3: provided transitively by nuxt/nitro at the version they need; adding
-  //   it directly causes version conflicts with the bundled h3 v1.
-  // - @tailwindcss/postcss: referenced as a string key in nuxt.config.ts's
-  //   `postcss.plugins` object, so knip can't detect it via import analysis.
-  ignoreDependencies: ["h3", "@tailwindcss/postcss"],
+  // h3 is provided transitively by Nuxt/Nitro; adding it directly would cause
+  // a version conflict with Nuxt's bundled dependency.
+  ignoreDependencies: ["h3"],
 };
 
 export default config;

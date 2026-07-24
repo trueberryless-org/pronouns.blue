@@ -6,7 +6,7 @@ Users sign in with their ATProto account (Bluesky, etc.), then set their names a
 
 ## Tech stack
 
-- [Nuxt 3](https://nuxt.com/) (Vue) with [Nitro](https://nitro.unjs.io/) server engine
+- [Nuxt 4](https://nuxt.com/) (Vue) with [Nitro](https://nitro.unjs.io/) server engine
 - Deployed to [Cloudflare Workers](https://workers.cloudflare.com/) (`cloudflare-module` preset)
 - `@atcute/oauth-browser-client` — Web Crypto OAuth for any ATProto account
 - `@atcute/client` — XRPC client for ATProto

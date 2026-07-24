@@ -1,7 +1,9 @@
+import tailwindcss from "@tailwindcss/vite";
+import type { NuxtConfig } from "nuxt/config";
 import { preventNodeBuiltinDependencyPlugin } from "./tools/prevent-node-builtins";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
-export default defineNuxtConfig({
+export default {
   compatibilityDate: "2025-05-30",
 
   // Prerender static pages — served directly from Cloudflare's asset CDN,
@@ -29,14 +31,6 @@ export default defineNuxtConfig({
 
   css: ["~/assets/globals.css"],
 
-  // Tailwind v4 via PostCSS — picks up postcss.config.mjs automatically.
-  // No separate @nuxtjs/tailwindcss module needed.
-  postcss: {
-    plugins: {
-      "@tailwindcss/postcss": {},
-    },
-  },
-
   typescript: {
     strict: true,
     typeCheck: false, // enabled only when developing locally
@@ -57,8 +51,9 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    plugins: [tailwindcss()],
     build: {
       minify: false,
     },
   },
-});
+} satisfies NuxtConfig;

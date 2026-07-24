@@ -22,7 +22,7 @@ running the E2E suite locally.
 
 ## High-level architecture
 
-This is a Nuxt 3 app for sharing names and pronouns on AT Protocol. **There is no database** — the entire backend is ATProto.
+This is a Nuxt 4 app for sharing names and pronouns on AT Protocol. **There is no database** — the entire backend is ATProto.
 
 1. **ATProto OAuth — browser Web Crypto sessions**
    `plugins/oauth.client.ts` configures `@atcute/oauth-browser-client`, and
@@ -61,12 +61,12 @@ This is a Nuxt 3 app for sharing names and pronouns on AT Protocol. **There is n
 
 ## Nuxt instructions
 
-Nuxt 3 Development Guidelines
+Nuxt 4 Development Guidelines
 
-The following guidelines are intended to ensure consistency, maintainability, and scalability in projects developed with Nuxt 3. Adhering to these standards will improve code quality and collaboration across the development team.
+The following guidelines are intended to ensure consistency, maintainability, and scalability in projects developed with Nuxt 4. Adhering to these standards will improve code quality and collaboration across the development team.
 
 1. Project Structure
-   1. Follow the default Nuxt 3 project structure for better readability and framework alignment:
+   1. Follow the default Nuxt 4 project structure for better readability and framework alignment:
       - pages/: For defining routes.
       - components/: For reusable UI components.
       - layouts/: For page layouts.
@@ -200,4 +200,4 @@ The following guidelines are intended to ensure consistency, maintainability, an
     3. Set up CI/CD pipelines to automate build, testing, and deployment processes.
     4. Monitor deployments and runtime performance using tools like Vercel, Netlify, or custom monitoring solutions.
 
-By following these guidelines, we can ensure that Nuxt 3 projects remain efficient, scalable, and maintainable, fostering a seamless development experience.
+By following these guidelines, we can ensure that Nuxt 4 projects remain efficient, scalable, and maintainable, fostering a seamless development experience.

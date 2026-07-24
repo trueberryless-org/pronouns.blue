@@ -28,14 +28,14 @@
     "@atcute/oauth-browser-client": "^4.0.1",
     "@fontsource-variable/geist": "^5.2.9",
     "@vercel/og": "^0.6",
-    "nuxt": "^3"
+    "nuxt": "^4.5.0"
   },
   "devDependencies": {
     "@atcute/lex-cli": "^3.1.0",
-    "@nuxt/eslint": "^1",
+    "@nuxt/eslint": "^1.16.0",
     "@nuxt/test-utils": "^3.23.0",
     "@playwright/test": "^1.61.1",
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/vite": "^4.3.3",
     "@vue/test-utils": "^2.4.11",
     "eslint": "^9",
     "happy-dom": "^20.11.1",
