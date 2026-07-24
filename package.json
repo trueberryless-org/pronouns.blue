@@ -1,0 +1,46 @@
+{
+  "name": "pronouns.blue",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "build:lex": "lex-cli generate",
+    "build": "pnpm build:lex && nuxt build",
+    "postinstall": "nuxt prepare",
+    "preview": "nuxt preview",
+    "deploy": "pnpm build && wrangler deploy",
+    "start": "wrangler dev",
+    "gen-key": "tsx scripts/gen-key.ts",
+    "knip": "knip",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
+  "dependencies": {
+    "@atcute/client": "^5.0.0",
+    "@atcute/identity-resolver": "^2.0.0",
+    "@atcute/lexicons": "^2.0.0",
+    "@atcute/oauth-node-client": "^2.0.0",
+    "@fontsource-variable/geist": "^5.2.9",
+    "@vercel/og": "^0.6",
+    "nuxt": "^3"
+  },
+  "devDependencies": {
+    "@atcute/lex-cli": "^3.1.0",
+    "@nuxt/eslint": "^1",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^24.12.2",
+    "eslint": "^9",
+    "knip": "^6.14.2",
+    "prettier": "^3.8.3",
+    "tailwindcss": "^4",
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "wrangler": "^4.95.0"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "packageManager": "pnpm@11.3.0"
+}

@@ -1,0 +1,12 @@
+User-agent: *
+# Don't crawl API routes, OAuth flows, or the settings page.
+Disallow: /api/
+Disallow: /oauth/
+Disallow: /settings
+
+# Slow down aggressive crawlers — 1 request per 10 seconds is plenty for
+# a site whose content doesn't change more than a few times per day.
+Crawl-delay: 10
+
+# Sitemaps
+# (none — profile URLs are user-generated and unbounded)

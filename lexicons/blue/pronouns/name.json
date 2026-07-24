@@ -1,0 +1,45 @@
+{
+  "id": "blue.pronouns.name",
+  "defs": {
+    "main": {
+      "key": "tid",
+      "type": "record",
+      "record": {
+        "type": "object",
+        "required": ["value", "preferred", "createdAt", "updatedAt"],
+        "properties": {
+          "value": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "maxGraphemes": 64
+          },
+          "preferred": {
+            "type": "boolean"
+          },
+          "lang": {
+            "type": "string",
+            "description": "BCP-47 language tag (e.g. 'en', 'de', 'zh-CN'). Omit or default to 'en' for English.",
+            "maxLength": 35,
+            "minLength": 2
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 127
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      }
+    }
+  },
+  "$type": "com.atproto.lexicon.schema",
+  "lexicon": 1
+}
