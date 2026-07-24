@@ -48,5 +48,11 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Test
+        run: pnpm test
+
       - name: Build
         run: pnpm build

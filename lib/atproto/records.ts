@@ -96,7 +96,7 @@ async function listAllRecords<T>(
   return records;
 }
 
-function aggregateEntriesByLang(
+export function aggregateEntriesByLang(
   records: {
     uri: string;
     value: string;
