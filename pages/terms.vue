@@ -15,7 +15,7 @@ useHead({ title: "Terms of Service – pronouns.blue" });
         width="80"
         height="80"
         class="pointer-events-none mt-1 h-16 w-16 shrink-0 select-none sm:h-20 sm:w-20"
-      >
+      />
     </div>
 
     <p class="mb-10 text-sm text-[var(--muted)]">

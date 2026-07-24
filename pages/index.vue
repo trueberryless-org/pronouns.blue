@@ -17,7 +17,7 @@ useHead({
           class="h-auto w-auto max-h-60 max-w-full"
           loading="eager"
           style="view-transition-name: site-logo"
-        >
+        />
       </div>
       <HomeUserSection />
       <section

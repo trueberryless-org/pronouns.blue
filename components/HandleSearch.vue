@@ -81,7 +81,7 @@ function openHandle(handle: string) {
       placeholder="Search handle (for example: trueberryless.org)"
       class="min-h-14 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-5 py-3 text-lg text-[var(--text)] shadow-sm outline-none focus:border-[var(--accent)]"
       @keydown.enter="normalizedQuery && openHandle(normalizedQuery)"
-    >
+    />
     <div
       v-if="loading || suggestions.length > 0"
       class="absolute left-0 right-0 top-16 z-20 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-lg"
@@ -104,7 +104,7 @@ function openHandle(handle: string) {
               width="36"
               height="36"
               class="size-9 shrink-0 rounded-full object-cover"
-            >
+            />
             <span
               v-else
               class="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-strong)] text-sm font-semibold text-[var(--text)]"

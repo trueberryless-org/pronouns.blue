@@ -141,7 +141,7 @@ function openHandle(handle: string) {
             class="flex-1 bg-transparent text-base text-[var(--text)] placeholder-[var(--muted)] outline-none"
             @keydown.enter="normalizedQuery && openHandle(normalizedQuery)"
             @keydown.escape="closeModal"
-          >
+          />
           <kbd
             class="inline-flex h-6 items-center rounded border border-[var(--border)] px-1.5 font-mono text-xs text-[var(--muted)]"
             >esc</kbd
@@ -176,7 +176,7 @@ function openHandle(handle: string) {
                   width="36"
                   height="36"
                   class="size-9 shrink-0 rounded-full object-cover"
-                >
+                />
                 <span
                   v-else
                   class="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-strong)] text-sm font-semibold text-[var(--text)]"

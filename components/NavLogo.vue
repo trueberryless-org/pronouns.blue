@@ -13,6 +13,6 @@ const showLogo = computed(() => route.path !== "/");
       class="h-14 w-auto"
       loading="eager"
       style="view-transition-name: site-logo"
-    >
+    />
   </NuxtLink>
 </template>
