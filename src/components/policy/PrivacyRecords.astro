@@ -7,14 +7,14 @@
     const did = getAuthenticatedDid();
     if (!did) return;
     const heading = document.createElement("h2");
-    heading.textContent = "View your records in PDSLS";
+    heading.textContent = "View your records in PDSls";
     const copy = document.createElement("p");
     copy.append("Since you are signed in, you can inspect your published lexicon records directly in ");
     const pdsls = document.createElement("a");
     pdsls.href = "https://pdsls.dev";
     pdsls.target = "_blank";
     pdsls.rel = "noopener noreferrer";
-    pdsls.textContent = "PDSLS";
+    pdsls.textContent = "PDSls";
     copy.append(pdsls, ".");
     const links = document.createElement("div");
     links.className = "record-links";

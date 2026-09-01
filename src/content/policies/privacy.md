@@ -31,7 +31,7 @@ We do not set authentication cookies. The ATProto OAuth client stores its sessio
 
 ## Data deletion
 
-Sign out to delete your browser-stored OAuth session. Your name/pronoun records are stored in your own ATProto repo — delete them there (via your PDS, any ATProto client, or [PDSLS](https://pdsls.dev)) to remove them from your repo and from public view.
+Sign out to delete your browser-stored OAuth session. Your name/pronoun records are stored in your own ATProto repo — delete them there (via your PDS, any ATProto client, or [PDSls](https://pdsls.dev)) to remove them from your repo and from public view.
 
 ## Contact
 

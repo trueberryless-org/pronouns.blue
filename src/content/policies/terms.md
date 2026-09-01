@@ -20,7 +20,7 @@ pronouns.blue is a web application built on the [AT Protocol](https://atproto.co
 Because records live in your own PDS repo, you retain full ownership and control of your data. The following implications apply:
 
 - **Public by default** — AT Protocol repositories are publicly readable. Any names or pronouns you publish via the Service will be visible to anyone who queries your PDS or the Bluesky network.
-- **Portability** — you can inspect, export, or delete your records at any time through your PDS, any compatible AT Protocol client, or a tool like [PDSLS](https://pdsls.dev).
+- **Portability** — you can inspect, export, or delete your records at any time through your PDS, any compatible AT Protocol client, or a tool like [PDSls](https://pdsls.dev).
 - **No server-side storage** — the Service holds no copy of your names or pronouns. Your OAuth session is stored only as `httpOnly` browser cookies, deleted when you sign out.
 
 ## 4. Account Requirements
