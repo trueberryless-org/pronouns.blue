@@ -176,11 +176,16 @@ const { hideLogo = false } = Astro.props;
 
   .account {
     position: relative;
+    display: flex;
+    align-items: center;
   }
 
   [data-account-toggle] {
+    display: flex;
     width: 2.5rem;
     height: 2.5rem;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
     border-radius: 50%;
     padding: 0;
