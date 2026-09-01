@@ -1,4 +1,5 @@
 import { getAuthenticatedDid } from "../lib/auth/oauth";
+import { loadAvatar } from "../lib/avatar";
 
 interface Actor {
   handle: string;
@@ -26,8 +27,7 @@ export async function initializeHomeUser() {
   const handle = section.querySelector<HTMLElement>("[data-home-handle]");
   if (link) link.href = `/profile/${encodeURIComponent(actor.handle)}`;
   if (avatar) {
-    avatar.textContent = label.charAt(0).toUpperCase();
-    if (actor.avatar) avatar.style.backgroundImage = `url("${actor.avatar}")`;
+    loadAvatar(avatar, actor.avatar, label);
   }
   if (name) name.textContent = label;
   if (handle) handle.textContent = `@${actor.handle}`;

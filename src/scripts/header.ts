@@ -1,4 +1,5 @@
 import { beginLogin, getAuthenticatedDid, signOut } from "../lib/auth/oauth";
+import { loadAvatar } from "../lib/avatar";
 
 interface Actor {
   did: string;
@@ -96,17 +97,7 @@ async function initializeAccount() {
       account.hidden = false;
       const avatar = account.querySelector<HTMLElement>("[data-account-avatar]");
       if (avatar) {
-        avatar.textContent = (actor.displayName ?? actor.handle).charAt(0).toUpperCase();
-        avatar.style.removeProperty("background-image");
-        if (actor.avatar) {
-          const image = new Image();
-          image.addEventListener("load", () => {
-            if (!avatar.isConnected) return;
-            avatar.textContent = "";
-            avatar.style.backgroundImage = `url("${actor.avatar}")`;
-          });
-          image.src = actor.avatar;
-        }
+        loadAvatar(avatar, actor.avatar, actor.displayName ?? actor.handle);
       }
       const profileLink = account.querySelector<HTMLAnchorElement>("[data-profile-link]");
       if (profileLink) profileLink.href = `/profile/${encodeURIComponent(actor.handle)}`;
