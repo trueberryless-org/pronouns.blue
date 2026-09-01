@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    ".astro/**",
+    ".wrangler/**",
+    "dist/**",
+    "node_modules/**",
+    "pnpm-lock.yaml",
+    "src/**/*.astro",
+    "worker-configuration.d.ts"
+  ]
+}

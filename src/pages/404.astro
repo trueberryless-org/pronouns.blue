@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Page not found – pronouns.blue">
+  <main class="narrow">
+    <img src="/pronouns.blue-round.svg" alt="" width="112" height="112" />
+    <h1>Page not found</h1>
+    <p class="muted">The profile or page you requested doesn’t exist.</p>
+    <a class="button primary" href="/">Return home</a>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    display: grid;
+    min-height: 65vh;
+    place-content: center;
+    justify-items: center;
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 0;
+  }
+</style>

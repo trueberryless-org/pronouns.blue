@@ -1,16 +1,14 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2026-09-01",
   "name": "pronouns-blue",
-  "compatibility_date": "2026-05-24",
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+  },
   "observability": {
     "enabled": true,
-  },
-  "vars": {
-    "PUBLIC_URL": "https://pronouns.blue",
-  },
-  "main": ".output/server/index.mjs",
-  "assets": {
-    "directory": ".output/public",
-    "binding": "ASSETS",
   },
 }

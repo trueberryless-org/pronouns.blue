@@ -1,6 +1,9 @@
+packages:
+  - "."
 allowBuilds:
-  "@parcel/watcher": false
   esbuild: false
-  sharp: true
-  unrs-resolver: false
-  workerd: false
+  sharp: false
+  workerd: true
+minimumReleaseAgeExclude:
+  - miniflare@5.20260831.0-alpha
+  - wrangler@4.128.0

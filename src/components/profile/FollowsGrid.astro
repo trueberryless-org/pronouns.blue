@@ -1,0 +1,134 @@
+---
+import type { FollowProfile } from "../../lib/atproto/profile";
+
+interface Props {
+  follows: FollowProfile[];
+  cursor?: string;
+  did: string;
+  title: string;
+}
+
+const { follows, cursor, did, title } = Astro.props;
+---
+
+<section class="more" data-follows data-did={did} data-cursor={cursor}>
+  <h2>More to explore</h2>
+  <p>People {title} follows on Bluesky</p>
+  <div class="grid" data-follows-grid>
+    {
+      follows.map((actor) => (
+        <a class="follow card" href={`/profile/${encodeURIComponent(actor.handle)}`}>
+          {actor.avatar ? (
+            <img src={actor.avatar} alt="" width="48" height="48" loading="lazy" />
+          ) : (
+            <span>{(actor.displayName ?? actor.handle).charAt(0).toUpperCase()}</span>
+          )}
+          <strong>{actor.displayName ?? actor.handle}</strong>
+          <small>@{actor.handle}</small>
+        </a>
+      ))
+    }
+  </div>
+  {cursor && <div class="sentinel" data-load-follows></div>}
+  <p class="caught-up" data-follows-complete hidden>All caught up ✓</p>
+</section>
+
+<script>
+  import { initializeFollows } from "../../scripts/follows";
+  document.addEventListener("astro:page-load", initializeFollows);
+</script>
+
+<style is:global>
+  .more {
+    border-top: 1px solid var(--border);
+    padding-top: 2.5rem;
+  }
+
+  .more h2,
+  .more > p {
+    margin: 0;
+  }
+
+  .more > p {
+    margin-bottom: 1.5rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .follow {
+    display: grid;
+    min-width: 0;
+    justify-items: center;
+    padding: 1rem;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .follow:hover {
+    border-color: var(--accent);
+  }
+
+  .follow img,
+  .follow span {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+  }
+
+  .follow img {
+    object-fit: cover;
+  }
+
+  .follow span {
+    display: grid;
+    place-items: center;
+    background: var(--tag-bg);
+    font-weight: 700;
+  }
+
+  .follow strong,
+  .follow small {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .follow strong {
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .follow small {
+    color: var(--muted);
+  }
+
+  .sentinel {
+    height: 1px;
+    margin-top: 2rem;
+  }
+
+  .caught-up {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.75rem;
+  }
+
+  @media (min-width: 40rem) {
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,211 @@
+<section class="settings-loading card" data-settings-loading aria-live="polite">
+  <div></div>
+  <div></div>
+  <div></div>
+  <span class="sr-only">Loading your profile settings</span>
+</section>
+
+<section class="settings card" data-settings-content hidden>
+  <header class="settings-header">
+    <div>
+      <h1>Settings</h1>
+      <p class="muted">Update your names, pronouns, preferences, and languages.</p>
+    </div>
+    <a class="button" href="/settings" data-own-profile hidden>Show profile</a>
+  </header>
+  <div data-editor></div>
+  <div class="settings-actions">
+    <button class="button" type="button" data-add-language>Add another language</button>
+    <button class="button primary" type="button" data-save>Save profile</button>
+    <output data-save-status aria-live="polite"></output>
+  </div>
+</section>
+
+<script>
+  import { initializeSettings } from "../../scripts/settings";
+  document.addEventListener("astro:page-load", initializeSettings);
+</script>
+
+<style>
+  .settings,
+  .settings-loading {
+    padding: clamp(1rem, 4vw, 1.75rem);
+  }
+
+  .settings-loading {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .settings-loading div {
+    height: 2rem;
+    border-radius: 0.5rem;
+    background: var(--surface-strong);
+    animation: pulse 1.4s infinite alternate;
+  }
+
+  .settings-loading div:nth-child(2) {
+    width: 60%;
+  }
+
+  .settings-loading div:nth-child(3) {
+    height: 20rem;
+  }
+
+  .settings-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h1,
+  p {
+    margin: 0;
+  }
+
+  :global(.language-card) {
+    margin-top: 1rem;
+    background: var(--surface-strong);
+    padding: 1rem;
+  }
+
+  :global(.language-card > header) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  :global(.language-card label) {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 650;
+    text-transform: uppercase;
+  }
+
+  :global(.language-card select) {
+    min-height: 2.2rem;
+    padding-block: 0.25rem;
+    color: var(--text);
+    text-transform: none;
+  }
+
+  :global(.entry-grid) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  :global(.entry-section h3) {
+    margin: 0 0 0.5rem;
+  }
+
+  :global(.entry-section form) {
+    display: flex;
+    gap: 0.5rem;
+    margin-block: 0.75rem;
+  }
+
+  :global(.entry-section form input) {
+    min-width: 0;
+    flex: 1;
+  }
+
+  :global(.suggestions) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  :global(.suggestions button) {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    padding: 0.2rem 0.55rem;
+    font-size: 0.75rem;
+  }
+
+  :global(.entry-section ul) {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  :global(.entry-section li) {
+    display: flex;
+    min-height: 2.6rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  :global(.entry-section li > span) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(.entry-section li button) {
+    border: 0;
+    border-radius: 0.3rem;
+    background: transparent;
+    padding: 0.3rem;
+    color: var(--muted);
+  }
+
+  :global(.entry-section li button:first-child) {
+    color: var(--danger);
+  }
+
+  :global(.entry-section .empty) {
+    justify-content: flex-start;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .settings-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  output {
+    flex-basis: 100%;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  output[data-state="success"] {
+    color: var(--success);
+  }
+
+  output[data-state="error"] {
+    color: var(--danger);
+  }
+
+  @keyframes pulse {
+    to {
+      opacity: 0.45;
+    }
+  }
+
+  @media (max-width: 45rem) {
+    :global(.entry-grid) {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.language-card > header) {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

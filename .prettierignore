@@ -1,7 +1,0 @@
-.next
-node_modules
-lib/lexicons
-*.db
-*.db-shm
-*.db-wal
-pnpm-lock.yaml

@@ -1,0 +1,340 @@
+---
+import Logo from "./Logo.astro";
+
+interface Props {
+  hideLogo?: boolean;
+}
+
+const { hideLogo = false } = Astro.props;
+---
+
+<header>
+  <div class="shell header-inner">
+    <div class="brand">
+      {!hideLogo && <Logo compact />}
+    </div>
+    <div class="actions">
+      <button class="search-button" type="button" data-open-search aria-label="Search profiles">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <span>Search…</span>
+        <kbd>⌘K</kbd>
+      </button>
+      <label class="theme">
+        <span class="sr-only">Theme</span>
+        <select data-theme-select aria-label="Theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="black">Black</option>
+        </select>
+      </label>
+      <form class="login" data-login-form>
+        <input
+          name="handle"
+          autocomplete="username"
+          placeholder="handle.bsky.social"
+          aria-label="AT Protocol handle"
+        />
+        <button type="submit">Log in / Sign up</button>
+        <output data-login-error></output>
+      </form>
+      <div class="account" data-account hidden>
+        <button
+          type="button"
+          data-account-toggle
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-label="Open account menu"
+        >
+          <span data-account-avatar></span>
+        </button>
+        <div class="account-menu card" data-account-menu hidden>
+          <a data-profile-link href="/settings">Profile</a>
+          <a href="/settings">Settings</a>
+          <button type="button" data-logout>Log out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<dialog data-search-dialog aria-labelledby="search-title">
+  <form method="dialog" class="search-panel card">
+    <div class="search-row">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </svg>
+      <label id="search-title" class="sr-only" for="profile-search">Search profiles</label>
+      <input id="profile-search" data-search-input placeholder="Search handle…" autocomplete="off" />
+      <button value="cancel" aria-label="Close search">Esc</button>
+    </div>
+    <div data-search-results></div>
+  </form>
+</dialog>
+
+<script>
+  import { initializeHeader } from "../../scripts/header";
+
+  document.addEventListener("astro:page-load", initializeHeader);
+</script>
+
+<style>
+  header {
+    margin-block: 1rem 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+  }
+
+  .header-inner {
+    display: flex;
+    min-height: 3.5rem;
+    align-items: center;
+  }
+
+  .brand {
+    min-width: 1px;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+  }
+
+  button,
+  input,
+  select {
+    min-height: 2.5rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .search-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    padding-inline: 0.8rem;
+    color: var(--muted);
+  }
+
+  svg {
+    width: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  kbd {
+    border: 1px solid var(--border);
+    border-radius: 0.25rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.7rem;
+  }
+
+  select {
+    border-radius: 0.6rem;
+    padding-inline: 0.6rem;
+  }
+
+  .login {
+    position: relative;
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .login input {
+    width: 12rem;
+    border-radius: 999px;
+    background: var(--surface-strong);
+    padding-inline: 1rem;
+  }
+
+  .login button {
+    border-color: var(--accent);
+    border-radius: 999px;
+    background: var(--accent);
+    padding-inline: 1rem;
+    color: var(--accent-contrast);
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+
+  output {
+    position: absolute;
+    top: 2.7rem;
+    right: 0;
+    max-width: 22rem;
+    color: var(--danger);
+    font-size: 0.75rem;
+  }
+
+  .account {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  [data-account-toggle] {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 50%;
+    padding: 0;
+  }
+
+  [data-account-avatar] {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    border-radius: inherit;
+    background: center / cover var(--surface-strong);
+    font-weight: 650;
+  }
+
+  .account-menu {
+    position: absolute;
+    z-index: 20;
+    top: 3rem;
+    right: 0;
+    width: 10rem;
+    padding: 0.35rem;
+    box-shadow: 0 1rem 2rem #0003;
+  }
+
+  .account-menu a,
+  .account-menu button {
+    display: block;
+    width: 100%;
+    min-height: auto;
+    border: 0;
+    border-radius: 0.45rem;
+    background: transparent;
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+    text-decoration: none;
+  }
+
+  .account-menu :is(a, button):hover {
+    background: var(--surface-strong);
+  }
+
+  dialog {
+    width: min(100% - 2rem, 34rem);
+    border: 0;
+    background: transparent;
+    padding: 0;
+  }
+
+  dialog::backdrop {
+    background: #0008;
+    backdrop-filter: blur(4px);
+  }
+
+  .search-panel {
+    overflow: hidden;
+    box-shadow: 0 1.5rem 4rem #0005;
+  }
+
+  .search-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+  }
+
+  .search-row input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+  }
+
+  .search-row button {
+    min-height: auto;
+    border-radius: 0.35rem;
+    padding: 0.2rem 0.4rem;
+    color: var(--muted);
+  }
+
+  [data-search-results] {
+    max-height: 19rem;
+    overflow: auto;
+    padding: 0.5rem;
+  }
+
+  :global(.search-result) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 0.75rem;
+    padding: 0.55rem;
+    text-decoration: none;
+  }
+
+  :global(.search-result:hover) {
+    background: var(--surface-strong);
+  }
+
+  :global(.search-result img),
+  :global(.search-fallback) {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+  }
+
+  :global(.search-fallback) {
+    display: grid;
+    flex: none;
+    place-items: center;
+    background: var(--tag-bg);
+  }
+
+  :global(.search-label) {
+    min-width: 0;
+  }
+
+  :global(.search-label span) {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global(.search-label small) {
+    color: var(--muted);
+  }
+
+  @media (max-width: 52rem) {
+    .theme,
+    .login input,
+    .search-button span,
+    kbd {
+      display: none;
+    }
+
+    .brand :global(.compact) {
+      width: 7rem;
+    }
+  }
+
+  @media (max-width: 32rem) {
+    .brand :global(.compact) {
+      width: 5.7rem;
+    }
+
+    .login button {
+      padding-inline: 0.65rem;
+      font-size: 0.75rem;
+    }
+  }
+</style>

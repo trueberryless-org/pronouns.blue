@@ -1,0 +1,32 @@
+---
+import HomeUserSection from "../components/home/HomeUserSection.astro";
+import ProfileSearch from "../components/home/ProfileSearch.astro";
+import Logo from "../components/layout/Logo.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout hideNavLogo>
+  <main class="home">
+    <div class="logo"><Logo linked={false} /></div>
+    <HomeUserSection />
+    <section class="search-card card">
+      <p>Find any user by handle and view their names and pronouns.</p>
+      <ProfileSearch />
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .home {
+    width: min(100% - 2rem, 72rem);
+    margin-inline: auto;
+    padding-bottom: 2rem;
+  }
+  .home > :global(*) + :global(*) { margin-top: 2rem; }
+  .logo { display: flex; justify-content: center; padding-bottom: 0.5rem; }
+  .search-card { padding: 2rem; text-align: center; }
+  .search-card > p { margin: 0 0 1.25rem; color: var(--muted); font-size: 1.125rem; }
+  @media (min-width: 40rem) {
+    .home { width: min(100% - 3rem, 72rem); }
+  }
+</style>

@@ -1,0 +1,67 @@
+---
+interface Props {
+  profileDid: string;
+}
+
+const { profileDid } = Astro.props;
+---
+
+<div class="edit" data-profile-edit data-profile-did={profileDid} hidden>
+  <a href="/settings" aria-label="Edit your names and pronouns" title="Edit profile">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 20h9"></path>
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+    </svg>
+  </a>
+</div>
+
+<script>
+  import { getAuthenticatedDid } from "../../lib/auth/oauth";
+
+  function initializeProfileEdit() {
+    const edit = document.querySelector<HTMLElement>("[data-profile-edit]");
+    if (!edit) return;
+    const did = getAuthenticatedDid();
+    edit.hidden = did?.toLowerCase() !== edit.dataset.profileDid?.toLowerCase();
+  }
+
+  document.addEventListener("astro:page-load", initializeProfileEdit);
+</script>
+
+<style>
+  .edit {
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+  }
+
+  .edit:not([hidden]) {
+    display: flex;
+  }
+
+  a {
+    display: inline-flex;
+    width: 2.25rem;
+    height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface-strong);
+    color: var(--text);
+  }
+
+  a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+</style>

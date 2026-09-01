@@ -1,0 +1,70 @@
+---
+interface Props {
+  title: string;
+  avatar?: string | null;
+}
+const { title, avatar } = Astro.props;
+---
+
+<div class="floating" data-floating-profile aria-hidden="true">
+  <button type="button" data-scroll-profile title={`Back to ${title}'s profile`}>
+    {
+      avatar ? (
+        <span class="avatar" style={`background-image: url("${avatar}")`} role="img" aria-label={title} />
+      ) : (
+        <span class="avatar fallback">{title.charAt(0).toUpperCase()}</span>
+      )
+    }
+    <strong>{title}</strong>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg>
+  </button>
+  <i></i>
+  <button type="button" data-profile-back title="Go back" aria-label="Go back to previous page">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
+  </button>
+</div>
+
+<script>
+  function initializeFloatingProfile() {
+    const floating = document.querySelector<HTMLElement>("[data-floating-profile]");
+    if (!floating || floating.dataset.initialized) return;
+    floating.dataset.initialized = "true";
+    const update = () => {
+      const visible = window.scrollY > window.innerHeight * 0.65;
+      floating.classList.toggle("visible", visible);
+      floating.setAttribute("aria-hidden", String(!visible));
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    floating.querySelector("[data-scroll-profile]")?.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    floating.querySelector("[data-profile-back]")?.addEventListener("click", () => history.back());
+  }
+  document.addEventListener("astro:page-load", initializeFloatingProfile);
+</script>
+
+<style>
+  .floating {
+    position: fixed; z-index: 30; right: 1.5rem; bottom: 1.5rem; display: flex;
+    overflow: hidden; border: 1px solid var(--border); border-radius: 999px;
+    background: var(--surface); box-shadow: 0 0.75rem 1.5rem #0002;
+    opacity: 0; transform: translateY(1.5rem); pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .visible { opacity: 1; transform: none; pointer-events: auto; }
+  button {
+    display: flex; align-items: center; gap: 0.5rem; border: 0; background: transparent;
+    padding: 0.5rem 0.75rem 0.5rem 0.5rem;
+  }
+  button:last-child { padding-inline: 0.75rem; color: var(--muted); }
+  button:hover { background: var(--surface-strong); }
+  .avatar {
+    display: grid; width: 2rem; height: 2rem; flex: none; place-items: center;
+    border: 1px solid var(--border); border-radius: 50%; background: center / cover;
+  }
+  .fallback { background-color: var(--tag-bg); font-size: 0.875rem; }
+  strong { max-width: 7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.875rem; }
+  svg { width: 0.875rem; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  i { width: 1px; margin-block: 0.5rem; background: var(--border); }
+</style>

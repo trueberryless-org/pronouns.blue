@@ -1,0 +1,17 @@
+---
+import SettingsEditor from "../components/settings/SettingsEditor.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Settings – pronouns.blue">
+  <main class="shell">
+    <SettingsEditor />
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    min-height: 70vh;
+    padding-block: 1.5rem 5rem;
+  }
+</style>

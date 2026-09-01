@@ -1,0 +1,41 @@
+<section class="home-user" data-home-user hidden>
+  <a href="/settings" class="card">
+    <p>Set pronouns and names</p>
+    <small>Update your profile entries and preferred options.</small>
+  </a>
+  <a href="/settings" class="card" data-home-profile>
+    <div>
+      <span class="avatar" data-home-avatar></span>
+      <div class="identity">
+        <p data-home-name></p>
+        <small data-home-handle></small>
+      </div>
+    </div>
+    <small>View your profile</small>
+  </a>
+</section>
+
+<script>
+  import { initializeHomeUser } from "../../scripts/home-user";
+  document.addEventListener("astro:page-load", initializeHomeUser);
+</script>
+
+<style>
+  .home-user { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .home-user:not([hidden]) { display: grid; }
+  a { display: block; padding: 1.5rem; text-decoration: none; transition: border-color 0.15s; }
+  a:hover { border-color: var(--accent); }
+  p { margin: 0; font-size: 1.125rem; font-weight: 600; }
+  small { display: block; margin-top: 0.25rem; color: var(--muted); font-size: 0.875rem; }
+  div { display: flex; align-items: center; gap: 0.75rem; }
+  .avatar {
+    display: grid; width: 3rem; height: 3rem; flex: none; place-items: center;
+    border: 1px solid var(--border); border-radius: 50%;
+    background: center / cover var(--surface-strong); font-size: 1.125rem; font-weight: 600;
+  }
+  .identity { display: block; min-width: 0; }
+  .identity :is(p, small) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  @media (max-width: 48rem) {
+    .home-user { grid-template-columns: 1fr; }
+  }
+</style>

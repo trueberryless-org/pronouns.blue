@@ -1,0 +1,39 @@
+<div class="profile-search" data-profile-search>
+  <input name="handle" placeholder="Search handle (for example: felixs.dev)" autocomplete="off" />
+  <div class="suggestions" data-profile-results hidden></div>
+</div>
+
+<script>
+  import { initializeProfileSearch } from "../../scripts/profile-search";
+  document.addEventListener("astro:page-load", initializeProfileSearch);
+</script>
+
+<style>
+  .profile-search { position: relative; width: min(100%, 42rem); margin-inline: auto; }
+  input {
+    width: 100%; min-height: 3.5rem; border: 1px solid var(--border); border-radius: 1rem;
+    background: var(--surface); padding: 0.75rem 1.25rem; color: var(--text);
+    font-size: 1.125rem; box-shadow: 0 1px 2px #0000000d; outline: none;
+  }
+  input:focus { border-color: var(--accent); }
+  .suggestions {
+    position: absolute; z-index: 20; top: 4rem; right: 0; left: 0; max-height: 18rem;
+    overflow: auto; border: 1px solid var(--border); border-radius: 1rem;
+    background: var(--surface); padding: 0.5rem; box-shadow: 0 1rem 2rem #0004; text-align: left;
+  }
+  :global(.profile-result) {
+    display: flex; width: 100%; align-items: center; gap: 0.75rem; border: 0;
+    border-radius: 0.75rem; background: transparent; padding: 0.5rem 0.75rem; text-align: left;
+  }
+  :global(.profile-result:hover) { background: var(--surface-strong); }
+  :global(.profile-result img), :global(.profile-result-avatar) {
+    width: 2.25rem; height: 2.25rem; flex: none; border-radius: 50%; object-fit: cover;
+  }
+  :global(.profile-result-avatar) {
+    display: grid; place-items: center; background: var(--surface-strong); font-weight: 600;
+  }
+  :global(.profile-result-label) { display: flex; min-width: 0; flex-direction: column; }
+  :global(.profile-result-label span) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  :global(.profile-result-label span:first-child) { font-size: 0.875rem; font-weight: 500; }
+  :global(.profile-result-label span:last-child) { color: var(--muted); font-size: 0.75rem; }
+</style>

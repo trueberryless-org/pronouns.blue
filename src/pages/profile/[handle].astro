@@ -1,0 +1,59 @@
+---
+import FollowsGrid from "../../components/profile/FollowsGrid.astro";
+import FloatingProfileBack from "../../components/profile/FloatingProfileBack.astro";
+import ProfileEditButton from "../../components/profile/ProfileEditButton.astro";
+import ProfileGroups from "../../components/profile/ProfileGroups.astro";
+import ProfileHeader from "../../components/profile/ProfileHeader.astro";
+import { getActorProfile, getFollows } from "../../lib/atproto/profile";
+import { getProfileRecords } from "../../lib/atproto/records";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export const prerender = false;
+
+const handle = decodeURIComponent(Astro.params.handle ?? "").replace(/^@/, "");
+const actor = await getActorProfile(handle);
+if (!actor) return Astro.redirect("/404");
+const [{ groups }, follows] = await Promise.all([
+  getProfileRecords(actor.did),
+  getFollows(actor.did),
+]);
+const description = `View @${actor.handle}’s preferred names and pronouns on pronouns.blue`;
+Astro.cache.set({ maxAge: 315_360_000, tags: [`profile:${actor.did}`] });
+---
+
+<BaseLayout title={`@${actor.handle} – pronouns.blue`} {description}>
+  <main class="profile-main narrow">
+    <ProfileEditButton profileDid={actor.did} />
+    <ProfileHeader {actor} />
+    <ProfileGroups {groups} fallbackPronouns={actor.pronouns} />
+  </main>
+  <div class="follows narrow">
+    {
+      follows.follows.length > 0 && (
+        <FollowsGrid
+          follows={follows.follows}
+          cursor={follows.cursor}
+          did={actor.did}
+          title={actor.displayName ?? actor.handle}
+        />
+      )
+    }
+  </div>
+  <FloatingProfileBack title={actor.displayName ?? actor.handle} avatar={actor.avatar} />
+</BaseLayout>
+
+<style>
+  .profile-main {
+    min-height: 100vh;
+    padding-block: 3rem 4rem;
+  }
+  .follows {
+    width: min(100% - 2rem, 48rem);
+    padding-bottom: 4rem;
+  }
+  @media (min-width: 40rem) {
+    .follows {
+      width: min(100% - 3rem, 48rem);
+    }
+  }
+</style>
