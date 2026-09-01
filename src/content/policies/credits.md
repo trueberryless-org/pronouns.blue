@@ -11,7 +11,7 @@ projectLogo: true
 
 Huge thanks to [@alfon.dev](https://bsky.app/profile/alfon.dev) and [@alexdln.com](https://bsky.app/profile/alexdln.com) for their amazing assistance and help creating all logo assets for this project.
 
-This website was created by [@trueberryless.org](https://bsky.app/profile/trueberryless.org) and used [bluesky-social/statusphere-example-app](https://github.com/bluesky-social/statusphere-example-app) as a very convenient starting point.
+This website was created by [@felixs.dev](https://bsky.app/profile/felixs.dev) and used [bluesky-social/statusphere-example-app](https://github.com/bluesky-social/statusphere-example-app) as a very convenient starting point.
 
 ## Deployment
 
@@ -25,6 +25,6 @@ pronouns.blue draws inspiration from these wonderful projects in the pronoun-sha
 - [pronouns.page](https://pronouns.page) — A comprehensive pronoun reference and profile tool available in many languages.
 - [pronouny.xyz](https://pronouny.xyz) — A simple and accessible pronoun sharing site built for the community.
 
-## Built with AI
+## Built with Delta
 
-This website was fully generated with AI assistance using [GitHub Copilot](https://github.com/features/copilot). All code, design decisions, and content were produced through an AI-assisted workflow with human direction.
+This website was fully generated with [Delta](https://delta.dev) through an AI-assisted workflow with human direction.

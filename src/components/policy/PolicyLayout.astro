@@ -128,6 +128,8 @@ const {
 
   article :global(p:has(+ h2)),
   article :global(ul:has(+ h2)),
+  article :global(p:has(+ [data-privacy-records])),
+  article :global(ul:has(+ [data-privacy-records])),
   article :global(p:last-child),
   article :global(ul:last-child) {
     margin-bottom: 1.5rem;
@@ -161,7 +163,7 @@ const {
     border: 1px solid var(--border);
     border-radius: 1.5rem;
     background: var(--surface);
-    padding: 1.5rem clamp(1.25rem, 4vw, 2rem);
+    padding: 2rem;
   }
 
   article :global([data-privacy-records] h2),

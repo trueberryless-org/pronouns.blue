@@ -41,7 +41,13 @@ const { hideLogo = false } = Astro.props;
         <output data-login-error></output>
       </form>
       <div class="account" data-account hidden>
-        <button type="button" data-account-toggle aria-haspopup="menu" aria-label="Open account menu">
+        <button
+          type="button"
+          data-account-toggle
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-label="Open account menu"
+        >
           <span data-account-avatar></span>
         </button>
         <div class="account-menu card" data-account-menu hidden>
@@ -174,6 +180,7 @@ const { hideLogo = false } = Astro.props;
 
   [data-account-toggle] {
     width: 2.5rem;
+    height: 2.5rem;
     overflow: hidden;
     border-radius: 50%;
     padding: 0;
@@ -184,6 +191,7 @@ const { hideLogo = false } = Astro.props;
     width: 100%;
     height: 100%;
     place-items: center;
+    border-radius: inherit;
     background: center / cover var(--surface-strong);
     font-weight: 650;
   }

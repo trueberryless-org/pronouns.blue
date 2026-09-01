@@ -1,6 +1,7 @@
 ---
 import FollowsGrid from "../../components/profile/FollowsGrid.astro";
 import FloatingProfileBack from "../../components/profile/FloatingProfileBack.astro";
+import ProfileEditButton from "../../components/profile/ProfileEditButton.astro";
 import ProfileGroups from "../../components/profile/ProfileGroups.astro";
 import ProfileHeader from "../../components/profile/ProfileHeader.astro";
 import { getActorProfile, getFollows } from "../../lib/atproto/profile";
@@ -22,6 +23,7 @@ Astro.cache.set({ maxAge: 315_360_000, tags: [`profile:${actor.did}`] });
 
 <BaseLayout title={`@${actor.handle} – pronouns.blue`} {description}>
   <main class="profile-main narrow">
+    <ProfileEditButton profileDid={actor.did} />
     <ProfileHeader {actor} />
     <ProfileGroups {groups} fallbackPronouns={actor.pronouns} />
   </main>

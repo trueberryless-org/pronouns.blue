@@ -9,6 +9,7 @@ interface Actor {
 
 let searchTimer: ReturnType<typeof setTimeout>;
 let shortcutInitialized = false;
+let accountDismissInitialized = false;
 
 function setTheme(value: string) {
   document.documentElement.dataset.theme = value;
@@ -96,7 +97,16 @@ async function initializeAccount() {
       const avatar = account.querySelector<HTMLElement>("[data-account-avatar]");
       if (avatar) {
         avatar.textContent = (actor.displayName ?? actor.handle).charAt(0).toUpperCase();
-        if (actor.avatar) avatar.style.backgroundImage = `url("${actor.avatar}")`;
+        avatar.style.removeProperty("background-image");
+        if (actor.avatar) {
+          const image = new Image();
+          image.addEventListener("load", () => {
+            if (!avatar.isConnected) return;
+            avatar.textContent = "";
+            avatar.style.backgroundImage = `url("${actor.avatar}")`;
+          });
+          image.src = actor.avatar;
+        }
       }
       const profileLink = account.querySelector<HTMLAnchorElement>("[data-profile-link]");
       if (profileLink) profileLink.href = `/profile/${encodeURIComponent(actor.handle)}`;
@@ -116,10 +126,31 @@ async function initializeAccount() {
       if (output) output.textContent = error instanceof Error ? error.message : "Login failed";
     }
   });
-  account.querySelector("[data-account-toggle]")?.addEventListener("click", () => {
+  account.querySelector("[data-account-toggle]")?.addEventListener("click", (event) => {
     const menu = account.querySelector<HTMLElement>("[data-account-menu]");
-    if (menu) menu.hidden = !menu.hidden;
+    if (menu) {
+      menu.hidden = !menu.hidden;
+      (event.currentTarget as HTMLElement).setAttribute("aria-expanded", String(!menu.hidden));
+    }
   });
+  if (!accountDismissInitialized) {
+    accountDismissInitialized = true;
+    document.addEventListener("mousedown", (event) => {
+      const currentAccount = document.querySelector<HTMLElement>("[data-account]");
+      const menu = currentAccount?.querySelector<HTMLElement>("[data-account-menu]");
+      if (currentAccount && menu && !currentAccount.contains(event.target as Node)) {
+        menu.hidden = true;
+        currentAccount.querySelector("[data-account-toggle]")?.setAttribute("aria-expanded", "false");
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        const menu = document.querySelector<HTMLElement>("[data-account-menu]");
+        if (menu) menu.hidden = true;
+        document.querySelector("[data-account-toggle]")?.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
   account.querySelector("[data-logout]")?.addEventListener("click", async () => {
     const currentDid = getAuthenticatedDid();
     if (currentDid) await signOut(currentDid);
