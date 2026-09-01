@@ -10,26 +10,14 @@ pronouns.blue is an Astro application for publishing and sharing names and prono
 - A successful settings update purges that DID’s cache tag.
 - ATCute’s browser OAuth client stores OAuth sessions and DPoP keys locally. Credentials never pass through the Worker.
 - Settings reads and writes the `blue.pronouns.name` and `blue.pronouns.pronoun` collections directly against the user’s PDS.
-- Profile updates use one `com.atproto.repo.applyWrites` transaction so an unsuccessful update cannot leave a partially replaced profile.
 
 The Worker-side application uses Web Platform APIs only. The Wrangler configuration intentionally does not enable `nodejs_compat`.
 
 ## Development
 
-Enter the Node development environment first:
-
 ```sh
-dev-node
 pnpm install
 pnpm dev
-```
-
-The Astro development server runs in background mode. Manage it with:
-
-```sh
-pnpm dev:status
-pnpm dev:logs
-pnpm dev:stop
 ```
 
 Run validation:

@@ -9,6 +9,9 @@ export default defineConfig({
   cache: {
     provider: cacheCloudflare(),
   },
+  devToolbar: {
+    enabled: false,
+  },
   output: "static",
   session: false,
   site: "https://pronouns.blue",

@@ -7,7 +7,7 @@
 
 ## Questions and bugs
 
-- Open a GitHub issue for bug reports and feature requests.
+- Open a [GitHub issue](https://github.com/trueberryless-org/pronouns.blue/issues/new/choose) for bug reports and feature requests.
 - Include environment details, reproduction steps, and expected behavior.
 
 ## Security issues

@@ -8,10 +8,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "astro dev --background",
-    "dev:stop": "astro dev stop",
-    "dev:status": "astro dev status",
-    "dev:logs": "astro dev logs",
+    "dev": "astro dev",
     "build": "wrangler types --include-runtime=false --install-skills=false && astro check && astro build",
     "preview": "wrangler dev",
     "deploy": "pnpm build && wrangler deploy",
