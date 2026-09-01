@@ -2,21 +2,42 @@
 interface Props {
   title: string;
   updated: string;
-  description: string;
+  intro?: string;
+  showLogo?: boolean;
+  showUpdated?: boolean;
+  projectLogo?: boolean;
 }
 
-const { title, updated, description } = Astro.props;
+const {
+  title,
+  updated,
+  intro,
+  showLogo = false,
+  showUpdated = true,
+  projectLogo = false,
+} = Astro.props;
 ---
 
 <div class="policy-heading">
   <div>
     <h1>{title}</h1>
-    <p>Last updated: {updated}</p>
+    {showUpdated && <p>Last updated: {updated}</p>}
   </div>
-  <img src="/pronouns.blue-round.svg" alt="" width="80" height="80" />
+  {showLogo && <img src="/pronouns.blue-round.svg" alt="pronouns.blue logo" width="80" height="80" />}
 </div>
-<p class="intro">{description}</p>
+{intro && <p class="intro">{intro}</p>}
 <article>
+  {
+    projectLogo && (
+      <img
+        class="project-logo"
+        src="/pronouns.blue-round.svg"
+        alt="pronouns.blue round logo"
+        width="120"
+        height="120"
+      />
+    )
+  }
   <slot />
 </article>
 
@@ -51,18 +72,40 @@ const { title, updated, description } = Astro.props;
     margin: 0 0 2rem;
   }
 
+  article {
+    position: relative;
+    margin-top: 2rem;
+  }
+
+  .intro + article {
+    margin-top: 0;
+  }
+
+  .project-logo {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    width: 5rem;
+    height: 5rem;
+    transform: translate(33%, -33%) rotate(-6deg);
+    pointer-events: none;
+    user-select: none;
+  }
+
   article :global(h2) {
-    margin: 0 0 0.75rem;
+    margin: 0;
     color: var(--text);
     font-size: 1.25rem;
   }
 
   article :global(h2:not(:first-child)) {
-    margin-top: 1.5rem;
+    margin-top: 0;
   }
 
   article :global(h2),
-  article :global(h2 + p) {
+  article :global(p),
+  article :global(ul) {
     border-inline: 1px solid var(--border);
     background: var(--surface);
     padding-inline: clamp(1.25rem, 4vw, 2rem);
@@ -75,12 +118,22 @@ const { title, updated, description } = Astro.props;
     padding-top: 1.5rem;
   }
 
-  article :global(h2 + p) {
+  article :global(p),
+  article :global(ul) {
     margin-top: 0;
+    margin-bottom: 0;
+    padding-block: 0.75rem;
+    color: var(--muted);
+  }
+
+  article :global(p:has(+ h2)),
+  article :global(ul:has(+ h2)),
+  article :global(p:last-child),
+  article :global(ul:last-child) {
+    margin-bottom: 1.5rem;
     border-bottom: 1px solid var(--border);
     border-radius: 0 0 1.5rem 1.5rem;
-    padding-block: 0.75rem 1.5rem;
-    color: var(--muted);
+    padding-bottom: 1.5rem;
   }
 
   article :global(a) {
@@ -90,5 +143,60 @@ const { title, updated, description } = Astro.props;
 
   article :global(code) {
     font-size: 0.85em;
+  }
+
+  article :global(ul) {
+    display: grid;
+    gap: 0.75rem;
+    padding-left: calc(clamp(1.25rem, 4vw, 2rem) + 1.25rem);
+  }
+
+  article :global(strong) {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  article :global([data-privacy-records]) {
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    background: var(--surface);
+    padding: 1.5rem clamp(1.25rem, 4vw, 2rem);
+  }
+
+  article :global([data-privacy-records] h2),
+  article :global([data-privacy-records] p) {
+    border: 0;
+    background: transparent;
+    padding: 0;
+  }
+
+  article :global([data-privacy-records] p) {
+    margin: 0;
+  }
+
+  article :global(.record-links) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  article :global(.record-links a) {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface-strong);
+    padding: 0.375rem 0.75rem;
+    color: var(--text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  @media (min-width: 40rem) {
+    .project-logo {
+      width: 6rem;
+      height: 6rem;
+    }
   }
 </style>

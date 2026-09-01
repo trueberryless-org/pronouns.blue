@@ -29,22 +29,39 @@ function followCard(actor: Follow) {
 
 export function initializeFollows() {
   const section = document.querySelector<HTMLElement>("[data-follows]");
-  const button = section?.querySelector<HTMLButtonElement>("[data-load-follows]");
+  const sentinel = section?.querySelector<HTMLElement>("[data-load-follows]");
   const grid = section?.querySelector<HTMLElement>("[data-follows-grid]");
-  if (!section || !button || !grid) return;
-  button.addEventListener("click", async () => {
-    button.disabled = true;
+  if (!section || !sentinel || !grid || section.dataset.initialized) return;
+  section.dataset.initialized = "true";
+  let loading = false;
+  let retryAfter = 0;
+  const observer = new IntersectionObserver(async ([entry]) => {
+    if (!entry.isIntersecting || loading || Date.now() < retryAfter) return;
+    loading = true;
     const url = new URL("https://public.api.bsky.app/xrpc/app.bsky.graph.getFollows");
     url.searchParams.set("actor", section.dataset.did!);
     url.searchParams.set("cursor", section.dataset.cursor!);
     url.searchParams.set("limit", "48");
-    const response = await fetch(url);
-    if (response.ok) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        retryAfter = Date.now() + 3000;
+        return;
+      }
       const value = (await response.json()) as { follows: Follow[]; cursor?: string };
       grid.append(...value.follows.map(followCard));
       section.dataset.cursor = value.cursor ?? "";
-      if (!value.cursor) button.remove();
+      if (!value.cursor) {
+        observer.disconnect();
+        sentinel.remove();
+        const complete = section.querySelector<HTMLElement>("[data-follows-complete]");
+        if (complete) complete.hidden = false;
+      }
+    } catch {
+      retryAfter = Date.now() + 3000;
+    } finally {
+      loading = false;
     }
-    button.disabled = false;
-  });
+  }, { rootMargin: "400px" });
+  observer.observe(sentinel);
 }

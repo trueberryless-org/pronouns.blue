@@ -1,5 +1,6 @@
 ---
 import FollowsGrid from "../../components/profile/FollowsGrid.astro";
+import FloatingProfileBack from "../../components/profile/FloatingProfileBack.astro";
 import ProfileGroups from "../../components/profile/ProfileGroups.astro";
 import ProfileHeader from "../../components/profile/ProfileHeader.astro";
 import { getActorProfile, getFollows } from "../../lib/atproto/profile";
@@ -20,20 +21,37 @@ Astro.cache.set({ maxAge: 315_360_000, tags: [`profile:${actor.did}`] });
 ---
 
 <BaseLayout title={`@${actor.handle} – pronouns.blue`} {description}>
-  <main class="narrow">
+  <main class="profile-main narrow">
     <ProfileHeader {actor} />
     <ProfileGroups {groups} fallbackPronouns={actor.pronouns} />
+  </main>
+  <div class="follows narrow">
     {
       follows.follows.length > 0 && (
-        <FollowsGrid follows={follows.follows} cursor={follows.cursor} did={actor.did} />
+        <FollowsGrid
+          follows={follows.follows}
+          cursor={follows.cursor}
+          did={actor.did}
+          title={actor.displayName ?? actor.handle}
+        />
       )
     }
-  </main>
+  </div>
+  <FloatingProfileBack title={actor.displayName ?? actor.handle} avatar={actor.avatar} />
 </BaseLayout>
 
 <style>
-  main {
-    min-height: 70vh;
-    padding-block: 2.5rem 5rem;
+  .profile-main {
+    min-height: 100vh;
+    padding-block: 3rem 4rem;
+  }
+  .follows {
+    width: min(100% - 2rem, 48rem);
+    padding-bottom: 4rem;
+  }
+  @media (min-width: 40rem) {
+    .follows {
+      width: min(100% - 3rem, 48rem);
+    }
   }
 </style>

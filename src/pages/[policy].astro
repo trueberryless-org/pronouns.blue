@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import PolicyLayout from "../components/policy/PolicyLayout.astro";
+import PrivacyRecords from "../components/policy/PrivacyRecords.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 export async function getStaticPaths() {
@@ -20,9 +21,13 @@ const { Content } = await render(policy);
     <PolicyLayout
       title={policy.data.title}
       updated={policy.data.updated}
-      description={policy.data.description}
+      intro={policy.data.intro}
+      showLogo={policy.data.showLogo}
+      showUpdated={policy.data.showUpdated}
+      projectLogo={policy.data.projectLogo}
     >
       <Content />
+      {policy.id === "privacy" && <PrivacyRecords />}
     </PolicyLayout>
   </main>
 </BaseLayout>

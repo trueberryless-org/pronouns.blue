@@ -1,34 +1,38 @@
 ---
 title: Privacy Policy
-description: How pronouns.blue handles account and profile data.
-updated: September 2026
+description: Privacy Policy for pronouns.blue.
+updated: May 2025
 order: 2
 ---
 
-## The short version
+## What this app does
 
-pronouns.blue has no account or profile database. Your names and pronouns live in your public AT Protocol repository. Your OAuth session and DPoP private key remain in your browser.
+pronouns.blue is an [AT Protocol](https://atproto.com) app that lets you publish your names and pronouns directly to your own ATProto repository (your personal data server, or PDS). Your data belongs to you and lives in your repo — not on our servers.
 
 ## Data we store
 
-We do not store authentication credentials, profile records, or analytics in an application database. The ATCute OAuth client stores your session, DPoP key, and short-lived authorization state in browser storage. Signing out removes the stored session.
+- **Nothing server-side** — we run no database. Your OAuth session and DPoP key stay in your browser's local storage. When you sign out, they are deleted.
+- **Names & pronouns** — your names and pronouns are written directly to your PDS and read back on every page load. We never keep a copy.
 
-Public profile pages are cached by Cloudflare for speed. That cache is invalidated after you successfully update your pronouns.blue records.
+## Third-party services we contact
 
-## Third-party services
+- **Bluesky public appview** (`public.api.bsky.app`) — used to resolve handles and search for users. This is a public, unauthenticated API.
+- **PLC directory** (`plc.directory`) — used to look up the PDS endpoint for a given DID.
+- **Your PDS** — all record reads and writes go to your personal data server, authenticated via OAuth.
 
-The Service contacts the Bluesky public AppView at `public.api.bsky.app` to resolve handles, search profiles, and display public Bluesky profile information. It contacts `plc.directory` or a `did:web` document to locate an account’s PDS, then reads public records directly from that PDS.
+## Cookies
 
-Cloudflare hosts the website and can process ordinary request information such as IP addresses and request metadata under its own privacy terms.
+We do not set authentication cookies. The ATProto OAuth client stores its session, DPoP key, and short-lived authorization state in this browser's local storage so it can make authenticated requests directly to your PDS.
 
-## Browser storage
+- `session` — your OAuth tokens and DPoP private key, used to make authenticated requests to your PDS on your behalf.
+- `state` — temporary PKCE state during the sign-in redirect. It expires after 10 minutes automatically.
 
-The Service does not use an authentication cookie. OAuth tokens, the DPoP private key, and temporary PKCE authorization state are held in browser storage by the ATCute OAuth client. Theme and editor tutorial preferences can also be stored locally.
+<section data-privacy-records hidden></section>
 
-## Public records and deletion
+## Data deletion
 
-Records in `blue.pronouns.name` and `blue.pronouns.pronoun` are public. Delete those records through the settings page, your PDS, another compatible client, or [PDSLS](https://pdsls.dev) to remove them from your repository. Copies outside your repository may remain in caches until invalidated or evicted.
+Sign out to delete your browser-stored OAuth session. Your name/pronoun records are stored in your own ATProto repo — delete them there (via your PDS, any ATProto client, or [PDSLS](https://pdsls.dev)) to remove them from your repo and from public view.
 
 ## Contact
 
-For privacy questions, open an issue in the project’s [GitHub repository](https://github.com/trueberryless-org/pronouns.blue/issues/new/choose).
+Questions or concerns? Open an issue on [GitHub](https://github.com/trueberryless-org/pronouns.blue/issues/new/choose).

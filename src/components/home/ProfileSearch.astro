@@ -1,56 +1,39 @@
-<form class="profile-search" data-profile-search>
-  <label for="home-search">Find someone on the AT Protocol</label>
-  <div>
-    <input
-      id="home-search"
-      class="field"
-      name="handle"
-      placeholder="Search handle, for example trueberryless.org"
-      autocomplete="off"
-      required
-    />
-    <button class="button primary" type="submit">View profile</button>
-  </div>
-</form>
+<div class="profile-search" data-profile-search>
+  <input name="handle" placeholder="Search handle (for example: trueberryless.org)" autocomplete="off" />
+  <div class="suggestions" data-profile-results hidden></div>
+</div>
 
 <script>
-  function initialize() {
-    document.querySelector<HTMLFormElement>("[data-profile-search]")?.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const form = event.currentTarget as HTMLFormElement;
-      const handle = String(new FormData(form).get("handle") ?? "").trim().replace(/^@/, "");
-      if (handle) window.location.assign(`/profile/${encodeURIComponent(handle)}`);
-    });
-  }
-  document.addEventListener("astro:page-load", initialize);
+  import { initializeProfileSearch } from "../../scripts/profile-search";
+  document.addEventListener("astro:page-load", initializeProfileSearch);
 </script>
 
 <style>
-  label {
-    display: block;
-    margin-bottom: 0.55rem;
-    color: var(--muted);
-    font-size: 0.9rem;
-    font-weight: 600;
-  }
-
-  div {
-    display: flex;
-    gap: 0.65rem;
-  }
-
+  .profile-search { position: relative; width: min(100%, 42rem); margin-inline: auto; }
   input {
-    flex: 1;
-    min-width: 0;
-    border-radius: 1rem;
-    padding-inline: 1rem;
-    font-size: 1.05rem;
+    width: 100%; min-height: 3.5rem; border: 1px solid var(--border); border-radius: 1rem;
+    background: var(--surface); padding: 0.75rem 1.25rem; color: var(--text);
+    font-size: 1.125rem; box-shadow: 0 1px 2px #0000000d; outline: none;
   }
-
-  @media (max-width: 32rem) {
-    div {
-      align-items: stretch;
-      flex-direction: column;
-    }
+  input:focus { border-color: var(--accent); }
+  .suggestions {
+    position: absolute; z-index: 20; top: 4rem; right: 0; left: 0; max-height: 18rem;
+    overflow: auto; border: 1px solid var(--border); border-radius: 1rem;
+    background: var(--surface); padding: 0.5rem; box-shadow: 0 1rem 2rem #0004; text-align: left;
   }
+  :global(.profile-result) {
+    display: flex; width: 100%; align-items: center; gap: 0.75rem; border: 0;
+    border-radius: 0.75rem; background: transparent; padding: 0.5rem 0.75rem; text-align: left;
+  }
+  :global(.profile-result:hover) { background: var(--surface-strong); }
+  :global(.profile-result img), :global(.profile-result-avatar) {
+    width: 2.25rem; height: 2.25rem; flex: none; border-radius: 50%; object-fit: cover;
+  }
+  :global(.profile-result-avatar) {
+    display: grid; place-items: center; background: var(--surface-strong); font-weight: 600;
+  }
+  :global(.profile-result-label) { display: flex; min-width: 0; flex-direction: column; }
+  :global(.profile-result-label span) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  :global(.profile-result-label span:first-child) { font-size: 0.875rem; font-weight: 500; }
+  :global(.profile-result-label span:last-child) { color: var(--muted); font-size: 0.75rem; }
 </style>

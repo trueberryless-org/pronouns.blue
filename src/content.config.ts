@@ -7,8 +7,12 @@ const policies = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    intro: z.string().optional(),
     updated: z.string(),
     order: z.number(),
+    showLogo: z.boolean().optional(),
+    showUpdated: z.boolean().optional(),
+    projectLogo: z.boolean().optional(),
   }),
 });
 

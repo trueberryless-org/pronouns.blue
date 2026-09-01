@@ -1,28 +1,30 @@
 ---
-title: Credits & Acknowledgements
-description: The people, projects, and technology behind pronouns.blue.
-updated: September 2026
+title: Credits & Inspiration
+description: Credits and inspiration for pronouns.blue.
+updated: May 2025
 order: 3
+showUpdated: false
+projectLogo: true
 ---
 
-## Project credits
+## Project Credits
 
-Huge thanks to [@alfon.dev](https://bsky.app/profile/alfon.dev) and [@alexdln.com](https://bsky.app/profile/alexdln.com) for their assistance creating the logo assets.
+Huge thanks to [@alfon.dev](https://bsky.app/profile/alfon.dev) and [@alexdln.com](https://bsky.app/profile/alexdln.com) for their amazing assistance and help creating all logo assets for this project.
 
-pronouns.blue was created by [@trueberryless.org](https://bsky.app/profile/trueberryless.org). The original prototype used Bluesky’s [Statusphere example application](https://github.com/bluesky-social/statusphere-example-app) as a starting point.
+This website was created by [@trueberryless.org](https://bsky.app/profile/trueberryless.org) and used [bluesky-social/statusphere-example-app](https://github.com/bluesky-social/statusphere-example-app) as a very convenient starting point.
 
-## Technology
+## Deployment
 
-The website is built with [Astro](https://astro.build), [ATCute](https://github.com/mary-ext/atcute), and the AT Protocol. It is deployed globally on [Cloudflare Workers](https://workers.cloudflare.com).
+This site is proudly hosted and deployed by [Netlify](https://www.netlify.com), providing the fast and reliable infrastructure that keeps this project accessible to everyone.
 
 ## Inspiration
 
-[pronouns.cc](https://pronouns.cc) provides a beautiful and inclusive platform for sharing pronouns, names, and more.
+pronouns.blue draws inspiration from these wonderful projects in the pronoun-sharing space. Please check them out!
 
-[pronouns.page](https://pronouns.page) is a comprehensive pronoun reference and profile tool available in many languages.
+- [pronouns.cc](https://pronouns.cc) — A platform for sharing your pronouns, names, and more — with a beautiful and inclusive design.
+- [pronouns.page](https://pronouns.page) — A comprehensive pronoun reference and profile tool available in many languages.
+- [pronouny.xyz](https://pronouny.xyz) — A simple and accessible pronoun sharing site built for the community.
 
-[pronouny.xyz](https://pronouny.xyz) is a simple, accessible pronoun-sharing site built for the community.
+## Built with AI
 
-## Development
-
-This project has been developed through an AI-assisted workflow with human direction and review. Its source and history are public on [GitHub](https://github.com/trueberryless-org/pronouns.blue).
+This website was fully generated with AI assistance using [GitHub Copilot](https://github.com/features/copilot). All code, design decisions, and content were produced through an AI-assisted workflow with human direction.

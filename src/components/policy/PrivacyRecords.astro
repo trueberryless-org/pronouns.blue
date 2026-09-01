@@ -1,0 +1,33 @@
+<script>
+  import { getAuthenticatedDid } from "../../lib/auth/oauth";
+
+  function initializePrivacyRecords() {
+    const section = document.querySelector<HTMLElement>("[data-privacy-records]");
+    if (!section) return;
+    const did = getAuthenticatedDid();
+    if (!did) return;
+    const heading = document.createElement("h2");
+    heading.textContent = "View your records in PDSLS";
+    const copy = document.createElement("p");
+    copy.append("Since you are signed in, you can inspect your published lexicon records directly in ");
+    const pdsls = document.createElement("a");
+    pdsls.href = "https://pdsls.dev";
+    pdsls.target = "_blank";
+    pdsls.rel = "noopener noreferrer";
+    pdsls.textContent = "PDSLS";
+    copy.append(pdsls, ".");
+    const links = document.createElement("div");
+    links.className = "record-links";
+    for (const collection of ["blue.pronouns.pronoun", "blue.pronouns.name"]) {
+      const link = document.createElement("a");
+      link.href = `https://pdsls.dev/at://${did}/${collection}`;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = collection;
+      links.append(link);
+    }
+    section.append(heading, copy, links);
+    section.hidden = false;
+  }
+  document.addEventListener("astro:page-load", initializePrivacyRecords);
+</script>

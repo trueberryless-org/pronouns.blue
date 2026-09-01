@@ -9,7 +9,7 @@ const { title, values, preferred } = Astro.props;
 ---
 
 <section>
-  <h2>{title}</h2>
+  {title && <h2>{title}</h2>}
   <ul>
     {
       values.map((value) => (

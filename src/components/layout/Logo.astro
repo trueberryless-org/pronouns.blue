@@ -1,21 +1,36 @@
 ---
 interface Props {
   compact?: boolean;
+  linked?: boolean;
 }
 
-const { compact = false } = Astro.props;
+const { compact = false, linked = true } = Astro.props;
 ---
 
-<a href="/" class:list={["logo", { compact }]} aria-label="pronouns.blue home">
-  <img
-    src="/pronouns.blue.png"
-    alt="pronouns.blue"
-    width="966"
-    height="396"
-    loading="eager"
-    transition:name="site-logo"
-  />
-</a>
+{
+  linked ? (
+    <a href="/" class:list={["logo", { compact }]} aria-label="pronouns.blue home">
+      <img
+        src="/pronouns.blue.png"
+        alt="pronouns.blue"
+        width="966"
+        height="396"
+        loading="eager"
+        style="view-transition-name: site-logo"
+      />
+    </a>
+  ) : (
+    <img
+      class="hero-logo"
+      src="/pronouns.blue.png"
+      alt="pronouns.blue"
+      width="966"
+      height="396"
+      loading="eager"
+      style="view-transition-name: site-logo"
+    />
+  )
+}
 
 <style>
   .logo {
@@ -27,8 +42,15 @@ const { compact = false } = Astro.props;
     width: 8.5rem;
   }
 
-  img {
+  .logo img {
     width: 100%;
+    height: auto;
+  }
+
+  .hero-logo {
+    width: auto;
+    max-width: 100%;
+    max-height: 15rem;
     height: auto;
   }
 </style>
