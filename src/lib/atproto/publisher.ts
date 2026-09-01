@@ -19,14 +19,8 @@ async function listKeys(rpc: Client, repo: ActorIdentifier, collection: Nsid) {
   return keys;
 }
 
-export async function publishProfile(
-  rpc: Client,
-  did: ActorIdentifier,
-  groups: LanguageGroup[],
-) {
-  const keys = await Promise.all(
-    COLLECTIONS.map((collection) => listKeys(rpc, did, collection)),
-  );
+export async function publishProfile(rpc: Client, did: ActorIdentifier, groups: LanguageGroup[]) {
+  const keys = await Promise.all(COLLECTIONS.map((collection) => listKeys(rpc, did, collection)));
   const timestamp = new Date().toISOString();
   const writes: (
     | {
@@ -56,20 +50,22 @@ export async function publishProfile(
           $type: "com.atproto.repo.applyWrites#create",
           collection,
           value: {
-              $type: collection,
-              value,
-              preferred: preferred.includes(value),
-              lang: group.lang,
-              sortOrder,
-              createdAt: timestamp,
-              updatedAt: timestamp,
+            $type: collection,
+            value,
+            preferred: preferred.includes(value),
+            lang: group.lang,
+            sortOrder,
+            createdAt: timestamp,
+            updatedAt: timestamp,
           },
         });
       }
     }
   }
   if (writes.length > 200) {
-    throw new Error("This update contains more than 200 record changes. Remove some entries and try again.");
+    throw new Error(
+      "This update contains more than 200 record changes. Remove some entries and try again.",
+    );
   }
   const response = await rpc.post("com.atproto.repo.applyWrites", {
     input: { repo: did, writes },

@@ -60,10 +60,8 @@ function initializeSearch() {
     document.addEventListener("keydown", (event) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
         event.preventDefault();
-        const activeDialog =
-          document.querySelector<HTMLDialogElement>("[data-search-dialog]");
-        const activeInput =
-          activeDialog?.querySelector<HTMLInputElement>("[data-search-input]");
+        const activeDialog = document.querySelector<HTMLDialogElement>("[data-search-dialog]");
+        const activeInput = activeDialog?.querySelector<HTMLInputElement>("[data-search-input]");
         activeDialog?.showModal();
         activeInput?.focus();
       }
@@ -131,7 +129,9 @@ async function initializeAccount() {
       const menu = currentAccount?.querySelector<HTMLElement>("[data-account-menu]");
       if (currentAccount && menu && !currentAccount.contains(event.target as Node)) {
         menu.hidden = true;
-        currentAccount.querySelector("[data-account-toggle]")?.setAttribute("aria-expanded", "false");
+        currentAccount
+          .querySelector("[data-account-toggle]")
+          ?.setAttribute("aria-expanded", "false");
       }
     });
     document.addEventListener("keydown", (event) => {

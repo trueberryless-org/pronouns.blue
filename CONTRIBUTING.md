@@ -19,6 +19,8 @@ No database or environment variables are needed for local development. Astro sta
 ## Main commands
 
 ```bash
+pnpm lint:check
+pnpm format:check
 pnpm test
 pnpm check
 pnpm build
@@ -45,9 +47,9 @@ pnpm exec wrangler deploy --dry-run
 
 1. Keep changes focused and scoped.
 2. Update docs when behavior or setup changes.
-3. Run `pnpm test`, `pnpm check`, and `pnpm build` before opening a PR.
+3. Run `pnpm lint:check`, `pnpm format:check`, `pnpm test`, and `pnpm build` before opening a PR.
 4. Describe user-visible behavior changes in the PR description.
 
 ## Testing
 
-`pnpm test` runs the Vitest unit test suite. `pnpm check` validates Astro and TypeScript, and `pnpm build` verifies the production Cloudflare build.
+`pnpm lint:check` runs Oxlint, and `pnpm format:check` checks Oxfmt formatting. `pnpm test` runs the Vitest unit test suite. `pnpm check` validates Astro and TypeScript, and `pnpm build` verifies the production Cloudflare build.

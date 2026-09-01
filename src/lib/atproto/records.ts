@@ -27,10 +27,7 @@ async function resolvePdsUrl(did: string) {
     if (did.startsWith("did:plc:")) {
       url = `https://plc.directory/${did}`;
     } else if (did.startsWith("did:web:")) {
-      const [host, ...path] = did
-        .slice("did:web:".length)
-        .split(":")
-        .map(decodeURIComponent);
+      const [host, ...path] = did.slice("did:web:".length).split(":").map(decodeURIComponent);
       url =
         path.length === 0
           ? `https://${host}/.well-known/did.json`
@@ -87,7 +84,7 @@ function aggregate(records: PdsRecord[]) {
   }
   return new Map(
     [...languages].map(([language, entries]) => {
-      const sorted = [...entries.values()].sort(
+      const sorted = [...entries.values()].toSorted(
         (a, b) =>
           (a.value.sortOrder ?? 0) - (b.value.sortOrder ?? 0) ||
           a.value.value.localeCompare(b.value.value),
@@ -115,7 +112,7 @@ export async function getProfileRecords(did: string) {
   const names = aggregate(nameRecords);
   const pronouns = aggregate(pronounRecords);
   const languages = new Set([...names.keys(), ...pronouns.keys()]);
-  const ordered = [...languages].sort((a, b) => {
+  const ordered = [...languages].toSorted((a, b) => {
     if (a === DEFAULT_LANG) return -1;
     if (b === DEFAULT_LANG) return 1;
     return a.localeCompare(b);

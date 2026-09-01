@@ -41,9 +41,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           location.replace(url);
           return;
         }
+        const themeKey = "pronounsblue-theme";
         const readTheme = () => {
           try {
-            return localStorage.getItem("pronounsblue-theme") || "dark";
+            return localStorage.getItem(themeKey) || "dark";
           } catch {
             return "dark";
           }

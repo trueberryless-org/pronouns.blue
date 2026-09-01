@@ -10,12 +10,7 @@ import {
 
 describe("profile editor model", () => {
   it("splits comma, semicolon, and newline separated values", () => {
-    expect(splitEntries("Ada, Alex; Sky\nRiver")).toEqual([
-      "Ada",
-      "Alex",
-      "Sky",
-      "River",
-    ]);
+    expect(splitEntries("Ada, Alex; Sky\nRiver")).toEqual(["Ada", "Alex", "Sky", "River"]);
   });
 
   it("deduplicates values without changing the first position", () => {

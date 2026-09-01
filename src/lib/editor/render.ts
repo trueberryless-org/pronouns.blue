@@ -5,18 +5,11 @@ function escape(value: string) {
   return value.replace(
     /[&<>"']/g,
     (character) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[
-        character
-      ]!,
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[character]!,
   );
 }
 
-function entryRow(
-  value: string,
-  index: number,
-  preferred: boolean,
-  type: "name" | "pronoun",
-) {
+function entryRow(value: string, index: number, preferred: boolean, type: "name" | "pronoun") {
   return `
     <li>
       <span>${escape(value)}</span>

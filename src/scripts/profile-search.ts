@@ -40,7 +40,9 @@ export function initializeProfileSearch() {
   root.dataset.initialized = "true";
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && input.value.trim()) {
-      window.location.assign(`/profile/${encodeURIComponent(input.value.trim().replace(/^@/, ""))}`);
+      window.location.assign(
+        `/profile/${encodeURIComponent(input.value.trim().replace(/^@/, ""))}`,
+      );
     }
     if (event.key === "Escape") results.hidden = true;
   });

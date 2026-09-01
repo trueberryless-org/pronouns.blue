@@ -1,12 +1,8 @@
 {
   "name": "pronouns.blue",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "version": "0.2.0",
-  "packageManager": "pnpm@11.7.0",
-  "engines": {
-    "node": ">=24"
-  },
   "scripts": {
     "dev": "astro dev",
     "build": "wrangler types --include-runtime=false --install-skills=false && astro check && astro build",
@@ -14,6 +10,10 @@
     "deploy": "pnpm build && wrangler deploy",
     "test": "vitest run",
     "check": "wrangler types --include-runtime=false --install-skills=false && astro check",
+    "lint:check": "oxlint --deny-warnings",
+    "lint:fix": "oxlint --fix",
+    "format:check": "oxfmt --check",
+    "format:fix": "oxfmt",
     "astro": "astro",
     "generate-types": "wrangler types --include-runtime=false --install-skills=false"
   },
@@ -30,8 +30,14 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@types/node": "^26.4.0",
+    "oxfmt": "^0.65.0",
+    "oxlint": "^1.80.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11",
     "wrangler": "^4.128.0"
-  }
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.7.0"
 }

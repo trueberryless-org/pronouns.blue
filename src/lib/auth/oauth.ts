@@ -17,8 +17,7 @@ import {
 } from "@atcute/oauth-browser-client";
 import { Client } from "@atcute/client";
 
-export const OAUTH_SCOPE =
-  "atproto repo:blue.pronouns.name repo:blue.pronouns.pronoun";
+export const OAUTH_SCOPE = "atproto repo:blue.pronouns.name repo:blue.pronouns.pronoun";
 
 let configuredOrigin: string | undefined;
 

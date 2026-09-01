@@ -23,6 +23,8 @@ pnpm dev
 Run validation:
 
 ```sh
+pnpm lint:check
+pnpm format:check
 pnpm test
 pnpm check
 pnpm build

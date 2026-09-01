@@ -1,8 +1,4 @@
-export function loadAvatar(
-  element: HTMLElement,
-  imageUrl: string | undefined,
-  fallback: string,
-) {
+export function loadAvatar(element: HTMLElement, imageUrl: string | undefined, fallback: string) {
   element.textContent = fallback.charAt(0).toUpperCase();
   element.style.removeProperty("background-image");
   if (!imageUrl) return;

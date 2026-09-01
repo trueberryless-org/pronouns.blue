@@ -129,9 +129,7 @@ async function save(did: Did, root: HTMLElement) {
     if (groups.some((group) => group.names.length > 128 || group.pronouns.length > 128)) {
       throw new Error("Each language supports up to 128 names and 128 pronouns.");
     }
-    const filtered = groups.filter(
-      (group) => group.names.length > 0 || group.pronouns.length > 0,
-    );
+    const filtered = groups.filter((group) => group.names.length > 0 || group.pronouns.length > 0);
     const rpc = await getAuthenticatedClient(did);
     await publishProfile(rpc, did, filtered);
     const invalidation = await fetch("/api/cache/invalidate", {
