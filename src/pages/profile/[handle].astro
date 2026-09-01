@@ -1,0 +1,39 @@
+---
+import FollowsGrid from "../../components/profile/FollowsGrid.astro";
+import ProfileGroups from "../../components/profile/ProfileGroups.astro";
+import ProfileHeader from "../../components/profile/ProfileHeader.astro";
+import { getActorProfile, getFollows } from "../../lib/atproto/profile";
+import { getProfileRecords } from "../../lib/atproto/records";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export const prerender = false;
+
+const handle = decodeURIComponent(Astro.params.handle ?? "").replace(/^@/, "");
+const actor = await getActorProfile(handle);
+if (!actor) return Astro.redirect("/404");
+const [{ groups }, follows] = await Promise.all([
+  getProfileRecords(actor.did),
+  getFollows(actor.did),
+]);
+const description = `View @${actor.handle}’s preferred names and pronouns on pronouns.blue`;
+Astro.cache.set({ maxAge: 315_360_000, tags: [`profile:${actor.did}`] });
+---
+
+<BaseLayout title={`@${actor.handle} – pronouns.blue`} {description}>
+  <main class="narrow">
+    <ProfileHeader {actor} />
+    <ProfileGroups {groups} fallbackPronouns={actor.pronouns} />
+    {
+      follows.follows.length > 0 && (
+        <FollowsGrid follows={follows.follows} cursor={follows.cursor} did={actor.did} />
+      )
+    }
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    min-height: 70vh;
+    padding-block: 2.5rem 5rem;
+  }
+</style>

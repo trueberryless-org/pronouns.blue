@@ -1,0 +1,94 @@
+---
+interface Props {
+  title: string;
+  updated: string;
+  description: string;
+}
+
+const { title, updated, description } = Astro.props;
+---
+
+<div class="policy-heading">
+  <div>
+    <h1>{title}</h1>
+    <p>Last updated: {updated}</p>
+  </div>
+  <img src="/pronouns.blue-round.svg" alt="" width="80" height="80" />
+</div>
+<p class="intro">{description}</p>
+<article>
+  <slot />
+</article>
+
+<style>
+  .policy-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  .policy-heading p,
+  .intro {
+    color: var(--muted);
+  }
+
+  .policy-heading p {
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+  }
+
+  img {
+    width: 5rem;
+  }
+
+  .intro {
+    margin: 0 0 2rem;
+  }
+
+  article :global(h2) {
+    margin: 0 0 0.75rem;
+    color: var(--text);
+    font-size: 1.25rem;
+  }
+
+  article :global(h2:not(:first-child)) {
+    margin-top: 1.5rem;
+  }
+
+  article :global(h2),
+  article :global(h2 + p) {
+    border-inline: 1px solid var(--border);
+    background: var(--surface);
+    padding-inline: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  article :global(h2) {
+    margin-bottom: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 1.5rem 1.5rem 0 0;
+    padding-top: 1.5rem;
+  }
+
+  article :global(h2 + p) {
+    margin-top: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0 0 1.5rem 1.5rem;
+    padding-block: 0.75rem 1.5rem;
+    color: var(--muted);
+  }
+
+  article :global(a) {
+    color: var(--accent);
+    text-underline-offset: 0.2em;
+  }
+
+  article :global(code) {
+    font-size: 0.85em;
+  }
+</style>

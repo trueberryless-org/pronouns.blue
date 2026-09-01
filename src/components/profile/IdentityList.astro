@@ -1,0 +1,51 @@
+---
+interface Props {
+  title: string;
+  values: string[];
+  preferred: string[];
+}
+
+const { title, values, preferred } = Astro.props;
+---
+
+<section>
+  <h2>{title}</h2>
+  <ul>
+    {
+      values.map((value) => (
+        <li>
+          <span>{value}</span>
+          {preferred.includes(value) && <span class="heart" title="Preferred">♥</span>}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  h2 {
+    margin: 0 0 0.5rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    min-height: 2.7rem;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .heart {
+    color: var(--danger);
+  }
+</style>

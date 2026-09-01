@@ -1,0 +1,98 @@
+---
+import type { LanguageGroup } from "../../lib/atproto/records";
+import IdentityList from "./IdentityList.astro";
+
+interface Props {
+  groups: LanguageGroup[];
+  fallbackPronouns: string | null;
+}
+
+const { fallbackPronouns } = Astro.props;
+const groups = Astro.props.groups.filter(
+  (group) => group.names.length > 0 || group.pronouns.length > 0,
+);
+const languageNames = new Intl.DisplayNames(["en"], { type: "language" });
+const label = (tag: string) => {
+  try {
+    return languageNames.of(tag) ?? tag;
+  } catch {
+    return tag;
+  }
+};
+---
+
+{
+  groups.length > 0 ? (
+    <div class="groups">
+      {groups.map((group) => (
+        <section class="group">
+          {groups.length > 1 && (
+            <div class="language">
+              <span>{label(group.lang)}</span>
+              <i />
+            </div>
+          )}
+          <div class="columns">
+            {group.names.length > 0 && (
+              <IdentityList
+                title="Names"
+                values={group.names}
+                preferred={group.preferredNames}
+              />
+            )}
+            {group.pronouns.length > 0 && (
+              <IdentityList
+                title="Pronouns"
+                values={group.pronouns}
+                preferred={group.preferredPronouns}
+              />
+            )}
+          </div>
+        </section>
+      ))}
+    </div>
+  ) : fallbackPronouns ? (
+    <IdentityList title="Pronouns from Bluesky" values={[fallbackPronouns]} preferred={[]} />
+  ) : (
+    <p class="empty">This user hasn’t set any names or pronouns yet.</p>
+  )
+}
+
+<style>
+  .groups,
+  .group {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .language {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .language span {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.15rem 0.65rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  .language i {
+    height: 1px;
+    flex: 1;
+    background: var(--line);
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+    gap: 2rem;
+  }
+
+  .empty {
+    color: var(--muted);
+    text-align: center;
+  }
+</style>

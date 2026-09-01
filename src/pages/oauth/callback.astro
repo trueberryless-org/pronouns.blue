@@ -1,0 +1,52 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Completing sign-in – pronouns.blue">
+  <main class="narrow">
+    <section class="card">
+      <h1 data-callback-title>Completing sign-in…</h1>
+      <p class="muted" data-callback-message>Please keep this page open.</p>
+      <a class="button" href="/" hidden data-callback-home>Return home</a>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  import { finishLogin } from "../../lib/auth/oauth";
+
+  async function finish() {
+    const title = document.querySelector("[data-callback-title]");
+    const message = document.querySelector("[data-callback-message]");
+    const home = document.querySelector<HTMLElement>("[data-callback-home]");
+    try {
+      const parameters = new URLSearchParams(location.hash.slice(1));
+      history.replaceState(null, "", location.pathname);
+      await finishLogin(parameters);
+      window.location.replace("/settings");
+    } catch (error) {
+      if (title) title.textContent = "Sign-in failed";
+      if (message) {
+        message.textContent = error instanceof Error ? error.message : "Unable to complete sign-in";
+      }
+      if (home) home.hidden = false;
+    }
+  }
+  document.addEventListener("astro:page-load", finish, { once: true });
+</script>
+
+<style>
+  main {
+    min-height: 65vh;
+    padding-block: 4rem;
+  }
+
+  section {
+    padding: 2rem;
+    text-align: center;
+  }
+
+  h1 {
+    margin: 0;
+  }
+</style>

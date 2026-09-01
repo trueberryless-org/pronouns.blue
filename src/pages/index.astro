@@ -1,0 +1,119 @@
+---
+import ProfileSearch from "../components/home/ProfileSearch.astro";
+import Logo from "../components/layout/Logo.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout hideNavLogo>
+  <main>
+    <section class="hero narrow">
+      <Logo />
+      <h1>A simple home for your names and pronouns.</h1>
+      <p>
+        Publish them to your own AT Protocol repository, share one clear profile,
+        and stay in control of your data.
+      </p>
+      <ProfileSearch />
+    </section>
+    <section class="features shell" aria-label="How it works">
+      <article class="card">
+        <strong>Yours</strong>
+        <p>Your profile records live in your PDS, not in a pronouns.blue database.</p>
+      </article>
+      <article class="card">
+        <strong>Flexible</strong>
+        <p>Add multiple names, pronouns, preferences, ordering, and languages.</p>
+      </article>
+      <article class="card">
+        <strong>Shareable</strong>
+        <p>Send one fast, accessible profile page to anyone who needs it.</p>
+      </article>
+    </section>
+    <section class="cta narrow card">
+      <img src="/pronouns.blue-round.svg" alt="" width="96" height="96" />
+      <div>
+        <h2>Ready to make your profile?</h2>
+        <p class="muted">Log in with any AT Protocol account using the form in the header.</p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    padding-bottom: 5rem;
+  }
+
+  .hero {
+    display: grid;
+    justify-items: center;
+    padding: 3.5rem 0 5rem;
+    text-align: center;
+  }
+
+  h1 {
+    max-width: 42rem;
+    margin: 2rem 0 0.75rem;
+    font-size: clamp(2rem, 6vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: -0.045em;
+  }
+
+  .hero > p {
+    max-width: 37rem;
+    margin: 0 0 2.5rem;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+
+  .hero :global(.profile-search) {
+    width: 100%;
+    text-align: left;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 4rem;
+  }
+
+  article {
+    padding: 1.5rem;
+  }
+
+  article strong {
+    font-size: 1.15rem;
+  }
+
+  article p {
+    margin-bottom: 0;
+    color: var(--muted);
+  }
+
+  .cta {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .cta h2,
+  .cta p {
+    margin: 0;
+  }
+
+  .cta img {
+    width: 5rem;
+  }
+
+  @media (max-width: 42rem) {
+    .features {
+      grid-template-columns: 1fr;
+    }
+
+    .hero {
+      padding-top: 2rem;
+    }
+  }
+</style>

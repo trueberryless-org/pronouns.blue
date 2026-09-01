@@ -1,0 +1,56 @@
+<form class="profile-search" data-profile-search>
+  <label for="home-search">Find someone on the AT Protocol</label>
+  <div>
+    <input
+      id="home-search"
+      class="field"
+      name="handle"
+      placeholder="Search handle, for example trueberryless.org"
+      autocomplete="off"
+      required
+    />
+    <button class="button primary" type="submit">View profile</button>
+  </div>
+</form>
+
+<script>
+  function initialize() {
+    document.querySelector<HTMLFormElement>("[data-profile-search]")?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = event.currentTarget as HTMLFormElement;
+      const handle = String(new FormData(form).get("handle") ?? "").trim().replace(/^@/, "");
+      if (handle) window.location.assign(`/profile/${encodeURIComponent(handle)}`);
+    });
+  }
+  document.addEventListener("astro:page-load", initialize);
+</script>
+
+<style>
+  label {
+    display: block;
+    margin-bottom: 0.55rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  div {
+    display: flex;
+    gap: 0.65rem;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border-radius: 1rem;
+    padding-inline: 1rem;
+    font-size: 1.05rem;
+  }
+
+  @media (max-width: 32rem) {
+    div {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  }
+</style>

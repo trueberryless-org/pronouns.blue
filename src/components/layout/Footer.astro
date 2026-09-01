@@ -1,0 +1,48 @@
+<footer>
+  <div class="shell footer-inner">
+    <p>Names and pronouns belong to people, not platforms.</p>
+    <nav aria-label="Legal">
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/credits">Acknowledgements</a>
+      <a href="https://github.com/trueberryless-org/pronouns.blue">GitHub</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 2rem;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+
+  @media (max-width: 40rem) {
+    .footer-inner {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>
