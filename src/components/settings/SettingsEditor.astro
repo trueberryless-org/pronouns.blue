@@ -160,6 +160,11 @@
     color: var(--muted);
   }
 
+  :global(.entry-section li button:disabled) {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
   :global(.entry-section li button:first-child) {
     color: var(--danger);
   }

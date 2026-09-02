@@ -9,14 +9,20 @@ function escape(value: string) {
   );
 }
 
-function entryRow(value: string, index: number, preferred: boolean, type: "name" | "pronoun") {
+function entryRow(
+  value: string,
+  index: number,
+  count: number,
+  preferred: boolean,
+  type: "name" | "pronoun",
+) {
   return `
     <li>
       <span>${escape(value)}</span>
       <div>
         <button type="button" data-action="preferred" data-type="${type}" data-entry="${escape(value)}" aria-label="${preferred ? "Unmark" : "Mark"} ${escape(value)} as preferred" aria-pressed="${preferred}">${preferred ? "♥" : "♡"}</button>
-        <button type="button" data-action="move-up" data-type="${type}" data-index="${index}" aria-label="Move ${escape(value)} up">↑</button>
-        <button type="button" data-action="move-down" data-type="${type}" data-index="${index}" aria-label="Move ${escape(value)} down">↓</button>
+        <button type="button" data-action="move-up" data-type="${type}" data-index="${index}" aria-label="Move ${escape(value)} up" ${index === 0 ? "disabled" : ""}>↑</button>
+        <button type="button" data-action="move-down" data-type="${type}" data-index="${index}" aria-label="Move ${escape(value)} down" ${index === count - 1 ? "disabled" : ""}>↓</button>
         <button type="button" data-action="remove-entry" data-type="${type}" data-entry="${escape(value)}" aria-label="Remove ${escape(value)}">×</button>
       </div>
     </li>`;
@@ -43,7 +49,7 @@ function entrySection(
         <input class="field" name="entry" maxlength="64" placeholder="${type === "name" ? "Name, Name 2" : "they/them, she/her"}" required>
         <button class="button primary" type="submit">Add</button>
       </form>
-      <ul>${values.length ? values.map((value, index) => entryRow(value, index, preferred.includes(value), type)).join("") : `<li class="empty">No ${title.toLowerCase()} yet.</li>`}</ul>
+      <ul>${values.length ? values.map((value, index) => entryRow(value, index, values.length, preferred.includes(value), type)).join("") : `<li class="empty">No ${title.toLowerCase()} yet.</li>`}</ul>
     </section>`;
 }
 
