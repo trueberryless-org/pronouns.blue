@@ -8,10 +8,10 @@ interface Actor {
 let timer: ReturnType<typeof setTimeout>;
 let controller: AbortController | undefined;
 
-function resultButton(actor: Actor) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "profile-result";
+function resultLink(actor: Actor) {
+  const link = document.createElement("a");
+  link.href = `/profile/${encodeURIComponent(actor.handle)}`;
+  link.className = "profile-result";
   const avatar = actor.avatar
     ? Object.assign(document.createElement("img"), { src: actor.avatar, alt: "", loading: "lazy" })
     : Object.assign(document.createElement("span"), {
@@ -25,11 +25,8 @@ function resultButton(actor: Actor) {
   const handle = document.createElement("span");
   handle.textContent = `@${actor.handle}`;
   label.append(name, handle);
-  button.append(avatar, label);
-  button.addEventListener("click", () => {
-    window.location.assign(`/profile/${encodeURIComponent(actor.handle)}`);
-  });
-  return button;
+  link.append(avatar, label);
+  return link;
 }
 
 export function initializeProfileSearch() {
@@ -64,7 +61,7 @@ export function initializeProfileSearch() {
         );
         if (!response.ok) throw new Error();
         const data = (await response.json()) as { actors?: Actor[] };
-        results.replaceChildren(...(data.actors ?? []).map(resultButton));
+        results.replaceChildren(...(data.actors ?? []).map(resultLink));
         results.hidden = !data.actors?.length;
       } catch {
         results.hidden = true;
