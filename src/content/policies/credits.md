@@ -15,7 +15,7 @@ This website was created by [@felixs.dev](https://bsky.app/profile/felixs.dev) a
 
 ## Deployment
 
-This site is proudly hosted and deployed by [Netlify](https://www.netlify.com), providing the fast and reliable infrastructure that keeps this project accessible to everyone.
+This site is proudly hosted and deployed by [Cloudflare](https://www.cloudflare.com), providing the fast and reliable infrastructure that keeps this project accessible to everyone.
 
 ## Inspiration
 
